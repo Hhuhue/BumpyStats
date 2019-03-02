@@ -2,6 +2,7 @@ import { Component, OnInit } from '@angular/core';
 import { LeaderboardEntry } from "../models/model.leaderboard-entry";
 import { StatisticsService } from "../statistics.service";
 import { RatioEntry } from '../models/models.ratio-entry';
+import { TableSorterService } from "../table-sorter.service";
 
 @Component({
   selector: 'app-leaderboards',
@@ -11,25 +12,38 @@ import { RatioEntry } from '../models/models.ratio-entry';
 export class LeaderboardsComponent implements OnInit {
   entries : LeaderboardEntry[];
   statistics : RatioEntry[];
-  sectionDisplayed = [true, false];
-  count = 0;
-  constructor(private bumpyball : StatisticsService) { }
+  selectedBoard = 0;
+
+  constructor(private bumpyball : StatisticsService,
+    public sorter : TableSorterService
+  ) { }
 
   ngOnInit() {
-    this.bumpyball.getLeaderboard(true).subscribe(entries => this.entries = entries);
-    this.bumpyball.getRatios(true).subscribe(statistics => this.statistics = statistics);
-    this.count = 0;
+    this.bumpyball.getLeaderboard(false)
+      .subscribe(entries => this.setLeaderboard(entries));
+    this.bumpyball.getRatios(false)
+      .subscribe(statistics => this.setStatistics(statistics));
   }
   
-  nextCount() : number{
-    this.count++;
-    if(this.count > 250) this.count = 1;
-    
-    return this.count;
+  onSelect(board : number) {
+    this.selectedBoard = board;
   }
-  
-  onFold(section : number, element) {
-    console.log(element);
-    this.sectionDisplayed[section-1] = !this.sectionDisplayed[section-1];
+
+  private setLeaderboard(leaderboard : LeaderboardEntry[]){
+    for (let index = 0; index < leaderboard.length; index++) {
+      leaderboard[index].Position = index + 1;      
+    }
+
+    this.entries = leaderboard;
+  }
+
+  private setStatistics(stats : RatioEntry[]){
+    var sortedRatios = this.sorter.sortTable(stats, 'WinLoss').reverse();
+
+    for (let index = 0; index < sortedRatios.length; index++) {
+      sortedRatios[index].Position = index + 1;      
+    }
+
+    this.statistics = sortedRatios;
   }
 }

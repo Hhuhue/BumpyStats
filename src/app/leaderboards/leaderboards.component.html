@@ -1,12 +1,14 @@
 <div class="page-title">Leaderboards</div>
-<div class="section-title">
-  Top by Experience
-  <i class="fa" (click)="onFold(1)" [class.fa-chevron-up]="sectionDisplayed[0]" [class.fa-chevron-down]="!sectionDisplayed[0]"
-    [class.blue]="!sectionDisplayed[0]" [class.red]="sectionDisplayed[0]"></i>
+<div class="row leaderbord-selector col-md-11">
+  <div class="col-md-6" [class.selected]="selectedBoard === 0" (click)="onSelect(0)">
+    Top Experience
+  </div>
+  <div class="col-md-6" [class.selected]="selectedBoard === 1" (click)="onSelect(1)">
+    Top Win/Loss
+  </div>
 </div>
-<hr>
-<div class="row" class="foldable" [class.fold]="!sectionDisplayed[0]">
-  <table class="table table-striped col-md-11">
+<div class="row" class="foldable" [class.fold]="selectedBoard === 1">
+  <table id="ExpBoard" class="table table-striped col-md-11">
     <thead class="thead-dark">
       <tr>
         <th>Position</th>
@@ -21,7 +23,7 @@
     </thead>
     <tbody>
       <tr *ngFor="let entry of entries">
-        <td>{{nextCount()}}</td>
+        <td>{{entry.Position}}</td>
         <td>{{entry.last_name}}</td>
         <td>{{entry.Wins}}</td>
         <td>{{entry.Losses}}</td>
@@ -33,14 +35,8 @@
     </tbody>
   </table>
 </div>
-<div class="section-title">
-  Top by Win/Loss
-  <i class="fa" (click)="onFold(2)" [class.fa-chevron-up]="sectionDisplayed[1]" [class.fa-chevron-down]="!sectionDisplayed[1]"
-    [class.blue]="!sectionDisplayed[1]" [class.red]="sectionDisplayed[1]"></i>
-</div>
-<hr>
-<div class="row" class="foldable" [class.fold]="!sectionDisplayed[1]">
-  <table class="table table-striped col-md-11">
+<div class="row wrapper" class="foldable" [class.fold]="selectedBoard === 0">
+  <table id="RatioBoard" class="table table-striped col-md-11">
     <thead class="thead-dark">
       <tr>
         <th>Position</th>
@@ -54,7 +50,7 @@
     </thead>
     <tbody>
       <tr *ngFor="let stats of statistics">
-        <td>{{nextCount()}}</td>
+        <td>{{stats.Position}}</td>
         <td>{{stats.Name}}</td>
         <td>{{stats.Games}}</td>
         <td>{{stats.GoalsGame}}</td>

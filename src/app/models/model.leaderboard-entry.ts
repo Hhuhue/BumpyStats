@@ -6,4 +6,5 @@ export class LeaderboardEntry {
     Draws : number;
     Losses : number;
     last_name : string;
+    Position : number;
 }
