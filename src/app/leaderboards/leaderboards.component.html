@@ -1,0 +1,30 @@
+<div class="page-title">Leaderboards</div>
+<hr>
+<div class="row">
+  <table class="table table-striped">
+    <thead class="thead-dark">
+      <tr>
+        <th>Position</th>
+        <th>Name</th>
+        <th>Win</th>
+        <th>Loss</th>
+        <th>Draw</th>
+        <th>Goal</th>
+        <th>Assist</th>
+        <th>Experience</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr *ngFor="let entry of entries">
+        <td>{{nextCount()}}</td>
+        <td>{{entry.last_name}}</td>
+        <td>{{entry.Wins}}</td>
+        <td>{{entry.Losses}}</td>
+        <td>{{entry.Draws}}</td>
+        <td>{{entry.goals}}</td>
+        <td>{{entry.assists}}</td>
+        <td>{{entry.Experience}}</td>
+      </tr>
+    </tbody>
+  </table>
+</div>

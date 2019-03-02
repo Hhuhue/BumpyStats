@@ -1,7 +1,7 @@
 .side-bar{
     height: 100%;
     width: 250px;
-    position: absolute;
+    position: fixed;
     background-color: rgba(2, 18, 20, 1);
     color: white;
 }
@@ -38,7 +38,7 @@
     padding-bottom: 8px;
     margin-top: 10px;
     margin-bottom: 10px;
-    transition: border-width 0.5s;
+    transition: border-width 0.3s;
 }
 
 .nav-elements > div:nth-child(even):hover{

@@ -1,1 +1,6 @@
 /* You can add global styles to this file, and also import other style files */
+.page-title{
+    font-size: 25pt;
+    font-weight: bold;
+    color: rgba(2, 18, 20, 1);
+}
