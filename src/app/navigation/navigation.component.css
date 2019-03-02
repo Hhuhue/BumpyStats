@@ -3,21 +3,76 @@
     width: 250px;
     position: absolute;
     background-color: rgba(2, 18, 20, 1);
-    color: rgba(213, 226, 188, 1);
+    color: white;
 }
 
 .nav-title{
     text-align: center;
     font-weight: bold;
-    margin-top: 30px; 
 }
 
 .car-img{
-    width: 40px;
-    height: 40px;
+    width: 150px;
+    height: 150px;
+    margin: auto;
+    margin-top: 10px; 
 }
 
 .car-img img {
     width: 100%;
     height: auto;
+}
+
+.nav-elements{
+    padding-top: 30px;
+    color: white;
+}
+
+.nav-elements > div{
+    padding-top: 15px;
+    padding-bottom: 15px;
+}
+
+.nav-elements > div{
+    padding-top: 8px;
+    padding-bottom: 8px;
+    margin-top: 10px;
+    margin-bottom: 10px;
+    transition: border-width 0.5s;
+}
+
+.nav-elements > div:nth-child(even):hover{
+    border-left-style: solid;
+    border-left-width: 5px;
+    border-left-color: rgba(61, 61, 211, 1);
+}
+
+.nav-elements > div:nth-child(odd):hover{
+    border-left-style: solid;
+    border-left-width: 5px;
+    border-left-color: rgba(178, 74, 74, 1);
+}
+
+.nav-elements > div.selected:nth-child(even){
+    border-left-style: solid;
+    border-left-width: 5px;
+    border-left-color: rgba(61, 61, 211, 1);
+    font-weight: bold;
+    color: rgba(61, 61, 211, 1);
+}
+
+.nav-elements > div.selected:nth-child(odd){
+    border-left-style: solid;
+    border-left-width: 5px;
+    border-left-color: rgba(178, 74, 74, 1);
+    font-weight: bold;
+    color: rgba(178, 74, 74, 1);
+}
+
+.nav-elements > div > a{
+    padding-left: 30px;
+}
+
+.nav-elements > div > a > i{
+    margin-right: 15px;
 }

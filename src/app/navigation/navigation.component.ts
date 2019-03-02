@@ -6,10 +6,14 @@ import { Component, OnInit } from '@angular/core';
   styleUrls: ['./navigation.component.css']
 })
 export class NavigationComponent implements OnInit {
-
+  selectedIndex = 1;
   constructor() { }
 
   ngOnInit() {
+  }
+
+  onSelect(index){
+    this.selectedIndex = index;
   }
 
 }

@@ -1,11 +1,22 @@
 <div class="side-bar">
+  <div class="car-img">
+    <img src="assets/bumpycar.png" alt="car image">
+  </div>
   <h3 class="nav-title">
-    <div class="car-img d-inline-block">
-      <img src="assets/bumpycar.png" alt="car image">
-    </div>
-    <div class="d-inline-block">BumpyStats</div>
+    BumpyStats
   </h3>
   <div class="nav-elements">
-
-  </div>  
+    <div [class.selected]="1 === selectedIndex" (click)="onSelect(1)">
+      <a><i class="fa fa-columns"></i> Leaderboards</a>
+    </div>
+    <div [class.selected]="2 === selectedIndex" (click)="onSelect(2)">
+      <a><i class="fa fa-chart-bar"></i> Player Stats</a>
+    </div>
+    <div [class.selected]="3 === selectedIndex" (click)="onSelect(3)">
+      <a><i class="fa fa-project-diagram"></i> Compare Players</a>
+    </div>
+    <div [class.selected]="4 === selectedIndex" (click)="onSelect(4)">
+      <a><i class="fa fa-search"></i>Find Player</a>
+    </div>
+  </div>
 </div>
