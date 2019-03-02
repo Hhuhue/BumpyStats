@@ -1,7 +1,12 @@
 <div class="page-title">Leaderboards</div>
+<div class="section-title">
+  Top by Experience
+  <i class="fa" (click)="onFold(1)" [class.fa-chevron-up]="sectionDisplayed[0]" [class.fa-chevron-down]="!sectionDisplayed[0]"
+    [class.blue]="!sectionDisplayed[0]" [class.red]="sectionDisplayed[0]"></i>
+</div>
 <hr>
-<div class="row">
-  <table class="table table-striped">
+<div class="row" class="foldable" [class.fold]="!sectionDisplayed[0]">
+  <table class="table table-striped col-md-11">
     <thead class="thead-dark">
       <tr>
         <th>Position</th>
@@ -24,6 +29,38 @@
         <td>{{entry.goals}}</td>
         <td>{{entry.assists}}</td>
         <td>{{entry.Experience}}</td>
+      </tr>
+    </tbody>
+  </table>
+</div>
+<div class="section-title">
+  Top by Win/Loss
+  <i class="fa" (click)="onFold(2)" [class.fa-chevron-up]="sectionDisplayed[1]" [class.fa-chevron-down]="!sectionDisplayed[1]"
+    [class.blue]="!sectionDisplayed[1]" [class.red]="sectionDisplayed[1]"></i>
+</div>
+<hr>
+<div class="row" class="foldable" [class.fold]="!sectionDisplayed[1]">
+  <table class="table table-striped col-md-11">
+    <thead class="thead-dark">
+      <tr>
+        <th>Position</th>
+        <th>Name</th>
+        <th>Games</th>
+        <th>Goals / Game</th>
+        <th>Assists / Game</th>
+        <th>Exp / Game</th>
+        <th>Wins / Losses</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr *ngFor="let stats of statistics">
+        <td>{{nextCount()}}</td>
+        <td>{{stats.Name}}</td>
+        <td>{{stats.Games}}</td>
+        <td>{{stats.GoalsGame}}</td>
+        <td>{{stats.AssistsGame}}</td>
+        <td>{{stats.ExpGame}}</td>
+        <td>{{stats.WinLoss}}</td>
       </tr>
     </tbody>
   </table>

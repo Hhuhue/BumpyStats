@@ -3,4 +3,30 @@
     font-size: 25pt;
     font-weight: bold;
     color: rgba(2, 18, 20, 1);
+    user-select: none;
+}
+
+.section-title{
+    padding-top: 20px;
+    font-size: 18pt;
+    font-weight: bold;
+    color: rgba(2, 18, 20, 1);
+    user-select: none;
+}
+
+.foldable{
+    height: 100%;
+    overflow: hidden;
+}
+
+.foldable.fold{
+    height: 0;
+}
+
+.red{
+    color: rgba(178, 74, 74, 1);
+}
+
+.blue{
+    color: rgba(61, 61, 211, 1);
 }
