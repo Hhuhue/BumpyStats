@@ -23,6 +23,10 @@ export class LeaderboardsComponent implements OnInit {
       .subscribe(entries => this.setLeaderboard(entries));
     this.bumpyball.getRatios(false)
       .subscribe(statistics => this.setStatistics(statistics));
+    console.log($);
+
+    $("#ExpBoard").floatThead({position: 'fixed'});
+    $("#RatioBoard").floatThead({position: 'fixed'});
   }
   
   onSelect(board : number) {

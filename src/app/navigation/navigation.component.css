@@ -41,6 +41,10 @@
     transition: border-width 0.3s;
 }
 
+.nav-elements > div:focus{
+    outline: 0;
+}
+
 .nav-elements > div:nth-child(even):hover{
     border-left-style: solid;
     border-left-width: 5px;
