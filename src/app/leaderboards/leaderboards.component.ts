@@ -3,6 +3,7 @@ import { LeaderboardEntry } from "../models/model.leaderboard-entry";
 import { StatisticsService } from "../statistics.service";
 import { RatioEntry } from '../models/models.ratio-entry';
 import { TableSorterService } from "../table-sorter.service";
+import { BumpyballService } from '../bumpyball.service';
 
 @Component({
   selector: 'app-leaderboards',
@@ -11,22 +12,26 @@ import { TableSorterService } from "../table-sorter.service";
 })
 export class LeaderboardsComponent implements OnInit {
   entries : LeaderboardEntry[];
+  progress = [];
   statistics : RatioEntry[];
   selectedBoard = 0;
 
-  constructor(private bumpyball : StatisticsService,
+  constructor(private statService : StatisticsService,
+    private bumpyball : BumpyballService,
     public sorter : TableSorterService
   ) { }
 
   ngOnInit() {
-    this.bumpyball.getLeaderboard(false)
+    this.statService.getLeaderboard(false)
       .subscribe(entries => this.setLeaderboard(entries));
-    this.bumpyball.getRatios(false)
+    this.statService.getRatios(false)
       .subscribe(statistics => this.setStatistics(statistics));
-    console.log($);
+    this.bumpyball.getPlayerProgress()
+      .subscribe(progress => this.progress = progress);
 
     $("#ExpBoard").floatThead({position: 'fixed'});
     $("#RatioBoard").floatThead({position: 'fixed'});
+    $("#ProgressBoard").floatThead({position: 'fixed'});
   }
   
   onSelect(board : number) {

@@ -6,10 +6,10 @@
     BumpyStats
   </h3>
   <div class="nav-elements">
-    <div [class.selected]="1 === selectedIndex" (click)="onSelect(1)">
+    <div [class.selected]="1 === selectedIndex" (click)="onSelect(1)" routerLink="/Leaderboards">
       <a><i class="fa fa-columns"></i> Leaderboards</a>
     </div>
-    <div [class.selected]="2 === selectedIndex" (click)="onSelect(2)">
+    <div [class.selected]="2 === selectedIndex" (click)="onSelect(2)" routerLink="/PlayerStats">
       <a><i class="fa fa-chart-bar"></i> Player Stats</a>
     </div>
     <div [class.selected]="3 === selectedIndex" (click)="onSelect(3)">
