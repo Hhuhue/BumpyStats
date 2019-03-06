@@ -9,7 +9,7 @@ import { Observable } from '../../node_modules/rxjs';
 export class BumpyballService {
   private leaderboardURL = "http://listing.usemapsettings.com/Leaderboard?Limit=250";
   private getPlayerNamesApiUrl = "http://localhost:8080/names";
-  private getPlayerProgressApiUrl = "http://localhost:8080/progress/2019-03-03";
+  private getPlayerProgressApiUrl = "http://localhost:8080/snapshot-preview";
   constructor(private http: HttpClient) { }
 
   getLeaderboard() : Observable<LeaderboardEntry[]>{

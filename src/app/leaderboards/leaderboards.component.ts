@@ -38,6 +38,25 @@ export class LeaderboardsComponent implements OnInit {
     this.selectedBoard = board;
   }
 
+  getToday(offset){
+    var today = new Date();
+    var dd = today.getDate() + offset;
+    var mm = today.getMonth() + 1; //January is 0!
+    var yyyy = today.getFullYear();
+    
+    var ddStr = dd.toString();
+    if (dd < 10) {
+      ddStr = '0' + dd;
+    }
+
+    var mmStr = mm.toString();
+    if (mm < 10) {
+      mmStr = '0' + mm;
+    }
+
+    return yyyy + '-' + mmStr  + '-' + ddStr;
+  }
+
   private setLeaderboard(leaderboard : LeaderboardEntry[]){
     for (let index = 0; index < leaderboard.length; index++) {
       leaderboard[index].Position = index + 1;      
