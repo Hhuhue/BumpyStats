@@ -56,7 +56,7 @@ $app->get('/snapshot-preview', function (Request $request, Response $response) {
     $connection = new Database($this->db, $this->logger);
     $json = $connection->snapshotPreview($result, $date);
 
-    $response->getBody()->write($json);
+    $response->getBody()->write($date . "\n" . $json);
     return $response;
 });
 
@@ -73,6 +73,15 @@ $app->get('/progress/{date}', function (Request $request, Response $response, $a
     $date = (string)$args['date'];
     $connection = new Database($this->db, $this->logger);
     $array = $connection->getPlayersProgress($date);
+
+    $response->getBody()->write($array);
+    return $response;
+});
+
+$app->get('/data/{player}', function (Request $request, Response $response, $args) {
+    $name = (string)$args['player'];
+    $connection = new Database($this->db, $this->logger);
+    $array = $connection->getPlayerData($name);
 
     $response->getBody()->write($array);
     return $response;

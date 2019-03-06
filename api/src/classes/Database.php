@@ -71,6 +71,39 @@ class Database
         return json_encode($progresses);
     }
 
+    public function getPlayerData($player){
+        $id = $this->getPlayerId($player);
+
+        if($id == -1) return -1;
+
+        $progresses = "SELECT content, progressDate FROM progress WHERE player = $id";
+        $states = "SELECT content, stateDate FROM state WHERE player = $id";
+
+        $result = $this->pdo->query($progresses)->fetchAll();
+        $progressArray = [];
+
+        foreach ($result as $progress) {
+            $json = json_decode($progress['content'], true);
+            $json['Date'] = $progress['progressDate'];
+            array_push($progressArray, $json);
+        }
+
+        $result = $this->pdo->query($states)->fetchAll();
+        $stateArray = [];
+
+        foreach ($result as $state) {
+            $json = json_decode($state['content'], true);
+            $json['Date'] = $state['stateDate'];
+            array_push($stateArray, $json);
+        }
+
+        $data = [];
+        $data['states'] = $stateArray;
+        $data['progress'] = $progressArray;
+
+        return json_encode($data);
+    }
+
     public function snapshot($json, $date)
     {
         $this->setPlayerData($json, $date);
@@ -115,7 +148,8 @@ class Database
         }
     }
 
-    public function snapshotPreview($json, $date){
+    public function snapshotPreview($json, $date)
+    {
         $newStates = json_decode($json, true);
 
         $fallens = json_decode($this->getPlayerNames());
@@ -123,21 +157,26 @@ class Database
         $dateObj->add(new DateInterval('P1D'));
         $tomorrow = $dateObj->format('Y-m-d');
 
+        $visitedPlayers = [];
+
         $progresses = [];
         $position = 0;
         foreach ($newStates as $state) {
             $position++;
             $name = $state['last_name'];
-            $id = $this->getPlayerId($name);
-            $state['Position'] = $position;
+            if (!array_key_exists($name, $visitedPlayers)) {
+                $visitedPlayers[$name] = 1;
+                $id = $this->getPlayerId($name);
+                $state['Position'] = $position;
 
-            if($id == -1) continue;
+                if ($id == -1) continue;
 
-            $oldState = $this->getPreviousState($id, $tomorrow);
-            if ($oldState != -1) {
-                $progress = $this->getPlayerProgress($oldState, $state);
-                if($progress != 0){
-                    array_push($progresses, $progress);
+                $oldState = $this->getPreviousState($id, $tomorrow);
+                if ($oldState != -1) {
+                    $progress = $this->getPlayerProgress($oldState, $state);
+                    if ($progress != 0) {
+                        array_push($progresses, $progress);
+                    }
                 }
             }
         }
@@ -161,7 +200,7 @@ class Database
 
     private function insertPlayerProgress($oldSpecs, $newSpecs, $id, $date)
     {
-        $array = $this->getPlayerProgress($oldSpecs, $newSpecs);        
+        $array = $this->getPlayerProgress($oldSpecs, $newSpecs);
 
         if ($array == 0) return -1;
 

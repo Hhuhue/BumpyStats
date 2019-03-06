@@ -1,6 +1,14 @@
 <div class="page-title">Player Statistics</div>
-<div>
-  <div *ngFor="let name of names">
-    {{name}}
+<br>
+<div class="row col-md-11">
+  <div class="form-group row col-md-12">
+    <label for="SearchedPlayer" class="col-md-2 col-form-label">Player name: </label>
+    <div class="col-md-6">
+      <input type="text" (keyup)="onEnter($event)" class="form-control" id="SearchedPlayer" placeholder="Enter a name">
+      <small id="NameHelp" class="form-text text-muted">This field is case sensitive </small>
+    </div>
+  </div>
+  <div class="col-md-12">
+    {{playerData}}
   </div>
 </div>

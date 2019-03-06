@@ -10,6 +10,7 @@ export class BumpyballService {
   private leaderboardURL = "http://listing.usemapsettings.com/Leaderboard?Limit=250";
   private getPlayerNamesApiUrl = "http://localhost:8080/names";
   private getPlayerProgressApiUrl = "http://localhost:8080/snapshot-preview";
+  private getPlayerDataApiUrl = "http://localhost:8080/data/";
   constructor(private http: HttpClient) { }
 
   getLeaderboard() : Observable<LeaderboardEntry[]>{
@@ -22,5 +23,9 @@ export class BumpyballService {
 
   getPlayerProgress() : Observable<LeaderboardEntry[]>{
     return this.http.get<LeaderboardEntry[]>(this.getPlayerProgressApiUrl);
+  }
+
+  getPlayerData(name : string) : Observable<any>{
+    return this.http.get<any>(this.getPlayerDataApiUrl + name);
   }
 }

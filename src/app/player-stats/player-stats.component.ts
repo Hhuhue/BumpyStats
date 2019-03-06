@@ -8,12 +8,20 @@ import { BumpyballService } from '../bumpyball.service';
 })
 
 export class PlayerStatsComponent implements OnInit {
-  names : string[];
+  names: string[];
+  playerData: any;
 
-  constructor(private bumpyball : BumpyballService) { }
+  constructor(private bumpyball: BumpyballService) { }
 
   ngOnInit() {
     this.bumpyball.getPlayerNames().subscribe(names => this.names = names);
   }
 
+  onEnter(event: any) {
+    var keycode = (event.keyCode ? event.keyCode : event.which);
+    if (keycode.toString() == '13') {
+      this.bumpyball.getPlayerData($("#SearchedPlayer").val().toString())
+        .subscribe(data => this.playerData = JSON.stringify(data));
+    }
+  }
 }
