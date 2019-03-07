@@ -4,6 +4,7 @@ import { RatioEntry } from "./models/models.ratio-entry";
 import { BumpyballService } from "./bumpyball.service";
 import { Observable, of } from '../../node_modules/rxjs';
 import { map } from 'rxjs/operators';
+import { PlayerData } from './models/model.player-data';
 
 @Injectable({
   providedIn: 'root'
@@ -34,6 +35,34 @@ export class StatisticsService {
       promise.subscribe(leaderboard => this.currentRatios = this.treatLeaderboard(leaderboard));
       return promise.pipe(map(leaderboard => this.treatLeaderboard(leaderboard)));
     }
+  }
+
+  buildPlayerData(raw : any) : PlayerData[]{
+    var rawStates = raw.states;
+    var rawProgress = raw.progress;
+
+    var ratios = this.treatLeaderboard(rawStates);
+    var playerData : PlayerData[] = [];
+
+    var j = 0;
+    for (let i = 0; i < rawStates.length; i++) {
+      var data : PlayerData = {
+        DataDate : rawStates[i].Date,
+        State : rawStates[i],
+        Progress : undefined,
+        Ratios : ratios[i]
+      }
+      delete data.State['Date'];
+
+      if(rawProgress.length > j && rawProgress[j].Date == data.DataDate){
+        data.Progress = rawProgress[j];
+        delete data.Progress['Date'];
+        j++;
+      }   
+      playerData.push(data);
+    }
+    
+    return playerData;
   }
 
   private treatLeaderboard(leaderboard : LeaderboardEntry[]) : RatioEntry[]{

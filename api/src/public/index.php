@@ -56,7 +56,7 @@ $app->get('/snapshot-preview', function (Request $request, Response $response) {
     $connection = new Database($this->db, $this->logger);
     $json = $connection->snapshotPreview($result, $date);
 
-    $response->getBody()->write($date . "\n" . $json);
+    $response->getBody()->write($json);
     return $response;
 });
 
