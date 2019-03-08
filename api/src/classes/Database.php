@@ -148,6 +148,37 @@ class Database
         }
     }
 
+    public function setPlayerUID($json, $date)
+    {
+        $data = json_decode($json, true);
+        $name = $data['last_name'];
+        $uid = $data['Uid'];
+        $id = $this->getPlayerId($name);
+
+        if($id == -1){
+            $this->insertPlayer($data['last_name'], 0, $uid);
+            $id = $this->getPlayerId($name);
+
+            $sql = "INSERT INTO state (player, stateDate, content) VALUES (?,?,?)";
+            $state = array(
+                "goals" => 359,
+                "assists" =>153,
+                "Wins" => 156,
+                "Draws" => 22,
+                "Losses" => 54,
+                "Experience" =>39825
+            );
+            $stmt = $this->pdo->prepare($sql);
+            $stmt->execute([$id, $date, json_encode($state)]);
+
+
+        } else {
+            $sql = "UPDATE player SET guid=? WHERE id=?";
+            $stmt = $this->pdo->prepare($sql);
+            $stmt->execute([$uid, $id]);
+        }
+    }
+
     public function snapshotPreview($json, $date)
     {
         $newStates = json_decode($json, true);
