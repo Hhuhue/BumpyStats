@@ -7,10 +7,13 @@ import { Observable } from '../../node_modules/rxjs';
   providedIn: 'root'
 })
 export class BumpyballService {
+  private localBase = "http://localhost:8080";
+  private prodBase = "http://bumpystats.gearhostpreview.com/src/public";
+
   private leaderboardURL = "http://listing.usemapsettings.com/Leaderboard?Limit=250";
-  private getPlayerNamesApiUrl = "http://localhost:8080/names";
-  private getPlayerProgressApiUrl = "http://localhost:8080/snapshot-preview";
-  private getPlayerDataApiUrl = "http://localhost:8080/data/";
+  private getPlayerNamesApiUrl = this.prodBase + "/names";
+  private getPlayerProgressApiUrl = this.prodBase + "/snapshot-preview";
+  private getPlayerDataApiUrl = this.prodBase + "/data/";
   constructor(private http: HttpClient) { }
 
   getLeaderboard() : Observable<LeaderboardEntry[]>{
