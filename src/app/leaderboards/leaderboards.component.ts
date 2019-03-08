@@ -66,7 +66,7 @@ export class LeaderboardsComponent implements OnInit {
   }
 
   private setStatistics(stats : RatioEntry[]){
-    var sortedRatios = this.sorter.sortTable(stats, 'WinLoss').reverse();
+    var sortedRatios = this.sorter.sortTable(stats, 'WinGame').reverse();
 
     for (let index = 0; index < sortedRatios.length; index++) {
       sortedRatios[index].Position = index + 1;      

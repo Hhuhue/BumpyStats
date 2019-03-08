@@ -24,21 +24,42 @@
       </thead>
       <tbody>
         <tr *ngIf="data">
-          <td>{{data.Position}}</td>
-          <td>{{data.Wins}}</td>
-          <td>{{data.Losses}}</td>
-          <td>{{data.Draws}}</td>
-          <td>{{data.goals}}</td>
-          <td>{{data.assists}}</td>
-          <td>{{data.Experience}}</td>
+          <td>{{data.state.Position}}</td>
+          <td>{{data.state.Wins}}</td>
+          <td>{{data.state.Losses}}</td>
+          <td>{{data.state.Draws}}</td>
+          <td>{{data.state.goals}}</td>
+          <td>{{data.state.assists}}</td>
+          <td>{{data.state.Experience}}</td>
+        </tr>
+      </tbody>
+    </table>
+    <table class="table table-striped col-md-11">
+      <thead class="thead-dark">
+        <tr>
+          <th>Games</th>
+          <th>Goals / Game</th>
+          <th>Assists / Game</th>
+          <th>Exp / Game</th>
+          <th>Wins / Losses</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr *ngIf="data">
+          <td>{{data.ratio.Games}}</td>
+          <td>{{data.ratio.GoalsGame}}</td>
+          <td>{{data.ratio.AssistsGame}}</td>
+          <td>{{data.ratio.ExpGame}}</td>
+          <td>{{data.ratio.WinLoss}}</td>
         </tr>
       </tbody>
     </table>
   </div>
   <div class="col-md-12 row" style="height: 300px;">
-    <canvas height="300" id="ProgressionChart" class="col-md-12"></canvas>
+    <canvas height="300" id="ProgressionChart" class="col-md-6"></canvas>
+    <canvas height="300" id="GameRatioChart" class="col-md-6"></canvas>
   </div>
-  <div class="col-md-12 row">
+  <div class="col-md-12 row" style="margin-top: 100px">
     <canvas id="GameChart" class="col-md-6"></canvas>
     <canvas id="PerformanceChart" class="col-md-6"></canvas>
   </div>

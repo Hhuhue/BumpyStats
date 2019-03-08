@@ -11,9 +11,9 @@ export class BumpyballService {
   private prodBase = "http://bumpystats.gearhostpreview.com/src/public";
 
   private leaderboardURL = "http://listing.usemapsettings.com/Leaderboard?Limit=250";
-  private getPlayerNamesApiUrl = this.prodBase + "/names";
-  private getPlayerProgressApiUrl = this.prodBase + "/snapshot-preview";
-  private getPlayerDataApiUrl = this.prodBase + "/data/";
+  private getPlayerNamesApiUrl = this.localBase + "/names";
+  private getPlayerProgressApiUrl = this.localBase + "/snapshot-preview";
+  private getPlayerDataApiUrl = this.localBase + "/data/";
   constructor(private http: HttpClient) { }
 
   getLeaderboard() : Observable<LeaderboardEntry[]>{

@@ -6,4 +6,7 @@ export class RatioEntry{
     ExpGame : number;
     WinLoss : number;
     Position : number;
+    DrawGame : number;
+    LossGame : number;
+    WinGame : number;
 }

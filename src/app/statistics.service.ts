@@ -65,18 +65,26 @@ export class StatisticsService {
     return playerData;
   }
 
+  entryToRatio(entry : LeaderboardEntry) : any{    
+    var games = entry.Wins + entry.Draws + entry.Losses;
+    var ratio = {
+      Name : entry.last_name,
+      Games : games,
+      GoalsGame : this.roundFloat(entry.goals / games),
+      AssistsGame : this.roundFloat(entry.assists / games),
+      ExpGame : this.roundFloat(entry.Experience / games),
+      WinLoss : this.roundFloat(entry.Wins / entry.Losses),
+      WinGame : this.roundFloat(entry.Wins / games),      
+      LossGame : this.roundFloat(entry.Losses / games),     
+      DrawGame : this.roundFloat(entry.Draws / games),
+    };
+    return ratio;
+  }
+
   private treatLeaderboard(leaderboard : LeaderboardEntry[]) : RatioEntry[]{
     var ratios = [];
     leaderboard.forEach(element => {
-      var games = element.Wins + element.Draws + element.Losses;
-      ratios.push({
-        Name : element.last_name,
-        Games : games,
-        GoalsGame : this.roundFloat(element.goals / games),
-        AssistsGame : this.roundFloat(element.assists / games),
-        ExpGame : this.roundFloat(element.Experience / games),
-        WinLoss : this.roundFloat(element.Wins / element.Losses)
-      });
+      ratios.push(this.entryToRatio(element));
     });
 
     return ratios;
