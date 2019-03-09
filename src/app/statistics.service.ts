@@ -74,9 +74,9 @@ export class StatisticsService {
       AssistsGame : this.roundFloat(entry.assists / games),
       ExpGame : this.roundFloat(entry.Experience / games),
       WinLoss : this.roundFloat(entry.Wins / entry.Losses),
-      WinGame : this.roundFloat(entry.Wins / games),      
-      LossGame : this.roundFloat(entry.Losses / games),     
-      DrawGame : this.roundFloat(entry.Draws / games),
+      WinGame : this.roundPercent(entry.Wins / games),      
+      LossGame : this.roundPercent(entry.Losses / games),     
+      DrawGame : this.roundPercent(entry.Draws / games),
     };
     return ratio;
   }
@@ -89,8 +89,11 @@ export class StatisticsService {
 
     return ratios;
   }
-
   private roundFloat(num : number) : number{
+    return Math.round(num*100)/100;
+  } 
+
+  private roundPercent(num : number) : number{
     return Math.round(num*10000)/100;
   } 
 }
