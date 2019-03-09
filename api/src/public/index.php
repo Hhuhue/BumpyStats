@@ -83,8 +83,7 @@ $app->get('/setPlayerUID/{uid}', function (Request $request, Response $response,
 
     $connection = new Database($this->db, $this->logger);
     $connection->setPlayerUID($result, $date);
-
-    $response->getBody()->write('All is good');
+    
     return $response;
 });
 

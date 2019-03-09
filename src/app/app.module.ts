@@ -7,13 +7,15 @@ import { NavigationComponent } from './navigation/navigation.component';
 import { LeaderboardsComponent } from './leaderboards/leaderboards.component';
 import { HttpClientModule }    from '@angular/common/http';
 import { PlayerStatsComponent } from './player-stats/player-stats.component';
+import { RegisterComponent } from './register/register.component';
 
 @NgModule({
   declarations: [
     AppComponent,
     NavigationComponent,
     LeaderboardsComponent,
-    PlayerStatsComponent
+    PlayerStatsComponent,
+    RegisterComponent
   ],
   imports: [
     BrowserModule,

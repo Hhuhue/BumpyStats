@@ -15,8 +15,11 @@
     <div [class.selected]="3 === selectedIndex" (click)="onSelect(3)">
       <a><i class="fa fa-project-diagram"></i> Compare Players</a>
     </div>
-    <div [class.selected]="4 === selectedIndex" (click)="onSelect(4)">
+    <div [class.selected]="4 === selectedIndex" (click)="onSelect(4)" routerLink="/Register">
       <a><i class="fa fa-plus"></i>Register Player</a>
+    </div>
+    <div [class.selected]="5 === selectedIndex" (click)="onSelect(5)">
+      <a><i class="fa fa-info-circle"></i>About</a>
     </div>
   </div>
 </div>

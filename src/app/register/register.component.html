@@ -1,0 +1,59 @@
+<div class="page-title">Register a player</div>
+<br>
+<div class="col-md-11">
+  <div class="col-md-10 plain-text">
+    If you are not part of the top 250 players or are about to leave it, 
+    you came to the right place. For you know, each player possess a unique
+    UID from which your stats can be obtained. All you need to do is to obtain it
+    and putting it in the field bellow.
+    <br>
+    <br>
+    Note that players in the top 250 can also provide it.
+  </div>
+  <br>
+  <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#UID-Modal">
+    Obtain UID
+  </button>
+  <br>
+  <div class="form-group row col-md-12" style="margin-top: 30px">
+    <label for="GUID" class="col-md-2 col-form-label">Your UID: </label>
+    <div class="col-md-6">
+      <input type="text" (keyup)="onEnter($event)" class="form-control" id="GUID" placeholder="UID">
+    </div>
+  </div>
+  <div *ngIf="message" class="col-md-10 plain-text">{{message}}</div>
+  <div *ngIf="result">
+    <div class="section-title">Is this you?</div>
+    <table class="table table-striped col-md-11">
+      <thead class="thead-dark">
+        <tr>
+          <th>Name</th>
+          <th>Experience</th>
+          <th></th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td>{{result.last_name}}</td>
+          <td>{{result.Experience}}</td>
+          <td><span class="btn btn-success" (click)="onConfirm()">Confirm</span></td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+  <!-- Modal -->
+  <div class="modal fade" id="UID-Modal" tabindex="-1" role="dialog" aria-hidden="true">
+    <div class="modal-dialog modal-lg" role="document">
+      <div class="modal-content">
+        <div class="modal-header">
+          <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+            <span aria-hidden="true">&times;</span>
+          </button>
+        </div>
+        <div class="modal-body">
+          <img src="assets/GetYourUID.gif" class="col-md-12" alt="How to get your UID"/>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
