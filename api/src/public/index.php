@@ -41,7 +41,13 @@ $app->get('/snapshot', function (Request $request, Response $response) {
     $date = date('Y-m-d');
 
     $connection = new Database($this->db, $this->logger);
-    $json = $connection->snapshot($result, $date);
+    $players = $connection->snapshot($result, $date);    
+
+    foreach ($players as $player) {
+        $playerRequest = new \GuzzleHttp\Psr7\Request('GET', 'http://nifty-condition-169823.appspot.com/GetPlayerRecord?Game=BumpyBall&Uid=' . $player['guid']);
+        $playerResult = $client->send($playerRequest)->getBody();
+        $progress = $connection->setOffBoardPlayerProgress($player['id'], $playerResult, $date);
+    }
 
     return $response;
 });
@@ -54,9 +60,17 @@ $app->get('/snapshot-preview', function (Request $request, Response $response) {
     $date = date('Y-m-d');
 
     $connection = new Database($this->db, $this->logger);
-    $json = $connection->snapshotPreview($result, $date);
+    $preview = $connection->snapshotPreview($result, $date);
+    $json = $preview['result'];
 
-    $response->getBody()->write($json);
+    foreach ($preview['players'] as $player) {
+        $playerRequest = new \GuzzleHttp\Psr7\Request('GET', 'http://nifty-condition-169823.appspot.com/GetPlayerRecord?Game=BumpyBall&Uid=' . $player['guid']);
+        $playerResult = $client->send($playerRequest)->getBody();
+        $progress = $connection->getOffBoardPlayerProgress($player['id'], $playerResult);
+        array_push($json, $progress);
+    }
+
+    $response->getBody()->write(json_encode($json));
     return $response;
 });
 
