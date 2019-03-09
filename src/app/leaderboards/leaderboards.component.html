@@ -4,7 +4,7 @@
     Top Experience
   </div>
   <div class="col-md-4" [class.selected]="selectedBoard === 1" (click)="onSelect(1)">
-    Top Win/Loss
+    Top Win %
   </div>
   <div class="col-md-4" [class.selected]="selectedBoard === 2" (click)="onSelect(2)">
     Progress
@@ -46,6 +46,7 @@
         <th>Name</th>
         <th>Games</th>
         <th>Goals / Game</th>
+        <th>Assists / Game</th>
         <th>Exp / Game</th>
         <th>Loss %</th>
         <th>Win %</th>
@@ -57,6 +58,7 @@
         <td>{{stats.Name}}</td>
         <td>{{stats.Games}}</td>
         <td>{{stats.GoalsGame}}</td>
+        <td>{{stats.AssistsGame}}</td>
         <td>{{stats.ExpGame}}</td>
         <td>{{stats.LossGame}}</td>
         <td>{{stats.WinGame}}</td>
