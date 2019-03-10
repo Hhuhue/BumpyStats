@@ -71,10 +71,11 @@ class Database
         return json_encode($progresses);
     }
 
-    public function getPlayerData($player){
+    public function getPlayerData($player)
+    {
         $id = $this->getPlayerId($player);
 
-        if($id == -1) return -1;
+        if ($id == -1) return -1;
 
         $progresses = "SELECT content, progressDate FROM progress WHERE player = $id";
         $states = "SELECT content, stateDate FROM state WHERE player = $id";
@@ -121,7 +122,7 @@ class Database
             $state = json_decode($data['content'], true);
             $id = $data['player'];
             $name = $state['last_name'];
-            
+
             //The player has not fallen off the leaderboard
             $index = array_search($name, $fallens);
             unset($fallens[$index]);
@@ -134,7 +135,7 @@ class Database
             if ($inLeaderboard == 0) {
                 $this->updatePlayer($name, 1);
             }
-            
+
             //Set player progess if sufficient data is available
             $oldState = $this->getPreviousState($id, $date);
             if ($oldState != -1) {
@@ -157,7 +158,7 @@ class Database
         $uid = $data['Uid'];
         $id = $this->getPlayerId($name);
 
-        if($id == -1){
+        if ($id == -1) {
             $this->insertPlayer($data['last_name'], 0, $uid);
             $id = $this->getPlayerId($name);
 
@@ -174,8 +175,6 @@ class Database
             );
             $stmt = $this->pdo->prepare($sql);
             $stmt->execute([$id, $date, json_encode($state)]);
-
-
         } else {
             $sql = "UPDATE player SET guid=? WHERE id=?";
             $stmt = $this->pdo->prepare($sql);
@@ -223,10 +222,11 @@ class Database
 
         $updatablePlayers = $this->getUpdatablePlayers($fallens);
 
-        return array( "result" => $progresses, "players" => $updatablePlayers);
+        return array("result" => $progresses, "players" => $updatablePlayers);
     }
-    
-    public function getOffBoardPlayerProgress($id, $json){
+
+    public function getOffBoardPlayerProgress($id, $json)
+    {
         $sql = "SELECT id, content FROM state WHERE player=? ORDER BY id DESC LIMIT 1";
         $stmt = $this->pdo->prepare($sql);
         $stmt->execute([$id]);
@@ -243,14 +243,17 @@ class Database
             "Experience" => $data['Experience']
         );
 
-        $progress = $this->getPlayerProgress($oldState, $newState);  
-        $progress['Position'] = "NA";        
-        $progress['last_name'] = $data['last_name'];
+        $progress = $this->getPlayerProgress($oldState, $newState);
+        if ($progress != 0) {
+            $progress['Position'] = "NA";
+            $progress['last_name'] = $data['last_name'];
+        }
 
         return $progress;
     }
 
-    public function setOffBoardPlayerProgress($id, $json, $date){
+    public function setOffBoardPlayerProgress($id, $json, $date)
+    {
         $sql = "SELECT id, content FROM state WHERE player=? ORDER BY id DESC LIMIT 1";
         $stmt = $this->pdo->prepare($sql);
         $stmt->execute([$id]);
@@ -276,24 +279,27 @@ class Database
         $newState['Position'] = 0;
         $oldState['Position'] = 0;
 
-        $progress = $this->getPlayerProgress($oldState, $newState);  
-        $progress['Position'] = "NA";        
-        $progress['last_name'] = $data['last_name'];    
-        
-        $sql = "INSERT INTO progress (player, progressDate, content) VALUES (?,?,?)";
-        $stmt = $this->pdo->prepare($sql);
-        $stmt->execute([$id, $date, json_encode($progress)]);
+        $progress = $this->getPlayerProgress($oldState, $newState);
+        if ($progress != 0) {
+            $progress['Position'] = "NA";
+            $progress['last_name'] = $data['last_name'];
+
+            $sql = "INSERT INTO progress (player, progressDate, content) VALUES (?,?,?)";
+            $stmt = $this->pdo->prepare($sql);
+            $stmt->execute([$id, $date, json_encode($progress)]);
+        }
     }
 
-    private function getUpdatablePlayers($names){
+    private function getUpdatablePlayers($names)
+    {
         $players = [];
         foreach ($names as $name) {
             $sql = "SELECT id, guid FROM player WHERE name = ?";
             $stmt = $this->pdo->prepare($sql);
             $stmt->execute([$name]);
             $data = $stmt->fetch();
-            
-            if(strlen($data['guid']) > 0){
+
+            if (strlen($data['guid']) > 0) {
                 array_push($players, array('id' => $data['id'], 'guid' => $data['guid']));
             }
         }
