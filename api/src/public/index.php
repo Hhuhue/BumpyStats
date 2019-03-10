@@ -18,7 +18,7 @@ $app = new \Slim\App(['settings' => $config]);
 
 $container = $app->getContainer();
 
-$container['logger'] = function($c) {
+$container['logger'] = function ($c) {
     $logger = new \Monolog\Logger('my_logger');
     $file_handler = new \Monolog\Handler\StreamHandler('../logs/app.log');
     $logger->pushHandler($file_handler);
@@ -27,8 +27,7 @@ $container['logger'] = function($c) {
 
 $container['db'] = function ($c) {
     $db = $c['settings']['db'];
-    $pdo = new PDO('mysql:host=' . $db['host'] . ';dbname=' . $db['dbname'],
-    $db['user'], $db['pass']);
+    $pdo = new PDO('mysql:host=' . $db['host'] . ';dbname=' . $db['dbname'], $db['user'], $db['pass'],[]);
     $pdo->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
     $pdo->setAttribute(PDO::ATTR_DEFAULT_FETCH_MODE, PDO::FETCH_ASSOC);
     return $pdo;
@@ -41,7 +40,7 @@ $app->get('/snapshot', function (Request $request, Response $response) {
     $date = date('Y-m-d');
 
     $connection = new Database($this->db, $this->logger);
-    $players = $connection->snapshot($result, $date);    
+    $players = $connection->snapshot($result, $date);
 
     foreach ($players as $player) {
         $playerRequest = new \GuzzleHttp\Psr7\Request('GET', 'http://nifty-condition-169823.appspot.com/GetPlayerRecord?Game=BumpyBall&Uid=' . $player['guid']);
@@ -67,7 +66,7 @@ $app->get('/snapshot-preview', function (Request $request, Response $response) {
         $playerRequest = new \GuzzleHttp\Psr7\Request('GET', 'http://nifty-condition-169823.appspot.com/GetPlayerRecord?Game=BumpyBall&Uid=' . $player['guid']);
         $playerResult = $client->send($playerRequest)->getBody();
         $progress = $connection->getOffBoardPlayerProgress($player['id'], $playerResult);
-        if($progress != 0){
+        if ($progress != 0) {
             array_push($json, $progress);
         }
     }
@@ -85,7 +84,7 @@ $app->get('/setPlayerUID/{uid}', function (Request $request, Response $response,
 
     $connection = new Database($this->db, $this->logger);
     $connection->setPlayerUID($result, $date);
-    
+
     return $response;
 });
 

@@ -213,6 +213,7 @@ class Database
                 $oldState = $this->getPreviousState($id, $tomorrow);
                 if ($oldState != -1) {
                     $progress = $this->getPlayerProgress($oldState, $state);
+                    if($name == "slow") $this->logger->addInfo($progress);
                     if ($progress != 0) {
                         array_push($progresses, $progress);
                     }
@@ -341,6 +342,7 @@ class Database
                 $delta = $value - $oldSpecs[$key];
                 $total = $total + $delta;
                 if ($delta < 0 && $key != 'Position') return 0;
+                if ($delta > 50000) return 0;
 
                 $array[$key] = $delta;
             }
