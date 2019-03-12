@@ -8,6 +8,8 @@ import { LeaderboardsComponent } from './leaderboards/leaderboards.component';
 import { HttpClientModule }    from '@angular/common/http';
 import { PlayerStatsComponent } from './player-stats/player-stats.component';
 import { RegisterComponent } from './register/register.component';
+import { CompareComponent } from './compare/compare.component';
+import { AboutComponent } from './about/about.component';
 
 @NgModule({
   declarations: [
@@ -15,7 +17,9 @@ import { RegisterComponent } from './register/register.component';
     NavigationComponent,
     LeaderboardsComponent,
     PlayerStatsComponent,
-    RegisterComponent
+    RegisterComponent,
+    CompareComponent,
+    AboutComponent
   ],
   imports: [
     BrowserModule,
