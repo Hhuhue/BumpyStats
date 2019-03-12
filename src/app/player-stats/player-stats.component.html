@@ -13,6 +13,7 @@
     <table class="table table-striped col-md-11">
       <thead class="thead-dark">
         <tr>
+          <th>Level</th>
           <th>Position</th>
           <th>Win</th>
           <th>Loss</th>
@@ -24,6 +25,7 @@
       </thead>
       <tbody>
         <tr *ngIf="data">
+          <td>{{level}}</td>
           <td>{{data.state.Position}}</td>
           <td>{{data.state.Wins}}</td>
           <td>{{data.state.Losses}}</td>

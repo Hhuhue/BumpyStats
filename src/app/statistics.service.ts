@@ -10,8 +10,15 @@ import { PlayerData } from './models/model.player-data';
   providedIn: 'root'
 })
 export class StatisticsService {
-  currentLeaderboard : LeaderboardEntry[] = undefined;
-  currentRatios : RatioEntry[] = undefined;
+  private currentLeaderboard : LeaderboardEntry[] = undefined;
+  private currentRatios : RatioEntry[] = undefined;
+  private expPath : number[] = [
+    100, 250, 500, 750, 1000, 1250, 1500,
+    2000, 2500, 3000, 3500, 4000, 4500, 5000,
+    6000, 7000, 8000, 9000, 10000, 11000, 12000,
+    19000, 26000, 33000, 41000, 50000, 60000,
+    80000, 100000, 120000, 140000, 160000, 180000, 200000 
+  ];
 
   constructor(private bumpyball : BumpyballService) { }
 
@@ -79,6 +86,15 @@ export class StatisticsService {
       DrawGame : this.roundPercent(entry.Draws / games),
     };
     return ratio;
+  }
+  expToLevel(exp : number){
+    var level = 0;
+    while(exp >= 0){
+      exp -= this.expPath[level];
+      level++;
+    }
+
+    return level;
   }
 
   private treatLeaderboard(leaderboard : LeaderboardEntry[]) : RatioEntry[]{

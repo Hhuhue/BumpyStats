@@ -15,6 +15,8 @@ export class PlayerStatsComponent implements OnInit {
   names: string[];
   playerData: PlayerData[];
   data: any;
+  level : number = 0;
+
   constructor(private bumpyball: BumpyballService,
     private statService: StatisticsService
   ) { }
@@ -24,11 +26,14 @@ export class PlayerStatsComponent implements OnInit {
   }
 
   onEnter(event: any) {
+    if (!event) return;
+
     var keycode = (event.keyCode ? event.keyCode : event.which);
     if (keycode.toString() == '13') {
       this.bumpyball.getPlayerData($("#SearchedPlayer").val().toString())
         .subscribe(data => {
           this.playerData = this.statService.buildPlayerData(data);
+          this.level = this.statService.expToLevel(this.playerData[this.playerData.length - 1].State.Experience);
           var state = this.playerData[this.playerData.length - 1].State;
           var ratio = this.statService.entryToRatio(state);
           this.data = { state, ratio };
