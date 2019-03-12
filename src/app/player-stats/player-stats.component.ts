@@ -3,7 +3,7 @@ import { BumpyballService } from '../bumpyball.service';
 import { PlayerData } from '../models/model.player-data';
 import { StatisticsService } from '../statistics.service';
 import * as Chart from 'chart.js';
-import { LeaderboardEntry } from '../models/model.leaderboard-entry';
+import * as moment from 'moment';
 
 @Component({
   selector: 'app-player-stats',
@@ -88,7 +88,8 @@ export class PlayerStatsComponent implements OnInit {
     var lossSet = [];
 
     this.playerData.forEach(data => {
-      labels.push(data.DataDate);
+      var date = moment(data.DataDate).subtract(1, 'days').format('YYYY-MM-DD');
+      labels.push(date);
 
       if (data.Progress) {
         winSet.push(data.Progress.Wins);
@@ -129,8 +130,9 @@ export class PlayerStatsComponent implements OnInit {
     var goalSet = [];
     var assistSet = [];
 
-    this.playerData.forEach(data => {
-      labels.push(data.DataDate);
+    this.playerData.forEach(data => {      
+      var date = moment(data.DataDate).subtract(1, 'days').format('YYYY-MM-DD');
+      labels.push(date);
 
       if (data.Progress) {
         goalSet.push(data.Progress.goals);

@@ -72,12 +72,16 @@ class Database
     }
 
     public function getPlayerData($player)
-    {
+    {        
         $id = $this->getPlayerId($player);
+
+        $dateObj = new DateTime(date('Y-m-d'));
+        $dateObj->sub(new DateInterval('P7D'));
+        $lastWeek = $dateObj->format('Y-m-d');
 
         if ($id == -1) return -1;
 
-        $progresses = "SELECT content, progressDate FROM progress WHERE player = $id";
+        $progresses = "SELECT content, progressDate FROM progress WHERE player = $id AND progressDate >= '$lastWeek'";
         $states = "SELECT content, stateDate FROM state WHERE player = $id";
 
         $result = $this->pdo->query($progresses)->fetchAll();
