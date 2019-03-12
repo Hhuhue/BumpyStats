@@ -82,7 +82,7 @@ class Database
         if ($id == -1) return -1;
 
         $progresses = "SELECT content, progressDate FROM progress WHERE player = $id AND progressDate >= '$lastWeek'";
-        $states = "SELECT content, stateDate FROM state WHERE player = $id";
+        $states = "SELECT content, stateDate FROM state WHERE player = $id  AND stateDate >= '$lastWeek'";
 
         $result = $this->pdo->query($progresses)->fetchAll();
         $progressArray = [];
