@@ -9,10 +9,10 @@ require_once('../classes/Database.php');
 $config['displayErrorDetails'] = true;
 $config['addContentLengthHeader'] = false;
 
-$config['db']['host']   = 'localhost';
-$config['db']['user']   = 'dev';
-$config['db']['pass']   = 'Welcome!123';
-$config['db']['dbname'] = 'bumpystatsdb';
+$config['db']['host']   = 'remotemysql.com';
+$config['db']['user']   = 'jhbXjetJDC';
+$config['db']['pass']   = 'AsXqTkVa49';
+$config['db']['dbname'] = 'jhbXjetJDC';
 
 $app = new \Slim\App(['settings' => $config]);
 
