@@ -12,8 +12,13 @@ import { BumpyballService } from '../bumpyball.service';
 })
 export class LeaderboardsComponent implements OnInit {
   entries : LeaderboardEntry[];
-  progress = [];
+  progress : LeaderboardEntry[];
   statistics : RatioEntry[];
+
+  leaderboardLabels : string[];
+  leaderboardOrder : number[];
+  ratioLabels : string[];
+  ratioOrder : number[];
   selectedBoard = 0;
 
   constructor(private statService : StatisticsService,
@@ -27,10 +32,16 @@ export class LeaderboardsComponent implements OnInit {
     this.statService.getRatios(false)
       .subscribe(statistics => this.setStatistics(statistics));
     this.bumpyball.getPlayerProgress()
-      .subscribe(progress => this.progress = progress);
+      .subscribe(progress => this.setProgresses(progress));
 
-    $("#ExpBoard").floatThead({position: 'fixed'});
-    $("#RatioBoard").floatThead({position: 'fixed'});
+    this.leaderboardLabels = ["Position", "Name", "Win", "Loss", "Draw", "Goal", "Assist", "Experience"];
+    this.leaderboardOrder = [7,6,3,5,4,1,2,0];
+
+    this.ratioLabels = ["Position", "Name", "Games", "Goals / Game", "Assists / Game", "Exp / Game", "Loss %", "Win %"];
+    this.ratioOrder = [9,0,1,2,3,4,7,6];
+
+    //$("#ExpBoard").floatThead({position: 'fixed'});
+    //$("#RatioBoard").floatThead({position: 'fixed'});
     $("#ProgressBoard").floatThead({position: 'fixed'});
   }
   
@@ -73,5 +84,13 @@ export class LeaderboardsComponent implements OnInit {
     }
 
     this.statistics = sortedRatios;
+  }
+
+  private setProgresses(progresses : LeaderboardEntry[]){
+    for (let index = 0; index < progresses.length; index++) {
+      progresses[index].Position *= -1;
+    }
+
+    this.progress = progresses;
   }
 }

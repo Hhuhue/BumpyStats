@@ -10,6 +10,7 @@ import { PlayerStatsComponent } from './player-stats/player-stats.component';
 import { RegisterComponent } from './register/register.component';
 import { CompareComponent } from './compare/compare.component';
 import { AboutComponent } from './about/about.component';
+import { BoardComponent } from './board/board.component';
 
 @NgModule({
   declarations: [
@@ -19,7 +20,8 @@ import { AboutComponent } from './about/about.component';
     PlayerStatsComponent,
     RegisterComponent,
     CompareComponent,
-    AboutComponent
+    AboutComponent,
+    BoardComponent
   ],
   imports: [
     BrowserModule,

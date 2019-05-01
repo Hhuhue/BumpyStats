@@ -1,0 +1,16 @@
+<table id="{{'Board_' + id}}" class="table table-striped col-md-11">
+  <thead class="thead-dark">
+    <tr>
+      <th *ngFor="let label of labels">
+        {{label}}
+      </th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr *ngFor="let entry of data">
+      <td *ngFor="let column of columns">
+        {{entry[column]}}
+      </td>
+    </tr>
+  </tbody>
+</table>

@@ -1,0 +1,4 @@
+$config['db']['host']   = 'den1.mysql5.gear.host';
+$config['db']['user']   = 'bumpystatsdb';
+$config['db']['pass']   = 'Wk1N6!nPz1L_';
+$config['db']['dbname'] = 'bumpystatsdb';

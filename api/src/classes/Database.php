@@ -217,7 +217,6 @@ class Database
                 $oldState = $this->getPreviousState($id, $tomorrow);
                 if ($oldState != -1) {
                     $progress = $this->getPlayerProgress($oldState, $state);
-                    if($name == "slow") $this->logger->addInfo($progress);
                     if ($progress != 0) {
                         array_push($progresses, $progress);
                     }

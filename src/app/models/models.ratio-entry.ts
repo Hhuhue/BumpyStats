@@ -5,8 +5,8 @@ export class RatioEntry{
     AssistsGame : number;
     ExpGame : number;
     WinLoss : number;
-    Position : number;
-    DrawGame : number;
-    LossGame : number;
     WinGame : number;
+    LossGame : number;
+    DrawGame : number;
+    Position : number;
 }
