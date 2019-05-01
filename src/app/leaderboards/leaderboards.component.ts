@@ -17,9 +17,12 @@ export class LeaderboardsComponent implements OnInit {
 
   leaderboardLabels : string[];
   leaderboardOrder : number[];
+  progressOrder : number[];
   ratioLabels : string[];
   ratioOrder : number[];
+  
   selectedBoard = 0;
+  initialized : boolean[];
 
   constructor(private statService : StatisticsService,
     private bumpyball : BumpyballService,
@@ -27,6 +30,8 @@ export class LeaderboardsComponent implements OnInit {
   ) { }
 
   ngOnInit() {
+    this.initialized = [true, false, false];
+
     this.statService.getLeaderboard(false)
       .subscribe(entries => this.setLeaderboard(entries));
     this.statService.getRatios(false)
@@ -36,17 +41,15 @@ export class LeaderboardsComponent implements OnInit {
 
     this.leaderboardLabels = ["Position", "Name", "Win", "Loss", "Draw", "Goal", "Assist", "Experience"];
     this.leaderboardOrder = [7,6,3,5,4,1,2,0];
+    this.progressOrder = [6,7,3,5,4,1,2,0];
 
     this.ratioLabels = ["Position", "Name", "Games", "Goals / Game", "Assists / Game", "Exp / Game", "Loss %", "Win %"];
     this.ratioOrder = [9,0,1,2,3,4,7,6];
-
-    //$("#ExpBoard").floatThead({position: 'fixed'});
-    //$("#RatioBoard").floatThead({position: 'fixed'});
-    $("#ProgressBoard").floatThead({position: 'fixed'});
   }
   
   onSelect(board : number) {
     this.selectedBoard = board;
+    this.initialized[board] = true;
   }
 
   getToday(offset){
