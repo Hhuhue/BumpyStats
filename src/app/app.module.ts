@@ -13,6 +13,7 @@ import { RegisterComponent } from './register/register.component';
 import { CompareComponent } from './compare/compare.component';
 import { AboutComponent } from './about/about.component';
 import { BoardComponent } from './board/board.component';
+import { PlayerGraphsComponent } from './player-graphs/player-graphs.component';
 
 @NgModule({
   declarations: [
@@ -23,7 +24,8 @@ import { BoardComponent } from './board/board.component';
     RegisterComponent,
     CompareComponent,
     AboutComponent,
-    BoardComponent
+    BoardComponent,
+    PlayerGraphsComponent
   ],
   imports: [
     BrowserModule,

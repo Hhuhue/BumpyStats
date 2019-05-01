@@ -36,7 +36,7 @@ export class LeaderboardsComponent implements OnInit {
       .subscribe(entries => this.setLeaderboard(entries));
     this.statService.getRatios(false)
       .subscribe(statistics => this.setStatistics(statistics));
-    this.bumpyball.getPlayerProgress()
+    this.statService.getProgresses(false)
       .subscribe(progress => this.setProgresses(progress));
 
     this.leaderboardLabels = ["Position", "Name", "Win", "Loss", "Draw", "Goal", "Assist", "Experience"];

@@ -25,15 +25,15 @@
         </tr>
       </thead>
       <tbody>
-        <tr *ngIf="data">
+        <tr *ngIf="rawData">
           <td>{{level}}</td>
-          <td>{{data.state.Position}}</td>
-          <td>{{data.state.Wins}}</td>
-          <td>{{data.state.Losses}}</td>
-          <td>{{data.state.Draws}}</td>
-          <td>{{data.state.goals}}</td>
-          <td>{{data.state.assists}}</td>
-          <td>{{data.state.Experience}}</td>
+          <td>{{rawData.state.Position}}</td>
+          <td>{{rawData.state.Wins}}</td>
+          <td>{{rawData.state.Losses}}</td>
+          <td>{{rawData.state.Draws}}</td>
+          <td>{{rawData.state.goals}}</td>
+          <td>{{rawData.state.assists}}</td>
+          <td>{{rawData.state.Experience}}</td>
         </tr>
       </tbody>
     </table>
@@ -48,22 +48,15 @@
         </tr>
       </thead>
       <tbody>
-        <tr *ngIf="data">
-          <td>{{data.ratio.Games}}</td>
-          <td>{{data.ratio.GoalsGame}}</td>
-          <td>{{data.ratio.AssistsGame}}</td>
-          <td>{{data.ratio.ExpGame}}</td>
-          <td>{{data.ratio.WinLoss}}</td>
+        <tr *ngIf="rawData">
+          <td>{{rawData.ratio.Games}}</td>
+          <td>{{rawData.ratio.GoalsGame}}</td>
+          <td>{{rawData.ratio.AssistsGame}}</td>
+          <td>{{rawData.ratio.ExpGame}}</td>
+          <td>{{rawData.ratio.WinLoss}}</td>
         </tr>
       </tbody>
     </table>
   </div>
-  <div class="col-md-12 row" style="height: 300px;">
-    <canvas height="300" id="ProgressionChart" class="col-md-6"></canvas>
-    <canvas height="300" id="GameRatioChart" class="col-md-6"></canvas>
-  </div>
-  <div class="col-md-12 row" style="margin-top: 100px">
-    <canvas id="GameChart" class="col-md-6"></canvas>
-    <canvas id="PerformanceChart" class="col-md-6"></canvas>
-  </div>
+  <app-player-graphs class="col-md-12" *ngIf="rawData" [rawData]="rawData" [playerData]="playerData"></app-player-graphs>
 </div>

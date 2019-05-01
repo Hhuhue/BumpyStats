@@ -2,3 +2,13 @@ $config['db']['host']   = 'den1.mysql5.gear.host';
 $config['db']['user']   = 'bumpystatsdb';
 $config['db']['pass']   = 'Wk1N6!nPz1L_';
 $config['db']['dbname'] = 'bumpystatsdb';
+
+$config['db']['host']   = 'localhost';
+$config['db']['user']   = 'dev';
+$config['db']['pass']   = 'Welcome!123';
+$config['db']['dbname'] = 'bumpystatsdb';
+
+$config['db']['host']   = 'remotemysql.com';
+$config['db']['user']   = 'jhbXjetJDC';
+$config['db']['pass']   = 'AsXqTkVa49';
+$config['db']['dbname'] = 'jhbXjetJDC';

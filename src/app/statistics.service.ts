@@ -12,6 +12,8 @@ import { PlayerData } from './models/model.player-data';
 export class StatisticsService {
   private currentLeaderboard : LeaderboardEntry[] = undefined;
   private currentRatios : RatioEntry[] = undefined;
+  private currentProgress : LeaderboardEntry[] = undefined;
+  
   private expPath : number[] = [
     100, 250, 500, 750, 1000, 1250, 1500,
     2000, 2500, 3000, 3500, 4000, 4500, 5000,
@@ -24,7 +26,7 @@ export class StatisticsService {
 
   getLeaderboard(getNew :boolean) : Observable<LeaderboardEntry[]>{
     if (this.currentLeaderboard && !getNew){
-      return of (this.currentLeaderboard);
+      return of(this.currentLeaderboard);
     } else {
       var promise = this.bumpyball.getLeaderboard();
       promise.subscribe(leaderboard => this.currentLeaderboard = leaderboard);
@@ -34,13 +36,23 @@ export class StatisticsService {
 
   getRatios(getNew :boolean) : Observable<RatioEntry[]>{
     if(this.currentRatios && !getNew){
-      return of (this.currentRatios);
+      return of(this.currentRatios);
     } else if (!this.currentRatios && this.currentLeaderboard && !getNew){
       return of(this.treatLeaderboard(this.currentLeaderboard));
     } else {
       var promise = this.getLeaderboard(true);
       promise.subscribe(leaderboard => this.currentRatios = this.treatLeaderboard(leaderboard));
       return promise.pipe(map(leaderboard => this.treatLeaderboard(leaderboard)));
+    }
+  }
+
+  getProgresses(getNew :boolean) : Observable<LeaderboardEntry[]>{
+    if(this.currentProgress && !getNew){
+      return of(this.currentProgress);
+    } else {
+      var promise = this.bumpyball.getPlayerProgress();
+      promise.subscribe(progresses => this.currentProgress = progresses);
+      return promise;
     }
   }
 
