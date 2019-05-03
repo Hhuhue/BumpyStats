@@ -20,6 +20,9 @@ export class NavigationComponent implements OnInit {
       case "PlayerStats":
         this.onSelect(2);
         break;
+        case "Compare":
+          this.onSelect(3);
+          break;
       case "Register":
         this.onSelect(4);
         break;

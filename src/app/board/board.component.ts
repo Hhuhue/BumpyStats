@@ -18,6 +18,8 @@ export class BoardComponent implements OnInit {
   constructor() { }
 
   ngOnInit() {
+    if(this.data.length == 0) return;
+
     var keys = Object.keys(this.data[0]);
     this.columns = Array(this.order.length);
 
