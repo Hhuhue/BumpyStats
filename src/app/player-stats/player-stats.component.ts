@@ -34,10 +34,10 @@ export class PlayerStatsComponent implements OnInit {
     if (keycode && keycode.toString() == '13') {
       this.rawData = undefined;
       this.name = $("#SearchedPlayer").val().toString();
-      this.bumpyball.getPlayerData(this.name).subscribe(data => this.setData(data));
+      this.bumpyball.getPlayerData(encodeURIComponent(this.name)).subscribe(data => this.setData(data));
     }
   }
-
+  
   private setData(data){
     if(data == -1){
       this.flashMessage.show("Player <b>" + this.name + "</b> not found", {cssClass : 'alert-danger', timeout : 5000})
