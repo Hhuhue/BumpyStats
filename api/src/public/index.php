@@ -107,7 +107,8 @@ $app->get('/progress/{date}', function (Request $request, Response $response, $a
 });
 
 $app->get('/data/{player}', function (Request $request, Response $response, $args) {
-    $name = (string)$args['player'];
+    $name = urldecode((string)$args['player']);
+    $this->logger->info($name);
     $connection = new Database($this->db, $this->logger);
     $array = $connection->getPlayerData($name);
 
@@ -122,7 +123,7 @@ $app->get('/init', function (Request $request, Response $response) {
     $date = date('Y-m-d');
 
     $connection = new Database($this->db, $this->logger);
-    $array = $connection->setPlayerData($result, $date);
+    $connection->setPlayerData($result, $date);
 
     $response->getBody()->write("Database initialized");
     return $response;
