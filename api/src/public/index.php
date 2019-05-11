@@ -1,10 +1,12 @@
 <?php
 header("Access-Control-Allow-Origin: *");
+require '../../vendor/autoload.php';
+
 use \Psr\Http\Message\ServerRequestInterface as Request;
 use \Psr\Http\Message\ResponseInterface as Response;
-
-require '../../vendor/autoload.php';
-require_once('../classes/Database.php');
+use Classes\Database as Database;
+use Classes\SqlHelper  as SqlHelper ;
+use Classes\ProgressService as ProgressService;
 
 $config['displayErrorDetails'] = true;
 $config['addContentLengthHeader'] = false;
@@ -27,19 +29,29 @@ $container['logger'] = function ($c) {
 
 $container['db'] = function ($c) {
     $db = $c['settings']['db'];
-    $pdo = new PDO('mysql:host=' . $db['host'] . ';dbname=' . $db['dbname'], $db['user'], $db['pass'],[]);
+    $pdo = new PDO('mysql:host=' . $db['host'] . ';dbname=' . $db['dbname'], $db['user'], $db['pass'], []);
     $pdo->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
     $pdo->setAttribute(PDO::ATTR_DEFAULT_FETCH_MODE, PDO::FETCH_ASSOC);
     return $pdo;
 };
 
-$app->get('/snapshot', function (Request $request, Response $response) {
+function ExecuteWebRequest($type, $url)
+{
     $client = new GuzzleHttp\Client();
-    $request = new \GuzzleHttp\Psr7\Request('GET', 'http://listing.usemapsettings.com/Leaderboard?Limit=250');
-    $result = $client->send($request)->getBody();
+    $request = new \GuzzleHttp\Psr7\Request($type, $url);
+    return $client->send($request)->getBody();
+}
+
+function CreateDBConnection($context)
+{ 
+    return new Database($context->db, $context->logger, new SqlHelper (), new ProgressService());
+}
+
+$app->get('/snapshot', function (Request $request, Response $response) {
+    $result = ExecuteWebRequest('GET', 'http://listing.usemapsettings.com/Leaderboard?Limit=250');
     $date = date('Y-m-d');
 
-    $connection = new Database($this->db, $this->logger);
+    $connection = CreateDBConnection($this);
     $players = $connection->snapshot($result, $date);
 
     foreach ($players as $player) {
@@ -53,25 +65,22 @@ $app->get('/snapshot', function (Request $request, Response $response) {
 
 $app->get('/snapshot-preview', function (Request $request, Response $response) {
 
-    $client = new GuzzleHttp\Client();
-    $request = new \GuzzleHttp\Psr7\Request('GET', 'http://listing.usemapsettings.com/Leaderboard?Limit=250');
-    $result = $client->send($request)->getBody();
-    $date = date('Y-m-d');
+    $leaderboardJson = ExecuteWebRequest('GET', 'http://listing.usemapsettings.com/Leaderboard?Limit=250');
 
-    $connection = new Database($this->db, $this->logger);
-    $preview = $connection->snapshotPreview($result, $date);
-    $json = $preview['result'];
+    $connection = CreateDBConnection($this);
+    $leaderboardPlayersProgress = $connection->snapshotPreview($leaderboardJson);
 
-    foreach ($preview['players'] as $player) {
-        $playerRequest = new \GuzzleHttp\Psr7\Request('GET', 'http://nifty-condition-169823.appspot.com/GetPlayerRecord?Game=BumpyBall&Uid=' . $player['guid']);
-        $playerResult = $client->send($playerRequest)->getBody();
-        $progress = $connection->getOffBoardPlayerProgress($player['id'], $playerResult);
-        if ($progress != 0) {
-            array_push($json, $progress);
-        }
+    $registeredPlayers = [];
+    $registeredPlayersState = [];
+    $registeredPlayersProgress = [];
+    foreach ($registeredPlayers as $player) {
+        $playerState = ExecuteWebRequest('GET', 'http://nifty-condition-169823.appspot.com/GetPlayerRecord?Game=BumpyBall&Uid=' . $player['guid']);
+        array_push($registeredPlayersState, $playerState);
     }
 
-    $response->getBody()->write(json_encode($json));
+    //TODO : Append registered player progress to main json
+
+    $response->getBody()->write(json_encode($leaderboardPlayersProgress));
     return $response;
 });
 
@@ -82,24 +91,15 @@ $app->get('/setPlayerUID/{uid}', function (Request $request, Response $response,
     $result = $client->send($request)->getBody();
     $date = date('Y-m-d');
 
-    $connection = new Database($this->db, $this->logger);
+    $connection = CreateDBConnection($this);
     $connection->setPlayerUID($result, $date);
 
     return $response;
 });
 
-$app->get('/names', function (Request $request, Response $response) {
-
-    $connection = new Database($this->db, $this->logger);
-    $array = $connection->getPlayerNames();
-
-    $response->getBody()->write($array);
-    return $response;
-});
-
 $app->get('/progress/{date}', function (Request $request, Response $response, $args) {
     $date = (string)$args['date'];
-    $connection = new Database($this->db, $this->logger);
+    $connection = CreateDBConnection($this);
     $array = $connection->getPlayersProgress($date);
 
     $response->getBody()->write($array);
@@ -109,7 +109,7 @@ $app->get('/progress/{date}', function (Request $request, Response $response, $a
 $app->get('/data/{player}', function (Request $request, Response $response, $args) {
     $name = urldecode((string)$args['player']);
     $this->logger->info($name);
-    $connection = new Database($this->db, $this->logger);
+    $connection = CreateDBConnection($this);
     $array = $connection->getPlayerData($name);
 
     $response->getBody()->write($array);
@@ -117,17 +117,13 @@ $app->get('/data/{player}', function (Request $request, Response $response, $arg
 });
 
 $app->get('/init', function (Request $request, Response $response) {
-    $client = new GuzzleHttp\Client();
-    $request = new \GuzzleHttp\Psr7\Request('GET', 'http://listing.usemapsettings.com/Leaderboard?Limit=250');
-    $result = $client->send($request)->getBody();
-    $date = date('Y-m-d');
+    $leaderboardJson = ExecuteWebRequest('GET', 'http://listing.usemapsettings.com/Leaderboard?Limit=250');
 
-    $connection = new Database($this->db, $this->logger);
-    $connection->setPlayerData($result, $date);
+    $connection = CreateDBConnection($this);
+    $connection->initDatabase($leaderboardJson);
 
     $response->getBody()->write("Database initialized");
     return $response;
 });
-
 
 $app->run();
