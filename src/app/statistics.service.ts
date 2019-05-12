@@ -56,27 +56,27 @@ export class StatisticsService {
     }
   }
 
-  buildPlayerData(raw: any): PlayerData[] {
-    var rawStates = raw.states;
-    var rawProgress = raw.progress;
-
-    var ratios = this.treatLeaderboard(rawStates);
+  buildPlayerData(playerHistory: any): PlayerData[] {
+    var stateHistory = this.sourceToLeaderboardEntries(playerHistory.states);
+    var progressHistory = this.sourceToLeaderboardEntries(playerHistory.progress);
+    
+    var ratioHistory = this.treatLeaderboard(stateHistory);
     var playerData: PlayerData[] = [];
 
-    var j = 0;
-    for (let i = 0; i < rawStates.length; i++) {
-      var data: PlayerData = {
-        DataDate: rawStates[i].Date,
-        State: rawStates[i],
-        Progress: undefined,
-        Ratios: ratios[i]
-      }
-      delete data.State['Date'];
+    console.log(ratioHistory);
 
-      if (rawProgress.length > j && rawProgress[j].Date == data.DataDate) {
-        data.Progress = rawProgress[j];
-        delete data.Progress['Date'];
-        j++;
+    var progressIndex = 0;
+    for (let i = 0; i < stateHistory.length; i++) {
+      var data: PlayerData = {
+        DataDate: playerHistory.states[i].Date,
+        State: stateHistory[i],
+        Progress: undefined,
+        Ratios: ratioHistory[i]
+      }
+
+      if (progressHistory.length > progressIndex && playerHistory.progress[progressIndex].Date == data.DataDate) {
+        data.Progress = progressHistory[progressIndex];
+        progressIndex++;
       }
       playerData.push(data);
     }

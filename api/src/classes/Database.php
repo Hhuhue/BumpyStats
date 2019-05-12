@@ -54,40 +54,22 @@ class Database
 
     public function getPlayerData($player)
     {
+        if (!array_key_exists($player, $this->playerIds)) return -1;
+
         $id = $this->playerIds[$player];
 
-        $dateObj = new DateTime(date('Y-m-d'));
-        $dateObj->sub(new DateInterval('P7D'));
+        $dateObj = new \DateTime(date('Y-m-d'));
+        $dateObj->sub(new \DateInterval('P7D'));
         $lastWeek = $dateObj->format('Y-m-d');
 
-        if ($id == -1) return -1;
+        $playerProgresses = $this->getPlayerProgresses($id, $lastWeek);
+        $playerStates = $this->getPlayerStates($id, $lastWeek);       
 
-        $progresses = "SELECT content, progressDate FROM progress WHERE player = $id AND progressDate >= '$lastWeek'";
-        $states = "SELECT content, stateDate FROM state WHERE player = $id  AND stateDate >= '$lastWeek'";
+        $playerData = [];
+        $playerData['states'] = $playerStates;
+        $playerData['progress'] = $playerProgresses;
 
-        $result = $this->pdo->query($progresses)->fetchAll();
-        $progressArray = [];
-
-        foreach ($result as $progress) {
-            $json = json_decode($progress['content'], true);
-            $json['Date'] = $progress['progressDate'];
-            array_push($progressArray, $json);
-        }
-
-        $result = $this->pdo->query($states)->fetchAll();
-        $stateArray = [];
-
-        foreach ($result as $state) {
-            $json = json_decode($state['content'], true);
-            $json['Date'] = $state['stateDate'];
-            array_push($stateArray, $json);
-        }
-
-        $data = [];
-        $data['states'] = $stateArray;
-        $data['progress'] = $progressArray;
-
-        return json_encode($data);
+        return json_encode($playerData);
     }
 
     public function snapshotPreview($leaderboardJson)
@@ -140,6 +122,10 @@ class Database
         $this->insertPlayersProgress($progressEntries);
 
         $playersState = $this->extractPlayersLeaderboardEntry($playersData, $players);
+        for ($i=0; $i < sizeof($playersState); $i++) { 
+            $playersState[$i]["content"] = $this->formatOffBoardPlayerStateContent($playersState[$i]["content"]);
+        }
+
         $this->insertPlayersState($playersState);
     }
 
@@ -157,6 +143,53 @@ class Database
         }
 
         return $uids;
+    }
+
+    private function formatOffBoardPlayerStateContent($playerStateContent)
+    {
+        $playerStateData = json_decode($playerStateContent, true);
+        $formattedState = array(
+            "Wins" => $playerStateData["Wins"],
+            "Draws" => $playerStateData["Draws"],
+            "goals" => $playerStateData["goals"],
+            "Losses" => $playerStateData["Losses"],
+            "assists" => $playerStateData["assists"],
+            "last_name" => $playerStateData["last_name"],
+            "Experience" => $playerStateData["Experience"]
+        );
+
+        return json_encode($formattedState);
+    }
+
+    private function getPlayerProgresses($playerId, $fromDate)
+    {
+        $sql = "SELECT content, progressDate FROM progress WHERE player = ? AND progressDate >= ?";
+        $playerProgresses = $this->executeSqlQuery($sql, [$playerId, $fromDate]);
+
+        $progressWithDate = [];
+
+        foreach ($playerProgresses as $playerProgress) {
+            $progressData = json_decode($playerProgress['content'], true);
+            $progressData['Date'] = $playerProgress['progressDate'];
+            array_push($progressWithDate, $progressData);
+        }
+        return $progressWithDate;
+    }
+
+    private function getPlayerStates($playerId, $fromDate)
+    {
+        $sql = "SELECT content, stateDate FROM state WHERE player = ? AND stateDate >= ?";
+        $playerStates = $this->executeSqlQuery($sql, [$playerId, $fromDate]);
+
+        $statesWithDate = [];
+
+        foreach ($playerStates as $playerState) {
+            $stateData = json_decode($playerState['content'], true);
+            $stateData['Date'] = $playerState['stateDate'];
+            array_push($statesWithDate, $stateData);
+        }
+
+        return $statesWithDate;
     }
 
     private function getRegisteredPLayers()
@@ -299,12 +332,13 @@ class Database
     }
 
     private function insertPlayersProgress($playersProgress)
-    {
-        $sql = "INSERT INTO progress (player, progressDate, content) VALUES ";
-        $propertiesToSave = 3;
-
-        $queryComponents = $this->sqlHelper->buildInsertQuery($sql, $playersProgress, $propertiesToSave);
-        $this->executeSqlQuery($queryComponents["query"], $queryComponents["parameters"]);
+    {        
+        if(sizeof($playersProgress) > 0){
+            $sql = "INSERT INTO progress (player, progressDate, content) VALUES ";
+            $propertiesToSave = 3;
+            $queryComponents = $this->sqlHelper->buildInsertQuery($sql, $playersProgress, $propertiesToSave);
+            $this->executeSqlQuery($queryComponents["query"], $queryComponents["parameters"]);
+        }
     }
 
     private function extractDistinctPlayers($leaderboard)

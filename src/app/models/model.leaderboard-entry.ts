@@ -11,7 +11,7 @@ export class LeaderboardEntry {
     constructor(source : any){
         if(!source) return;
 
-        this.Position = source.Position;
+        this.Position = (source.Position == undefined) ? "N/A" : source.Position;
         this.Name = source.last_name;
         this.Wins = source.Wins;
         this.Losses = source.Losses;

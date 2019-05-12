@@ -104,9 +104,9 @@ $app->get('/data/{player}', function (Request $request, Response $response, $arg
     $name = urldecode((string)$args['player']);
     $this->logger->info($name);
     $connection = CreateDBConnection($this);
-    $array = $connection->getPlayerData($name);
+    $playerData = $connection->getPlayerData($name);
 
-    $response->getBody()->write($array);
+    $response->getBody()->write($playerData);
     return $response;
 });
 
