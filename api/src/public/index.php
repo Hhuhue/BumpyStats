@@ -58,22 +58,6 @@ function GetPlayersStateFromUids($playersUid)
     return $playersState;
 }
 
-$app->get('/snapshot', function (Request $request, Response $response) {
-    $result = ExecuteWebRequest('GET', 'http://listing.usemapsettings.com/Leaderboard?Limit=250');
-    $date = date('Y-m-d');
-
-    $connection = CreateDBConnection($this);
-    $players = $connection->snapshot($result, $date);
-
-    foreach ($players as $player) {
-        $playerRequest = new \GuzzleHttp\Psr7\Request('GET', 'http://nifty-condition-169823.appspot.com/GetPlayerRecord?Game=BumpyBall&Uid=' . $player['guid']);
-        $playerResult = $client->send($playerRequest)->getBody();
-        $connection->setOffBoardPlayerProgress($player['id'], $playerResult, $date);
-    }
-
-    return $response;
-});
-
 $app->get('/snapshot-preview', function (Request $request, Response $response) {
 
     $leaderboardJson = ExecuteWebRequest('GET', 'http://listing.usemapsettings.com/Leaderboard?Limit=250');
@@ -88,6 +72,21 @@ $app->get('/snapshot-preview', function (Request $request, Response $response) {
     $playresProgress = array_merge($leaderboardPlayersProgress, $offboardPlayersProgress);
 
     $response->getBody()->write(json_encode($playresProgress));
+    return $response;
+});
+
+$app->get('/snapshot', function (Request $request, Response $response) {
+    $leaderboardJson = ExecuteWebRequest('GET', 'http://listing.usemapsettings.com/Leaderboard?Limit=250');
+
+    $connection = CreateDBConnection($this);
+    $connection->snapshotLeaderboard($leaderboardJson);
+
+    $offboardPlayersUids = $connection->getOffBoardPlayersUID($leaderboardJson);
+    $offboardPlayersState = GetPlayersStateFromUids($offboardPlayersUids);
+    $connection->snapshotOffBoard(json_encode($offboardPlayersState));
+
+    $response->getBody()->write("Snapshot success");
+
     return $response;
 });
 
@@ -118,6 +117,14 @@ $app->get('/init', function (Request $request, Response $response) {
     $connection->initDatabase($leaderboardJson);
 
     $response->getBody()->write("Database initialized");
+    return $response;
+});
+
+$app->get('/clear', function (Request $request, Response $response) {   
+    $connection = CreateDBConnection($this);
+    $connection->clearDatabase();
+
+    $response->getBody()->write("Database cleared");
     return $response;
 });
 

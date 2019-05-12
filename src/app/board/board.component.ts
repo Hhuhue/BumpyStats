@@ -19,8 +19,6 @@ export class BoardComponent implements OnInit {
   ngOnInit() {
     if(this.Options.Data.length == 0) return;
 
-    console.log(JSON.stringify(this.Options.Data[0]));
-
     var keys = Object.keys(this.Options.Data[0]);
     this.columns = Array(this.Options.DataOrder.length);
 

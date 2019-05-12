@@ -20,6 +20,11 @@ class ProgressService
         foreach ($playersOldState as $playerOldState) {
             $player = $playerOldState["player"];
             $playerOldAttributes = $this->getAttributesFromPlayerState($playerOldState);
+
+            if(!array_key_exists($player, $playersNewAttributesMap)){
+                throw new \Exception("Error Processing Request", 1);
+            }
+
             $playerProgress = $this->getPlayerProgress($playerOldAttributes, $playersNewAttributesMap[$player]);
 
             if($playerProgress != self::NO_PROGRESS_FLAG){
@@ -41,8 +46,10 @@ class ProgressService
         $progressData['last_name'] = $playerNewAttributes['last_name'];
 
         $progressTotal = 0;
+        if($playerNewAttributes == null) return self::NO_PROGRESS_FLAG;
+
         foreach ($playerNewAttributes as $attribute => $attributeValue) {
-            if ($attribute != 'last_name') {
+            if ($this->attributeIsSupported($attribute)) {
                 $attributeProgress = $this->getPlayerAttributeProgress($attribute, $attributeValue, $playerOldAttributes[$attribute]);
 
                 if ($attributeProgress == self::NO_PROGRESS_FLAG) return self::NO_PROGRESS_FLAG;
@@ -55,6 +62,16 @@ class ProgressService
         if ($progressTotal == 0) return $this::NO_PROGRESS_FLAG;;
 
         return $progressData;
+    }
+
+    private function attributeIsSupported($attribute)
+    {
+        return $attribute != 'last_name' && 
+               $attribute != 'Uid' && 
+               $attribute != 'LastUpdate' &&
+               $attribute != 'currency' &&
+               $attribute != 'skin_id' && 
+               $attribute != 'Created';
     }
 
     private function getPlayerAttributeProgress($attribute, $oldValue, $newValue)

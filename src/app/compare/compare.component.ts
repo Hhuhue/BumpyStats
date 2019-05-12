@@ -81,7 +81,6 @@ export class CompareComponent implements OnInit {
       });
     });
 
-    console.log(this.scoreBoardOptions.Data)
     this.scoreBoardOptions.Data = this.sorter.sortTable(this.scoreBoardOptions.Data, 'score');
     this.dataSet = true;
 
