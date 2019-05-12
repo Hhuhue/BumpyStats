@@ -22,9 +22,9 @@ class Database
         $this->getPlayerIds();
     }
 
-    public function initDatabase($leaderBoardJson)
+    public function initDatabase($leaderboardJson)
     {
-        $leaderboard = json_decode($leaderBoardJson, true);
+        $leaderboard = json_decode($leaderboardJson, true);
 
         $players = $this->extractDistinctPlayers($leaderboard);
         $this->insertPlayers($players);
@@ -32,19 +32,6 @@ class Database
 
         $playersState = $this->extractPlayersLeaderboardEntry($leaderboard, $players);
         $this->insertPlayersState($playersState);
-    }
-
-    public function getPlayersProgress($date)
-    {
-        $sql = "SELECT content FROM progress WHERE progressDate >= $date";
-        $result = $this->pdo->query($sql)->fetchAll();
-
-        $progresses = [];
-        foreach ($result as $progress) {
-            array_push($progresses, json_decode($progress['content'], true));
-        }
-
-        return json_encode($progresses);
     }
 
     public function getPlayerData($player)
@@ -131,42 +118,83 @@ class Database
         return $this->getUpdatablePlayers($fallens);
     }
 
-    public function setPlayerUID($json, $date)
+    public function setPlayerUID($playerDataJson)
     {
-        $data = json_decode($json, true);
-        $name = $data['last_name'];
-        $uid = $data['Uid'];
+        $playerData = json_decode($playerDataJson, true);
+        $name = $playerData['last_name'];
+
+        if (array_key_exists($name, $this->playerIds)) {
+            $this->updatePlayerUID($name, $playerData["Uid"]);
+        } else {
+            $this->initializePlayer($playerData);
+        }
+    }
+
+    public function getOffBoardPlayersUID($leaderboardJson)
+    {
+        $leaderboard = json_decode($leaderboardJson, true);
+        $registeredPlayers = $this->getRegisteredPLayers();
+        $leaderboardPlayers = $this->extractDistinctPlayers($leaderboard);
+        $leaderboardNames = $this->getNameFromPlayers($leaderboardPlayers);
+        $offBoardPlayers = $this->excludePlayersByName($registeredPlayers, $leaderboardNames);
+
+        $uids = [];
+        foreach ($offBoardPlayers as $offBoardPlayer) {
+            array_push($uids, $offBoardPlayer["guid"]);
+        }
+
+        return $uids;
+    }
+
+    private function getRegisteredPLayers()
+    {
+        $sql = "SELECT name, guid FROM player WHERE guid IS NOT NULL";
+        return $this->executeSqlQuery($sql, []);
+    }
+
+    private function initializePlayer($playerData)
+    {
+        $name = $playerData['last_name'];
+        $uid = $playerData['Uid'];
+
+        $this->insertPlayer($name, 0, $uid);
+        $this->getPlayerIds();
         $id = $this->playerIds[$name];
 
-        if ($id == -1) {
-            $this->insertPlayer($data['last_name'], 0, $uid);
-            $id = $this->playerIds[$name];
+        $state = $this->playerDataToPlayerSate($id, $playerData);
+        $this->insertPlayersState([$state]);
+    }
 
-            $sql = "INSERT INTO state (player, stateDate, content) VALUES (?,?,?)";
-            $state = array(
-                "goals" => $data['goals'],
-                "assists" => $data['assists'],
-                "Wins" => $data['Wins'],
-                "Draws" => $data['Draws'],
-                "Losses" => $data['Losses'],
-                "Experience" => $data['Experience'],
-                "last_name" => $data['last_name'],
-                "Position" => "NA"
-            );
-            $stmt = $this->pdo->prepare($sql);
-            $stmt->execute([$id, $date, json_encode($state)]);
-        } else {
-            $sql = "UPDATE player SET guid=? WHERE id=?";
-            $stmt = $this->pdo->prepare($sql);
-            $stmt->execute([$uid, $id]);
-        }
+    private function updatePlayerUID($playerName, $uid)
+    {
+        $id = $this->playerIds[$playerName];
+        $sql = "UPDATE player SET guid=? WHERE id=?";
+        $this->executeSqlQuery($sql, [$uid, $id]);
+    }
+
+    private function playerDataToPlayerSate($playerId, $playerData)
+    {
+        $date = date('Y-m-d');
+        $content = array(
+            "goals" => $playerData['goals'],
+            "assists" => $playerData['assists'],
+            "Wins" => $playerData['Wins'],
+            "Draws" => $playerData['Draws'],
+            "Losses" => $playerData['Losses'],
+            "Experience" => $playerData['Experience'],
+            "last_name" => $playerData['last_name']
+        );
+
+        $jsonContent = json_encode($content);
+
+        return array("player" => $playerId, "stateDate" => $date, "content" => $jsonContent);
     }
 
     public function snapshotPreview($leaderboardJson)
     {
         $leaderboard = json_decode($leaderboardJson, true);
         $knownLeaderboardPLayers = $this->getKnownPlayersFromLeaderboard($leaderboard);
-        
+
         $knownPlayersLeaderboardEntry = $this->extractPlayersLeaderboardEntry($leaderboard, $knownLeaderboardPLayers);
         $knownPlayersLatestState = $this->getPlayersLatestState($knownLeaderboardPLayers);
         $playersProgress = $this->progressService->getPlayersProgress($knownPlayersLeaderboardEntry, $knownPlayersLatestState);
@@ -175,7 +203,7 @@ class Database
     }
 
     private function getPlayersLatestState($players)
-    {         
+    {
         $names = $this->getNameFromPlayers($players);
         $namesInput = $this->sqlHelper->generatePropertyInputTemplate(sizeof($names));
         $nameSet = $this->nameSetToString($names);
@@ -186,7 +214,7 @@ class Database
                         p.id = s.player
                 WHERE p.name IN $namesInput AND (s.player, s.stateDate) IN 
                     (SELECT player, MAX(stateDate) FROM bumpystatsdb.state GROUP BY player)";
-        
+
         return $this->executeSqlQuery($sql, $names);
     }
 
@@ -234,106 +262,6 @@ class Database
         return $result;
     }
 
-    public function getOffBoardPlayerProgress($id, $json)
-    {
-        $sql = "SELECT id, content FROM state WHERE player=? ORDER BY id DESC LIMIT 1";
-        $stmt = $this->pdo->prepare($sql);
-        $stmt->execute([$id]);
-        $result = $stmt->fetch();
-
-        $oldState = json_decode($result['content'], true);
-        $data = json_decode($json, true);
-        $newState = array(
-            "goals" => $data['goals'],
-            "assists" => $data['assists'],
-            "Wins" => $data['Wins'],
-            "Draws" => $data['Draws'],
-            "Losses" => $data['Losses'],
-            "Experience" => $data['Experience']
-        );
-
-        $progress = $this->getPlayerProgress($oldState, $newState);
-        if ($progress != 0) {
-            $progress['Position'] = "NA";
-            $progress['last_name'] = $data['last_name'];
-        }
-
-        return $progress;
-    }
-
-    public function setOffBoardPlayerProgress($id, $json, $date)
-    {
-        $sql = "SELECT id, content FROM state WHERE player=? ORDER BY id DESC LIMIT 1";
-        $stmt = $this->pdo->prepare($sql);
-        $stmt->execute([$id]);
-        $result = $stmt->fetch();
-
-        $oldState = json_decode($result['content'], true);
-
-        $data = json_decode($json, true);
-        $newState = array(
-            "goals" => $data['goals'],
-            "assists" => $data['assists'],
-            "Wins" => $data['Wins'],
-            "Draws" => $data['Draws'],
-            "Losses" => $data['Losses'],
-            "Experience" => $data['Experience'],
-            "last_name" => $data['last_name'],
-            "Position" => "NA"
-        );
-
-        $sql = "INSERT INTO state (player, stateDate, content) VALUES (?,?,?)";
-        $stmt = $this->pdo->prepare($sql);
-        $stmt->execute([$id, $date, json_encode($newState)]);
-        $newState['Position'] = 0;
-        $oldState['Position'] = 0;
-
-        $progress = $this->getPlayerProgress($oldState, $newState);
-        if ($progress != 0) {
-            $progress['Position'] = "NA";
-            $progress['last_name'] = $data['last_name'];
-
-            $sql = "INSERT INTO progress (player, progressDate, content) VALUES (?,?,?)";
-            $stmt = $this->pdo->prepare($sql);
-            $stmt->execute([$id, $date, json_encode($progress)]);
-        }
-    }
-
-    private function getUpdatablePlayers($names)
-    {
-        $players = [];
-        foreach ($names as $name) {
-            $sql = "SELECT id, guid FROM player WHERE name = ?";
-            $stmt = $this->pdo->prepare($sql);
-            $stmt->execute([$name]);
-            $data = $stmt->fetch();
-
-            if (strlen($data['guid']) > 0) {
-                array_push($players, array('id' => $data['id'], 'guid' => $data['guid']));
-            }
-        }
-
-        return $players;
-    }
-
-    //TODO : Remove
-    private function updatePlayerInLeaderboard($name, $inLeaderboard)
-    {
-        $sql = "UPDATE player SET inLeaderboard=? WHERE name=?";
-        $this->executeSqlQuery($sql, [$inLeaderboard, $name]);
-    }
-
-    //TODO : Remove
-    private function insertPlayerProgress($oldSpecs, $newSpecs, $id, $date)
-    {
-        $playerProgress = $this->getPlayerProgress($oldSpecs, $newSpecs);
-
-        if ($playerProgress == 0) return -1;
-
-        $sql = "INSERT INTO progress (player, progressDate, content) VALUES (?,?,?)";
-        $this->executeSqlQuery($sql, [$id, $date, json_encode($playerProgress)]);
-    }
-    
     private function insertPlayers($players)
     {
         $sql = "INSERT INTO player (name, inLeaderBoard) VALUES ";
@@ -341,6 +269,12 @@ class Database
 
         $queryComponents = $this->sqlHelper->buildInsertQuery($sql, $players, $propertiesToSave);
         $this->executeSqlQuery($queryComponents["query"], $queryComponents["parameters"]);
+    }
+
+    private function insertPlayer($name, $inLeaderboard, $uid)
+    {
+        $sql = "INSERT INTO player (name, guid, inLeaderboard) VALUES (?,?,?)";
+        $this->executeSqlQuery($sql, [$name, $uid, $inLeaderboard]);
     }
 
     private function insertPlayersState($playersState)
@@ -424,6 +358,10 @@ class Database
         $queryResult = $this->pdo->prepare($sql);
         $queryResult->execute($parameters);
 
-        return $queryResult->fetchAll();
+        if (strpos($sql, "SELECT") == false) {
+            return $queryResult;
+        } else {
+            return $queryResult->fetchAll();
+        }
     }
 }

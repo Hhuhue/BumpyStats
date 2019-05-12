@@ -43,8 +43,19 @@ function ExecuteWebRequest($type, $url)
 }
 
 function CreateDBConnection($context)
-{ 
+{
     return new Database($context->db, $context->logger, new SqlHelper (), new ProgressService());
+}
+
+function GetPlayersStateFromUids($playersUid)
+{
+    $playersState = [];
+    foreach ($playersUid as $playerUid) {
+        $playerState = ExecuteWebRequest('GET', 'http://nifty-condition-169823.appspot.com/GetPlayerRecord?Game=BumpyBall&Uid=' . $playerUid);
+        array_push($playersState, json_decode($playerState, true));
+    }
+
+    return $playersState;
 }
 
 $app->get('/snapshot', function (Request $request, Response $response) {
@@ -70,39 +81,23 @@ $app->get('/snapshot-preview', function (Request $request, Response $response) {
     $connection = CreateDBConnection($this);
     $leaderboardPlayersProgress = $connection->snapshotPreview($leaderboardJson);
 
-    $registeredPlayers = [];
-    $registeredPlayersState = [];
-    $registeredPlayersProgress = [];
-    foreach ($registeredPlayers as $player) {
-        $playerState = ExecuteWebRequest('GET', 'http://nifty-condition-169823.appspot.com/GetPlayerRecord?Game=BumpyBall&Uid=' . $player['guid']);
-        array_push($registeredPlayersState, $playerState);
-    }
+    $offboardPlayersUids = $connection->getOffBoardPlayersUID($leaderboardJson);
+    $offboardPlayersState = GetPlayersStateFromUids($offboardPlayersUids);
+    $offboardPlayersProgress = $connection->snapshotPreview(json_encode($offboardPlayersState));
 
-    //TODO : Append registered player progress to main json
+    $playresProgress = array_merge($leaderboardPlayersProgress, $offboardPlayersProgress);
 
-    $response->getBody()->write(json_encode($leaderboardPlayersProgress));
+    $response->getBody()->write(json_encode($playresProgress));
     return $response;
 });
 
 $app->get('/setPlayerUID/{uid}', function (Request $request, Response $response, $args) {
     $uid = (string)$args['uid'];
-    $client = new GuzzleHttp\Client();
-    $request = new \GuzzleHttp\Psr7\Request('GET', 'http://nifty-condition-169823.appspot.com/GetPlayerRecord?Game=BumpyBall&Uid=' . $uid);
-    $result = $client->send($request)->getBody();
-    $date = date('Y-m-d');
+    $result = ExecuteWebRequest('GET', 'http://nifty-condition-169823.appspot.com/GetPlayerRecord?Game=BumpyBall&Uid=' . $uid);
 
     $connection = CreateDBConnection($this);
-    $connection->setPlayerUID($result, $date);
+    $connection->setPlayerUID($result);
 
-    return $response;
-});
-
-$app->get('/progress/{date}', function (Request $request, Response $response, $args) {
-    $date = (string)$args['date'];
-    $connection = CreateDBConnection($this);
-    $array = $connection->getPlayersProgress($date);
-
-    $response->getBody()->write($array);
     return $response;
 });
 
