@@ -34,7 +34,7 @@
 </div>
 <div class="row foldable" [class.fold]="selectedView !== 1" id="1">
   <div class="plain-text col-md-10">Experimental</div>
-  <app-board *ngIf="scoreData && initialized" [labels]="scoreLabels" [data]="scoreData" [order]="scoreOrder" [id]="1"></app-board>
+  <app-board *ngIf="dataSet && initialized" [Options]="scoreBoardOptions"></app-board>
 </div>
 <div class="row foldable" [class.fold]="selectedView !== 2" id="2">
   <div class="section-title">Sooooon :3</div>

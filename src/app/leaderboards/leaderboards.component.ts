@@ -3,7 +3,7 @@ import { LeaderboardEntry } from "../models/model.leaderboard-entry";
 import { StatisticsService } from "../statistics.service";
 import { RatioEntry } from '../models/models.ratio-entry';
 import { TableSorterService } from "../table-sorter.service";
-import { BumpyballService } from '../bumpyball.service';
+import { BoardOptions } from '../models/model.board-options';
 
 @Component({
   selector: 'app-leaderboards',
@@ -11,26 +11,22 @@ import { BumpyballService } from '../bumpyball.service';
   styleUrls: ['./leaderboards.component.css']
 })
 export class LeaderboardsComponent implements OnInit {
-  entries : LeaderboardEntry[];
-  progress : LeaderboardEntry[];
-  statistics : RatioEntry[];
+  leaderboardOptions: BoardOptions;
+  ratioBoardOptions: BoardOptions;
+  progressBoardOptions: BoardOptions;
 
-  leaderboardLabels : string[];
-  leaderboardOrder : number[];
-  progressOrder : number[];
-  ratioLabels : string[];
-  ratioOrder : number[];
-  
   selectedBoard = 0;
-  initialized : boolean[];
+  initialized: boolean[];
+  boardSet: boolean[];
 
-  constructor(private statService : StatisticsService,
-    private bumpyball : BumpyballService,
-    public sorter : TableSorterService
+  constructor(private statService: StatisticsService,
+    public sorter: TableSorterService
   ) { }
 
   ngOnInit() {
+    this.setBoardsOption();
     this.initialized = [true, false, false];
+    this.boardSet = [false, false, false];
 
     this.statService.getLeaderboard(false)
       .subscribe(entries => this.setLeaderboard(entries));
@@ -38,26 +34,19 @@ export class LeaderboardsComponent implements OnInit {
       .subscribe(statistics => this.setStatistics(statistics));
     this.statService.getProgresses(false)
       .subscribe(progress => this.setProgresses(progress));
-
-    this.leaderboardLabels = ["Position", "Name", "Win", "Loss", "Draw", "Goal", "Assist", "Experience"];
-    this.leaderboardOrder = [7,6,3,5,4,1,2,0];
-    this.progressOrder = [6,7,3,5,4,1,2,0];
-
-    this.ratioLabels = ["Position", "Name", "Games", "Goals / Game", "Assists / Game", "Exp / Game", "Loss %", "Win %"];
-    this.ratioOrder = [9,0,1,2,3,4,7,6];
   }
-  
-  onSelect(board : number) {
+
+  onSelect(board: number) {
     this.selectedBoard = board;
     this.initialized[board] = true;
   }
 
-  getToday(offset){
+  getToday(offset) {
     var today = new Date();
     var dd = today.getDate() + offset;
     var mm = today.getMonth() + 1; //January is 0!
     var yyyy = today.getFullYear();
-    
+
     var ddStr = dd.toString();
     if (dd < 10) {
       ddStr = '0' + dd;
@@ -68,32 +57,56 @@ export class LeaderboardsComponent implements OnInit {
       mmStr = '0' + mm;
     }
 
-    return yyyy + '-' + mmStr  + '-' + ddStr;
+    return yyyy + '-' + mmStr + '-' + ddStr;
   }
 
-  private setLeaderboard(leaderboard : LeaderboardEntry[]){
+  private setLeaderboard(leaderboard: LeaderboardEntry[]) {
     for (let index = 0; index < leaderboard.length; index++) {
-      leaderboard[index].Position = index + 1;      
+      leaderboard[index].Position = index + 1;
     }
 
-    this.entries = leaderboard;
+    this.leaderboardOptions.Data = leaderboard;
+    this.boardSet[0] = true;
   }
 
-  private setStatistics(stats : RatioEntry[]){
+  private setStatistics(stats: RatioEntry[]) {
     var sortedRatios = this.sorter.sortTable(stats, 'WinGame').reverse();
 
     for (let index = 0; index < sortedRatios.length; index++) {
-      sortedRatios[index].Position = index + 1;      
+      sortedRatios[index].Position = index + 1;
     }
 
-    this.statistics = sortedRatios;
+    this.ratioBoardOptions.Data = sortedRatios;
+    this.boardSet[1] = true;
   }
 
-  private setProgresses(progresses : LeaderboardEntry[]){
+  private setProgresses(progresses: LeaderboardEntry[]) {
     for (let index = 0; index < progresses.length; index++) {
-      progresses[index].Position *= -1;
+      if(progresses[index].Position != undefined)
+        progresses[index].Position *= -1;
+      else
+        progresses[index].Position = "N/A";
     }
 
-    this.progress = progresses;
+    this.progressBoardOptions.Data = progresses;
+    this.boardSet[2] = true;
+  }
+
+  private setBoardsOption() {
+    this.leaderboardOptions = new BoardOptions();
+    this.ratioBoardOptions = new BoardOptions();
+    this.progressBoardOptions = new BoardOptions();
+
+    this.leaderboardOptions.Labels = ["Position", "Name", "Win", "Loss", "Draw", "Goal", "Assist", "Experience"];
+    this.leaderboardOptions.DataOrder = [0, 1, 2, 3, 4, 5, 6, 7];
+    this.leaderboardOptions.Id = "0";
+
+    this.ratioBoardOptions.Labels = ["Position", "Name", "Games", "Goals / Game", "Assists / Game", "Exp / Game", "Loss %", "Win %"];
+    this.ratioBoardOptions.DataOrder = [9, 0, 1, 2, 3, 4, 7, 6];
+    this.ratioBoardOptions.Id = "1";
+
+    this.progressBoardOptions.Labels = ["Position", "Name", "Win", "Loss", "Draw", "Goal", "Assist", "Experience"];
+    this.progressBoardOptions.DataOrder = [0, 1, 2, 3, 4, 5, 6, 7];
+    this.progressBoardOptions.Id = "2";
   }
 }

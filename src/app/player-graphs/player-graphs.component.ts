@@ -116,8 +116,8 @@ export class PlayerGraphsComponent implements OnInit {
       labels.push(date);
 
       if (data.Progress) {
-        goalSet.push(data.Progress.goals);
-        assistSet.push(data.Progress.assists);
+        goalSet.push(data.Progress.Goals);
+        assistSet.push(data.Progress.Assists);
       } else {
         goalSet.push(0);
         assistSet.push(0);

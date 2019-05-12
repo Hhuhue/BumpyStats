@@ -3,6 +3,7 @@ import { LeaderboardEntry } from '../models/model.leaderboard-entry';
 import { StatisticsService } from '../statistics.service';
 import { TableSorterService } from '../table-sorter.service';
 import * as Chart from 'chart.js';
+import { BoardOptions } from '../models/model.board-options';
 
 @Component({
   selector: 'app-compare',
@@ -13,20 +14,23 @@ export class CompareComponent implements OnInit {
   selectedView: number;
 
   initialized: boolean;
-  scoreData: any[];
-  scoreLabels: string[];
-  scoreOrder: number[];
+  dataSet: boolean;
+  scoreBoardOptions: BoardOptions;
 
   constructor(private statService: StatisticsService, private sorter: TableSorterService) { }
 
   ngOnInit() {
     this.selectedView = 0;
     this.initialized = false;
-    this. scoreData = [];
-    this.scoreOrder = [0,1,2,3,4];
-    this.scoreLabels = ["Name", "Raw Score", "Survive Rate Penalty", "Goal per Game Penalty", "Final Score"];
+    this.dataSet = false;
+    this.scoreBoardOptions = new BoardOptions();
+
     this.statService.getLeaderboard(false)
       .subscribe(entries => this.setDistributionCharts(entries));
+
+    this.scoreBoardOptions.Labels = ["Name", "Raw Score", "Survive Rate Penalty", "Goal per Game Penalty", "Final Score"];
+    this.scoreBoardOptions.DataOrder = [0, 1, 2, 3, 4];
+    this.scoreBoardOptions.Id = "0";
   }
 
   onSelect(index: number) {
@@ -41,44 +45,45 @@ export class CompareComponent implements OnInit {
     var surviveRateData = [];
     var goalGameData = [];
     var scatterScoreData = [];
+    this.scoreBoardOptions.Data = [];
 
     entries.forEach(entry => {
       let games = entry.Draws + entry.Losses + entry.Wins;
       let kExp = Math.round(entry.Experience / 1000);
       let surviveRate = Math.round((entry.Wins + entry.Draws) / games * 10000) / 100;
-      let goalGame = Math.round(entry.goals / games * 100) / 100;
+      let goalGame = Math.round(entry.Goals / games * 100) / 100;
       let score = this.getScore(entry);
 
-      this.scoreData.push(score);
-
-      console.log(games + " " + kExp);
+      this.scoreBoardOptions.Data.push(score);
 
       expGameData.push({
         x: games,
         y: kExp,
-        name: entry.last_name
+        name: entry.Name
       });
 
       surviveRateData.push({
         x: games,
         y: surviveRate,
-        name: entry.last_name
+        name: entry.Name
       });
 
       goalGameData.push({
         x: games,
         y: goalGame,
-        name: entry.last_name
+        name: entry.Name
       });
 
       scatterScoreData.push({
         x: games,
         y: score.score,
-        name: entry.last_name
+        name: entry.Name
       });
     });
 
-    this.scoreData = this.sorter.sortTable(this.scoreData, 'score');
+    console.log(this.scoreBoardOptions.Data)
+    this.scoreBoardOptions.Data = this.sorter.sortTable(this.scoreBoardOptions.Data, 'score');
+    this.dataSet = true;
 
     expGameData = this.sorter.sortTable(expGameData, 'x');
     this.setScatterChart(expGameData, this.getExpScatterOptions(), "myChart", true);
@@ -288,7 +293,7 @@ export class CompareComponent implements OnInit {
     var surviveRate = Math.round((entry.Wins + entry.Draws) / games * 10000) / 100;
     var surviveRateModifier = Math.pow(Math.E, surviveRate - surviveRateThreshold - 10) / 10 + 1;
 
-    var goalGame = entry.goals / games;
+    var goalGame = entry.Goals / games;
     var goalGameModifier = Math.pow(Math.E, 3 * goalGame - goalGameThreshold - 6) + 1;
 
     surviveRateModifier = Math.max(1, surviveRateModifier);
@@ -297,11 +302,11 @@ export class CompareComponent implements OnInit {
     var rawScore = entry.Experience / 100;
     var score = rawScore / (surviveRateModifier * goalGameModifier);
     //console.log(entry.last_name + "| rs: " + rawScore + " | sp: " + surviveRateModifier + " | gp: " + goalGameModifier);
-    return { 
-      name: entry.last_name, 
-      rawScore: Math.round(rawScore), 
-      srm: Math.round(surviveRateModifier * 100) / 100, 
-      ggm: Math.round(goalGameModifier * 100) / 100, 
+    return {
+      name: entry.Name,
+      rawScore: Math.round(rawScore),
+      srm: Math.round(surviveRateModifier * 100) / 100,
+      ggm: Math.round(goalGameModifier * 100) / 100,
       score: Math.round(score)
     };
   }

@@ -29,8 +29,8 @@ export class StatisticsService {
       return of(this.currentLeaderboard);
     } else {
       var promise = this.bumpyball.getLeaderboard();
-      promise.subscribe(leaderboard => this.currentLeaderboard = leaderboard);
-      return promise;
+      promise.subscribe(leaderboard => this.currentLeaderboard = this.sourceToLeaderboardEntries(leaderboard));
+      return promise.pipe(map(leaderboard => this.sourceToLeaderboardEntries(leaderboard)));;
     }
   }
 
@@ -51,8 +51,8 @@ export class StatisticsService {
       return of(this.currentProgress);
     } else {
       var promise = this.bumpyball.getPlayerProgress();
-      promise.subscribe(progresses => this.currentProgress = progresses);
-      return promise;
+      promise.subscribe(progresses => this.currentProgress = this.sourceToLeaderboardEntries(progresses));
+      return promise.pipe(map(progresses => this.sourceToLeaderboardEntries(progresses)));;;
     }
   }
 
@@ -84,20 +84,21 @@ export class StatisticsService {
     return playerData;
   }
 
-  entryToRatio(entry: LeaderboardEntry): any {
+  entryToRatio(entry: LeaderboardEntry): RatioEntry {
     var games = entry.Wins + entry.Draws + entry.Losses;
-    var ratio = {
-      Name: entry.last_name,
-      Games: games,
-      GoalsGame: this.roundFloat(entry.goals / games),
-      AssistsGame: this.roundFloat(entry.assists / games),
-      ExpGame: this.roundFloat(entry.Experience / games),
-      WinLoss: this.roundFloat(entry.Wins / entry.Losses),
-      WinGame: this.roundPercent(entry.Wins / games),
-      LossGame: this.roundPercent(entry.Losses / games),
-      DrawGame: this.roundPercent(entry.Draws / games),
-    };
-    return ratio;
+    var ratios = new RatioEntry();
+
+    ratios.Name = entry.Name;
+    ratios.Games = games;
+    ratios.GoalsGame = this.roundFloat(entry.Goals / games);
+    ratios.AssistsGame = this.roundFloat(entry.Assists / games);
+    ratios.ExpGame = this.roundFloat(entry.Experience / games);
+    ratios.WinLoss = this.roundFloat(entry.Wins / entry.Losses);
+    ratios.WinGame = this.roundPercent(entry.Wins / games);
+    ratios.LossGame = this.roundPercent(entry.Losses / games);
+    ratios.DrawGame = this.roundPercent(entry.Draws / games);
+
+    return ratios;
   }
 
   expToLevel(exp: number) {
@@ -165,11 +166,20 @@ export class StatisticsService {
 
     regressionPoints.forEach(point => {
       let margin = studentVal * Math.pow(variance * (1 / n + Math.pow(point.x - avgX, 2) / sumXX), 0.5);
-      CI[0].push({x: point.x, y: point.y - margin});
-      CI[1].push({x: point.x, y: point.y + margin});
+      CI[0].push({ x: point.x, y: point.y - margin });
+      CI[1].push({ x: point.x, y: point.y + margin });
     });
 
     return CI;
+  }
+
+  sourceToLeaderboardEntries(source: any[]) {
+    var leaderboardEntries = [];
+    source.forEach(element => {
+      leaderboardEntries.push(new LeaderboardEntry(element));
+    });
+
+    return leaderboardEntries;
   }
 
   private treatLeaderboard(leaderboard: LeaderboardEntry[]): RatioEntry[] {

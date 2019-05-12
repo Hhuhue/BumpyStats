@@ -1,4 +1,6 @@
 import { Component, OnInit, Input } from '@angular/core';
+import { BoardOptions } from '../models/model.board-options';
+import { Options } from 'selenium-webdriver/ie';
 
 @Component({
   selector: 'app-board',
@@ -10,24 +12,23 @@ import { Component, OnInit, Input } from '@angular/core';
 
 export class BoardComponent implements OnInit {
   columns : string[]; 
-  @Input() data;
-  @Input() labels : string[]; 
-  @Input() order : number[];
-  @Input() id : string;
+  @Input() Options : BoardOptions;
 
   constructor() { }
 
   ngOnInit() {
-    if(this.data.length == 0) return;
+    if(this.Options.Data.length == 0) return;
 
-    var keys = Object.keys(this.data[0]);
-    this.columns = Array(this.order.length);
+    console.log(JSON.stringify(this.Options.Data[0]));
 
-    for (let index = 0; index < this.order.length; index++) {
-      this.columns[index] = keys[this.order[index]];
+    var keys = Object.keys(this.Options.Data[0]);
+    this.columns = Array(this.Options.DataOrder.length);
+
+    for (let index = 0; index < this.Options.DataOrder.length; index++) {
+      this.columns[index] = keys[this.Options.DataOrder[index]];
     }
     
-    $("#" + this.id + " >> table").floatThead({position: 'fixed'});
-    $("#" + this.id + " >> table").floatThead('reflow');
+    $("#" + this.Options.Id + " >> table").floatThead({position: 'fixed'});
+    $("#" + this.Options.Id + " >> table").floatThead('reflow');
   }
 }

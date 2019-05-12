@@ -11,15 +11,15 @@
   </div>
 </div>
 <div class="row foldable" [class.fold]="selectedBoard !== 0" id="0">
-  <app-board *ngIf="entries && initialized[0]" [labels]="leaderboardLabels" [data]="entries" [order]="leaderboardOrder" [id]="0"></app-board>
-  <div class="loader" *ngIf="!entries">Loading...</div>
+  <app-board *ngIf="boardSet[0] && initialized[0]" [Options]="leaderboardOptions"></app-board>
+  <div class="loader" *ngIf="!boardSet[0]">Loading...</div>
 </div>
 <div class="row foldable" [class.fold]="selectedBoard !== 1" id="1">
-  <app-board *ngIf="statistics && initialized[1]" [labels]="ratioLabels" [data]="statistics" [order]="ratioOrder" [id]="1"></app-board>
-  <div class="loader" *ngIf="!statistics">Loading...</div>
+  <app-board *ngIf="boardSet[1] && initialized[1]" [Options]="ratioBoardOptions"></app-board>
+  <div class="loader" *ngIf="!boardSet[1]">Loading...</div>
 </div>
 <div class="row foldable" [class.fold]="selectedBoard !== 2" id="2">
   <h6 class="dark">From {{getToday(-1)}} To {{getToday(0)}}</h6>  
-  <app-board *ngIf="progress && initialized[2]" [labels]="leaderboardLabels" [data]="progress" [order]="progressOrder" [id]="2"></app-board>
-  <div class="loader" *ngIf="!progress">Loading...</div>
+  <app-board *ngIf="boardSet[2] && initialized[2]" [Options]="progressBoardOptions"></app-board>
+  <div class="loader" *ngIf="!boardSet[2]">Loading...</div>
 </div>

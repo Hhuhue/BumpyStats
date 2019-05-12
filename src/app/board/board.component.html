@@ -1,13 +1,13 @@
 <table id="{{'Board_' + id}}" class="table table-striped col-md-11">
   <thead class="thead-dark">
     <tr>
-      <th *ngFor="let label of labels">
+      <th *ngFor="let label of Options.Labels">
         {{label}}
       </th>
     </tr>
   </thead>
   <tbody>
-    <tr *ngFor="let entry of data">
+    <tr *ngFor="let entry of Options.Data">
       <td *ngFor="let column of columns">
         {{entry[column]}}
       </td>
