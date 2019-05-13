@@ -69,9 +69,9 @@ $app->get('/snapshot-preview', function (Request $request, Response $response) {
     $offboardPlayersState = GetPlayersStateFromUids($offboardPlayersUids);
     $offboardPlayersProgress = $connection->snapshotPreview(json_encode($offboardPlayersState));
 
-    $playresProgress = array_merge($leaderboardPlayersProgress, $offboardPlayersProgress);
+    $playersProgress = array_merge($leaderboardPlayersProgress, $offboardPlayersProgress);
 
-    $response->getBody()->write(json_encode($playresProgress));
+    $response->getBody()->write(json_encode($playersProgress));
     return $response;
 });
 
@@ -101,7 +101,9 @@ $app->get('/setPlayerUID/{uid}', function (Request $request, Response $response,
 });
 
 $app->get('/data/{player}', function (Request $request, Response $response, $args) {
-    $name = urldecode((string)$args['player']);
+    $brokenName = urlencode(utf8_decode((string)$args['player']));
+    $name = rawurldecode(str_replace('_', '', $brokenName));
+
     $this->logger->info($name);
     $connection = CreateDBConnection($this);
     $playerData = $connection->getPlayerData($name);

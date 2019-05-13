@@ -21,10 +21,6 @@ class ProgressService
             $player = $playerOldState["player"];
             $playerOldAttributes = $this->getAttributesFromPlayerState($playerOldState);
 
-            if(!array_key_exists($player, $playersNewAttributesMap)){
-                throw new \Exception("Error Processing Request", 1);
-            }
-
             $playerProgress = $this->getPlayerProgress($playerOldAttributes, $playersNewAttributesMap[$player]);
 
             if($playerProgress != self::NO_PROGRESS_FLAG){
@@ -76,6 +72,8 @@ class ProgressService
 
     private function getPlayerAttributeProgress($attribute, $oldValue, $newValue)
     {
+        if($oldValue == "NA" || $newValue == "NA") return self::NO_PROGRESS_FLAG;
+        
         $attributeProgress = $newValue - $oldValue;
 
         if ($attributeProgress < 0 && $attribute != 'Position') return self::NO_PROGRESS_FLAG;

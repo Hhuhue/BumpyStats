@@ -372,7 +372,7 @@ class Database
         for ($i = 0; $i < sizeof($players); $i++) {
             $player = $players[$i];
             $leaderboardEntry = $leaderboard[$player["index"]];
-            $leaderboardEntry["Position"] = $i + 1;
+            $leaderboardEntry["Position"] = $player["index"] + 1;
 
             array_push($playersState, array(
                 "player" => $this->playerIds[$player["name"]],
