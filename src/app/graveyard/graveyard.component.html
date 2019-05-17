@@ -1,0 +1,19 @@
+<div class="page-title">Graveyard</div>
+<div class="row col-md-11" style="margin-top: 20px">
+  <table id="GraveyardBoard" class="table table-striped col-md-11">
+    <thead class="thead-dark">
+      <tr>
+        <th>Name</th>
+        <th>Last progress date</th>
+        <th>Days since today</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr *ngFor="let entry of progressEntries">
+        <td>{{entry.name}}</td>
+        <td>{{entry.progressDate}}</td>
+        <td>{{entry.daysCount}}</td>
+      </tr>
+    </tbody>
+  </table>
+</div>

@@ -18,7 +18,10 @@
     <div [class.selected]="4 === selectedIndex" (click)="onSelect(4)" routerLink="/Register">
       <a><i class="fa fa-plus"></i>Register Player</a>
     </div>
-    <div [class.selected]="5 === selectedIndex" (click)="onSelect(5)">
+    <div [class.selected]="5 === selectedIndex" (click)="onSelect(5)" routerLink="/Graveyard">
+      <a><i class="fa fa-skull-crossbones"></i>Graveyard</a>
+    </div>
+    <div [class.selected]="6 === selectedIndex" (click)="onSelect(6)" routerLink="/About">
       <a><i class="fa fa-info-circle"></i>About</a>
     </div>
   </div>

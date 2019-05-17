@@ -13,25 +13,31 @@ export class NavigationComponent implements OnInit {
     var url = window.location.href.split("/");
     var location = url[url.length - 1];
 
-    switch(location) {
+    switch (location) {
       case "Leaderboards":
         this.onSelect(1);
         break;
       case "PlayerStats":
         this.onSelect(2);
         break;
-        case "Compare":
-          this.onSelect(3);
-          break;
+      case "Compare":
+        this.onSelect(3);
+        break;
       case "Register":
         this.onSelect(4);
+        break;
+      case "Graveyard":
+        this.onSelect(5);
+        break;
+      case "About":
+        this.onSelect(6);
         break;
       default:
         this.onSelect(1);
     }
   }
 
-  onSelect(index){
+  onSelect(index) {
     this.selectedIndex = index;
   }
 }

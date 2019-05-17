@@ -14,6 +14,7 @@ import { CompareComponent } from './compare/compare.component';
 import { AboutComponent } from './about/about.component';
 import { BoardComponent } from './board/board.component';
 import { PlayerGraphsComponent } from './player-graphs/player-graphs.component';
+import { GraveyardComponent } from './graveyard/graveyard.component';
 
 @NgModule({
   declarations: [
@@ -25,7 +26,8 @@ import { PlayerGraphsComponent } from './player-graphs/player-graphs.component';
     CompareComponent,
     AboutComponent,
     BoardComponent,
-    PlayerGraphsComponent
+    PlayerGraphsComponent,
+    GraveyardComponent
   ],
   imports: [
     BrowserModule,

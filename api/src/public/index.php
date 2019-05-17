@@ -11,9 +11,9 @@ use Classes\ProgressService as ProgressService;
 $config['displayErrorDetails'] = true;
 $config['addContentLengthHeader'] = false;
 
-$config['db']['host']   = 'localhost';
-$config['db']['user']   = 'dev';
-$config['db']['pass']   = 'Welcome!123';
+$config['db']['host']   = 'den1.mysql5.gear.host';
+$config['db']['user']   = 'bumpystatsdb';
+$config['db']['pass']   = 'Wk1N6!nPz1L_';
 $config['db']['dbname'] = 'bumpystatsdb';
 
 $app = new \Slim\App(['settings' => $config]);
@@ -101,9 +101,7 @@ $app->get('/setPlayerUID/{uid}', function (Request $request, Response $response,
 });
 
 $app->get('/data/{player}', function (Request $request, Response $response, $args) {
-    $brokenName = urlencode(utf8_decode((string)$args['player']));
-    $name = rawurldecode(str_replace('_', '', $brokenName));
-
+    $name = (string)$args['player'];
     $this->logger->info($name);
     $connection = CreateDBConnection($this);
     $playerData = $connection->getPlayerData($name);
@@ -127,6 +125,14 @@ $app->get('/clear', function (Request $request, Response $response) {
     $connection->clearDatabase();
 
     $response->getBody()->write("Database cleared");
+    return $response;
+});
+
+$app->get('/latest-progress', function (Request $request, Response $response) {   
+    $connection = CreateDBConnection($this);
+    $latestProgresses = $connection->getPlayersLatestProgress();
+
+    $response->getBody()->write(json_encode($latestProgresses));
     return $response;
 });
 

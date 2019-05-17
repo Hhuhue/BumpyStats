@@ -54,9 +54,9 @@ class Database
 
     public function getPlayerData($player)
     {
-        if (!array_key_exists($player, $this->playerIds)) return -1;
+        $id = $this->getPlayerIdFromHash($player);
 
-        $id = $this->playerIds[$player];
+        if($id == -1) return -1;
 
         $dateObj = new \DateTime(date('Y-m-d'));
         $dateObj->sub(new \DateInterval('P7D'));
@@ -143,6 +143,23 @@ class Database
         }
 
         return $uids;
+    }
+
+    public function getPlayersLatestProgress()
+    {
+        $sql = "SELECT p.name, s.progressDate
+                FROM bumpystatsdb.progress s 
+                    LEFT JOIN bumpystatsdb.player p ON
+                        p.id = s.player
+                WHERE (s.player, s.progressDate) IN 
+                    (SELECT player, MAX(progressDate) 
+                     FROM bumpystatsdb.progress 
+                     WHERE content NOT LIKE '%\"Position\": 1%' 
+                     GROUP BY player)";
+
+        $latestProgresses = $this->executeSqlQuery($sql, []);
+
+        return $latestProgresses;
     }
 
     private function formatOffBoardPlayerStateContent($playerStateContent)
@@ -416,6 +433,16 @@ class Database
         return $names;
     }
 
+    private function getPlayerIdFromHash($hashedName)
+    {
+        $sql = "SELECT id FROM player WHERE MD5(name) = ?";
+        $result = $this->executeSqlQuery($sql, [$hashedName]);
+
+        if(sizeof($result) == 0) return -1;
+
+        return $result[0]['id'];
+    }
+
     private function getPlayers()
     {
         $sql = "SELECT name FROM player";
@@ -427,7 +454,7 @@ class Database
         $queryResult = $this->pdo->prepare($sql);
         $queryResult->execute($parameters);
 
-        if (strpos($sql, "SELECT") == false) {
+        if (!preg_match('/\bSELECT\b/', $sql)) {
             return $queryResult;
         } else {
             return $queryResult->fetchAll();

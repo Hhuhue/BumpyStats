@@ -10,6 +10,8 @@ export class AboutComponent implements OnInit {
   constructor() { }
 
   ngOnInit() {
+    $("table").floatThead({position: 'fixed'});
+    $("table").floatThead('reflow');
   }
 
 }

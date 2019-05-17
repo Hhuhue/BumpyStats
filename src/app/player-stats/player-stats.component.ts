@@ -2,8 +2,7 @@ import { Component, OnInit } from '@angular/core';
 import { BumpyballService } from '../bumpyball.service';
 import { PlayerData } from '../models/model.player-data';
 import { StatisticsService } from '../statistics.service';
-import * as Chart from 'chart.js';
-import * as moment from 'moment';
+import * as md5 from 'md5';
 import { FlashMessagesService } from 'angular2-flash-messages';
 
 @Component({
@@ -34,7 +33,7 @@ export class PlayerStatsComponent implements OnInit {
     if (keycode && keycode.toString() == '13') {
       this.rawData = undefined;
       this.name = $("#SearchedPlayer").val().toString();
-      this.bumpyball.getPlayerData(encodeURIComponent(this.name)).subscribe(data => this.setData(data));
+      this.bumpyball.getPlayerData(md5(this.name)).subscribe(data => this.setData(data));
     }
   }
   
