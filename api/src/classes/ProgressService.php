@@ -6,8 +6,8 @@ use function GuzzleHttp\json_decode;
 
 class ProgressService
 {
-    public const NO_PROGRESS_FLAG = -1;
-    public const MAX_PROGRESS_VALUE = 50000;
+    public const NO_PROGRESS_FLAG = -100000;
+    public const MAX_PROGRESS_VALUE = 150000;
 
     public function getPlayersProgress($playersOldState, $playersNewState)
     {
@@ -44,11 +44,13 @@ class ProgressService
         $progressTotal = 0;
         if($playerNewAttributes == null) return self::NO_PROGRESS_FLAG;
 
-        foreach ($playerNewAttributes as $attribute => $attributeValue) {
+        foreach ($playerNewAttributes as $attribute => $newAttributeValue) {
             if ($this->attributeIsSupported($attribute)) {
-                $attributeProgress = $this->getPlayerAttributeProgress($attribute, $attributeValue, $playerOldAttributes[$attribute]);
+                $attributeProgress = $this->getPlayerAttributeProgress($attribute, $playerOldAttributes[$attribute], $newAttributeValue);
 
-                if ($attributeProgress == self::NO_PROGRESS_FLAG) return self::NO_PROGRESS_FLAG;
+                if ($attributeProgress == self::NO_PROGRESS_FLAG){
+                    return self::NO_PROGRESS_FLAG;
+                }
 
                 $progressTotal = $progressTotal + $attributeProgress;
                 $progressData[$attribute] = $attributeProgress;
@@ -76,8 +78,12 @@ class ProgressService
         
         $attributeProgress = $newValue - $oldValue;
 
-        if ($attributeProgress < 0 && $attribute != 'Position') return self::NO_PROGRESS_FLAG;
-        if ($attributeProgress > self::MAX_PROGRESS_VALUE) return self::NO_PROGRESS_FLAG;
+        if ($attributeProgress < 0 && $attribute != 'Position'){
+            return self::NO_PROGRESS_FLAG;
+        }
+        if ($attributeProgress > self::MAX_PROGRESS_VALUE){
+            return self::NO_PROGRESS_FLAG;
+        }
 
         return $attributeProgress;
     }

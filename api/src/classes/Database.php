@@ -75,11 +75,11 @@ class Database
     public function snapshotPreview($leaderboardJson)
     {
         $leaderboard = json_decode($leaderboardJson, true);
-        $knownLeaderboardPLayers = $this->getKnownPlayersFromLeaderboard($leaderboard);
+        $knownLeaderboardPlayers = $this->getKnownPlayersFromLeaderboard($leaderboard);
 
-        $knownPlayersLeaderboardEntry = $this->extractPlayersLeaderboardEntry($leaderboard, $knownLeaderboardPLayers);
-        $knownPlayersLatestState = $this->getPlayersLatestState($knownLeaderboardPLayers);
-        $playersProgress = $this->progressService->getPlayersProgress($knownPlayersLeaderboardEntry, $knownPlayersLatestState);
+        $knownPlayersLeaderboardEntry = $this->extractPlayersLeaderboardEntry($leaderboard, $knownLeaderboardPlayers);
+        $knownPlayersLatestState = $this->getPlayersLatestState($knownLeaderboardPlayers);
+        $playersProgress = $this->progressService->getPlayersProgress($knownPlayersLatestState, $knownPlayersLeaderboardEntry);
 
         return $playersProgress;
     }
