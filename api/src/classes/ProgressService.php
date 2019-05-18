@@ -23,7 +23,7 @@ class ProgressService
 
             $playerProgress = $this->getPlayerProgress($playerOldAttributes, $playersNewAttributesMap[$player]);
 
-            if($playerProgress != self::NO_PROGRESS_FLAG){
+            if ($playerProgress != self::NO_PROGRESS_FLAG) {
                 array_push($playersProgress, $playerProgress);
             }
         }
@@ -42,18 +42,21 @@ class ProgressService
         $progressData['last_name'] = $playerNewAttributes['last_name'];
 
         $progressTotal = 0;
-        if($playerNewAttributes == null) return self::NO_PROGRESS_FLAG;
+        if ($playerNewAttributes == null) return self::NO_PROGRESS_FLAG;
 
         foreach ($playerNewAttributes as $attribute => $newAttributeValue) {
             if ($this->attributeIsSupported($attribute)) {
-                $attributeProgress = $this->getPlayerAttributeProgress($attribute, $playerOldAttributes[$attribute], $newAttributeValue);
+                if (array_key_exists($attribute, $playerOldAttributes)) {
+                    $oldAttributeValue = $playerOldAttributes[$attribute];
+                    $attributeProgress = $this->getPlayerAttributeProgress($attribute, $oldAttributeValue, $newAttributeValue);
 
-                if ($attributeProgress == self::NO_PROGRESS_FLAG){
-                    return self::NO_PROGRESS_FLAG;
+                    if ($attributeProgress == self::NO_PROGRESS_FLAG) {
+                        return self::NO_PROGRESS_FLAG;
+                    }
+
+                    $progressTotal = $progressTotal + $attributeProgress;
+                    $progressData[$attribute] = $attributeProgress;
                 }
-
-                $progressTotal = $progressTotal + $attributeProgress;
-                $progressData[$attribute] = $attributeProgress;
             }
         }
 
@@ -64,24 +67,24 @@ class ProgressService
 
     private function attributeIsSupported($attribute)
     {
-        return $attribute != 'last_name' && 
-               $attribute != 'Uid' && 
-               $attribute != 'LastUpdate' &&
-               $attribute != 'currency' &&
-               $attribute != 'skin_id' && 
-               $attribute != 'Created';
+        return $attribute != 'last_name' &&
+            $attribute != 'Uid' &&
+            $attribute != 'LastUpdate' &&
+            $attribute != 'currency' &&
+            $attribute != 'skin_id' &&
+            $attribute != 'Created';
     }
 
     private function getPlayerAttributeProgress($attribute, $oldValue, $newValue)
     {
-        if($oldValue == "NA" || $newValue == "NA") return self::NO_PROGRESS_FLAG;
-        
+        if ($oldValue == "NA" || $newValue == "NA") return self::NO_PROGRESS_FLAG;
+
         $attributeProgress = $newValue - $oldValue;
 
-        if ($attributeProgress < 0 && $attribute != 'Position'){
+        if ($attributeProgress < 0 && $attribute != 'Position') {
             return self::NO_PROGRESS_FLAG;
         }
-        if ($attributeProgress > self::MAX_PROGRESS_VALUE){
+        if ($attributeProgress > self::MAX_PROGRESS_VALUE) {
             return self::NO_PROGRESS_FLAG;
         }
 
