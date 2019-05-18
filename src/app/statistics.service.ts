@@ -13,16 +13,15 @@ export class StatisticsService {
   private currentLeaderboard: LeaderboardEntry[] = undefined;
   private currentRatios: RatioEntry[] = undefined;
   private currentProgress: LeaderboardEntry[] = undefined;
-
-  private expPath: number[] = [
-    100, 250, 500, 750, 1000, 1250, 1500,
-    2000, 2500, 3000, 3500, 4000, 4500, 5000,
-    6000, 7000, 8000, 9000, 10000, 11000, 12000,
-    19000, 26000, 33000, 41000, 50000, 60000,
-    80000, 100000, 120000, 140000, 160000, 180000, 200000
-  ];
+  private expPath: number[] = undefined;
 
   constructor(private bumpyball: BumpyballService) { }
+
+  init() {
+    this.getExpPath();
+    this.getLeaderboard(true);
+    this.getProgresses(true);
+  }
 
   getLeaderboard(getNew: boolean): Observable<LeaderboardEntry[]> {
     if (this.currentLeaderboard && !getNew) {
@@ -59,11 +58,9 @@ export class StatisticsService {
   buildPlayerData(playerHistory: any): PlayerData[] {
     var stateHistory = this.sourceToLeaderboardEntries(playerHistory.states);
     var progressHistory = this.sourceToLeaderboardEntries(playerHistory.progress);
-    
+
     var ratioHistory = this.treatLeaderboard(stateHistory);
     var playerData: PlayerData[] = [];
-
-    console.log(ratioHistory);
 
     var progressIndex = 0;
     for (let i = 0; i < stateHistory.length; i++) {
@@ -84,6 +81,19 @@ export class StatisticsService {
     return playerData;
   }
 
+  getExpPath() {
+    if (!this.expPath) {
+      this.expPath = [];
+      this.bumpyball.getLevels()
+        .subscribe(levels => {
+          var keys = Object.keys(levels.levelMap);
+          keys.forEach(key => {
+            this.expPath.push(levels.levelMap[key].experience)
+          });
+        });
+    }
+  }
+
   entryToRatio(entry: LeaderboardEntry): RatioEntry {
     var games = entry.Wins + entry.Draws + entry.Losses;
     var ratios = new RatioEntry();
@@ -102,6 +112,7 @@ export class StatisticsService {
   }
 
   expToLevel(exp: number) {
+    if (!this.expPath) return;
     var level = 0;
     while (exp >= 0) {
       exp -= this.expPath[level];
@@ -109,6 +120,18 @@ export class StatisticsService {
     }
 
     return level;
+  }
+
+  getExpForNextLevel(level: number) {
+    return this.expPath[level - 1];
+  }
+
+  getAccumulatedExpAtLevel(level: number) {
+    var accumulatedExp = 0;
+    for (let index = 0; index < level; index++) {
+      accumulatedExp += this.expPath[index];
+    }
+    return accumulatedExp;
   }
 
   linearRegression(points: any[], count: number, from: number, to: number) {

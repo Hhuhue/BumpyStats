@@ -1,0 +1,20 @@
+.stat-progress-bar {
+    border: 1px solid rgba(2, 18, 20, 1);
+    border-radius: 20px;
+    position: relative;
+}
+
+.stat-progress-bar>div {
+    border-radius: 20px;
+    height: 30px;
+    background-color: rgba(35, 234, 88, 0.7);
+}
+
+.stat-progress-bar+span {
+    position: absolute;
+    left: 50%;
+    bottom: 7px;
+    -webkit-transform: translateX(-50%);
+    transform: translateX(-50%);
+    font-weight: 600;
+}

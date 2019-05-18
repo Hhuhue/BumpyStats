@@ -1,62 +1,88 @@
 <div class="page-title">Player Statistics</div>
 <br>
 <div class="row col-md-11">
-  <flash-messages class="col-md-12"></flash-messages>
-  <div class="form-group row col-md-12">
-    <label for="SearchedPlayer" class="col-md-2 col-form-label">Player name: </label>
-    <div class="col-md-6">
-      <input type="text" (keyup)="onEnter($event)" class="form-control" id="SearchedPlayer" placeholder="Enter a name">
-      <small id="NameHelp" class="form-text text-muted">This field is case sensitive </small>
+    <flash-messages class="col-md-12"></flash-messages>
+    <div class="form-group row col-md-12">
+        <label for="SearchedPlayer" class="col-md-2 col-form-label">Player name: </label>
+        <div class="col-md-6">
+            <input type="text" (keyup)="onEnter($event)" class="form-control" id="SearchedPlayer" placeholder="Enter a name">
+            <small id="NameHelp" class="form-text text-muted">This field is case sensitive </small>
+        </div>
     </div>
-  </div>
-  <div class="col-md-12">
-    <div class="section-title">Informations</div>
-    <table class="table table-striped col-md-11">
-      <thead class="thead-dark">
-        <tr>
-          <th>Level</th>
-          <th>Position</th>
-          <th>Win</th>
-          <th>Loss</th>
-          <th>Draw</th>
-          <th>Goal</th>
-          <th>Assist</th>
-          <th>Experience</th>
-        </tr>
-      </thead>
-      <tbody>
-        <tr *ngIf="rawData">
-          <td>{{level}}</td>
-          <td>{{rawData.state.Position}}</td>
-          <td>{{rawData.state.Wins}}</td>
-          <td>{{rawData.state.Losses}}</td>
-          <td>{{rawData.state.Draws}}</td>
-          <td>{{rawData.state.Goals}}</td>
-          <td>{{rawData.state.Assists}}</td>
-          <td>{{rawData.state.Experience}}</td>
-        </tr>
-      </tbody>
-    </table>
-    <table class="table table-striped col-md-11">
-      <thead class="thead-dark">
-        <tr>
-          <th>Games</th>
-          <th>Goals / Game</th>
-          <th>Assists / Game</th>
-          <th>Exp / Game</th>
-          <th>Wins / Losses</th>
-        </tr>
-      </thead>
-      <tbody>
-        <tr *ngIf="rawData">
-          <td>{{rawData.ratio.Games}}</td>
-          <td>{{rawData.ratio.GoalsGame}}</td>
-          <td>{{rawData.ratio.AssistsGame}}</td>
-          <td>{{rawData.ratio.ExpGame}}</td>
-          <td>{{rawData.ratio.WinLoss}}</td>
-        </tr>
-      </tbody>
-    </table>
-  </div>
-  <app-player-graphs class="col-md-12" *ngIf="rawData" [rawData]="rawData" [playerData]="playerData"></app-player-graphs>
+    <div class="col-md-12">
+        <div class="section-title">Informations</div>
+        <table class="table table-striped col-md-11">
+            <thead class="thead-dark">
+                <tr>
+                    <th>Position</th>
+                    <th>Level</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr *ngIf="rawData">
+                    <td>{{rawData.state.Position}}</td>
+                    <td style="width: 80%;">
+                        <div class="container">
+                            <div class="row">
+                                <div class="col-md-1"><b>{{level}}</b></div>
+                                <div class="col-md-10">
+                                    <div class="stat-progress-bar">
+                                        <div [ngStyle]="{'width': levelUpProgress}"></div>
+                                    </div>
+                                    <span class="small">
+                                        {{expAccumulated}} / {{expNeededForLevelUp}} Exp ~ {{gamesUntilLevelUp}} Games left
+                                    </span>
+                                </div>
+                                <div class="col-md-1 bold"><b>{{level + 1}}</b></div>
+                            </div>
+                        </div>
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+        <table class="table table-striped col-md-11">
+            <thead class="thead-dark">
+                <tr>
+                    <th>Win</th>
+                    <th>Loss</th>
+                    <th>Draw</th>
+                    <th>Goal</th>
+                    <th>Assist</th>
+                    <th>Experience</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr *ngIf="rawData">
+                    <td>{{rawData.state.Wins}}</td>
+                    <td>{{rawData.state.Losses}}</td>
+                    <td>{{rawData.state.Draws}}</td>
+                    <td>{{rawData.state.Goals}}</td>
+                    <td>{{rawData.state.Assists}}</td>
+                    <td>{{rawData.state.Experience}}</td>
+                </tr>
+            </tbody>
+        </table>
+        <table class="table table-striped col-md-11">
+            <thead class="thead-dark">
+                <tr>
+                    <th>Games</th>
+                    <th>Goals / Game</th>
+                    <th>Assists / Game</th>
+                    <th>Exp / Game</th>
+                    <th>Wins / Losses</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr *ngIf="rawData">
+                    <td>{{rawData.ratio.Games}}</td>
+                    <td>{{rawData.ratio.GoalsGame}}</td>
+                    <td>{{rawData.ratio.AssistsGame}}</td>
+                    <td>{{rawData.ratio.ExpGame}}</td>
+                    <td>{{rawData.ratio.WinLoss}}</td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+    <app-player-graphs class="col-md-12" *ngIf="rawData" [rawData]="rawData" [playerData]="playerData">
+    </app-player-graphs>
 </div>

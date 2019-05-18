@@ -15,7 +15,12 @@ export class PlayerStatsComponent implements OnInit {
   name: string;
   playerData: PlayerData[];
   rawData: any;
+
   level : number = 0;
+  expNeededForLevelUp : number = 0;
+  expAccumulated : number = 0;
+  levelUpProgress : string = "";
+  gamesUntilLevelUp : number = 0;
 
   constructor(private bumpyball: BumpyballService,
     private statService: StatisticsService,
@@ -23,7 +28,6 @@ export class PlayerStatsComponent implements OnInit {
   ) { }
 
   ngOnInit() {
-    //this.bumpyball.getPlayerNames().subscribe(names => this.names = names);
   }
 
   onEnter(event: any) {
@@ -43,10 +47,22 @@ export class PlayerStatsComponent implements OnInit {
       this.name = "";
     } else {
       this.playerData = this.statService.buildPlayerData(data);
-      this.level = this.statService.expToLevel(this.playerData[this.playerData.length - 1].State.Experience);
-      var state = this.playerData[this.playerData.length - 1].State;
+      
+      if(this.playerData.length == 0){
+        this.flashMessage.show("Player <b>" + this.name + "</b> has no recent record", {cssClass : 'alert-warning', timeout : 5000})
+        this.name = "";
+        return;
+      }
+
+      var state = this.playerData[this.playerData.length - 1].State;      
       var ratio = this.statService.entryToRatio(state);
       this.rawData = { state, ratio };
+
+      this.level = this.statService.expToLevel(this.playerData[this.playerData.length - 1].State.Experience);
+      this.expNeededForLevelUp = this.statService.getExpForNextLevel(this.level);
+      this.expAccumulated = state.Experience - this.statService.getAccumulatedExpAtLevel(this.level - 1);
+      this.levelUpProgress = Math.round(this.expAccumulated / this.expNeededForLevelUp * 100) + '%';
+      this.gamesUntilLevelUp = Math.round((this.expNeededForLevelUp - this.expAccumulated) / ratio.ExpGame);
     }
   }
 }

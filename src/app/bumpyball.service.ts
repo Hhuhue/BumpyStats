@@ -23,8 +23,8 @@ export class BumpyballService {
     return this.http.get<LeaderboardEntry[]>(this.leaderboardURL);
   }
 
-  getLevels() : Observable<any[]>{
-    return this.http.get<any[]>(this.levelsUrl);
+  getLevels() : Observable<any>{
+    return this.http.get<any>(this.levelsUrl);
   }
 
   getPlayerProgress() : Observable<LeaderboardEntry[]>{
