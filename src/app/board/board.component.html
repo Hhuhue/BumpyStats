@@ -1,16 +1,16 @@
 <table id="{{'Board_' + Options.Id}}" class="table table-striped col-md-11">
-  <thead class="thead-dark">
-    <tr>
-      <th *ngFor="let label of Options.Labels">
-        {{label}}
-      </th>
-    </tr>
-  </thead>
-  <tbody>
-    <tr *ngFor="let entry of Options.Data">
-      <td *ngFor="let column of columns">
-        {{entry[column]}}
-      </td>
-    </tr>
-  </tbody>
+    <thead class="thead-dark">
+        <tr>
+            <th *ngFor="let label of Options.Labels">
+                {{label}}
+            </th>
+        </tr>
+    </thead>
+    <tbody>
+        <tr *ngFor="let entry of Options.Data">
+            <td *ngFor="let column of columns">
+                {{isNaN(entry[column]) ? entry[column] : format(entry[column], formatOption[column])}}
+            </td>
+        </tr>
+    </tbody>
 </table>

@@ -1,4 +1,4 @@
-.view-selector{
+.view-selector {
     text-align: center;
     font-weight: bold;
     color: rgba(2, 18, 20, 1);
@@ -6,32 +6,40 @@
     margin-top: 10px;
 }
 
-.view-selector > div{
+.view-selector>div {
     padding: 10px;
     background-color: none;
     transition: background-color 0.5s;
 }
 
-.view-selector > div:hover{
-    background-color: rgba(2,2,2,0.1);
+.view-selector>div:hover {
+    background-color: rgba(2, 2, 2, 0.1);
 }
 
-.view-selector > div:nth-child(odd).selected {
+.view-selector>div:nth-child(odd).selected {
     border-bottom: 4px solid rgba(178, 74, 74, 1);
 }
 
-.view-selector > div:nth-child(even).selected {
+.view-selector>div:nth-child(even).selected {
     border-bottom: 4px solid rgba(61, 61, 211, 1);
 }
 
-.foldable{
+.foldable {
     display: inline;
 }
 
-.foldable.fold{
+.foldable.fold {
     display: none;
 }
 
-.plain-text{
+.plain-text {
     border-left: 4px solid rgba(61, 61, 211, 1);
+}
+
+#CompareTable>tr>th {
+    text-align: center;
+}
+
+#CompareTable>tr>td {
+    text-align: center;
 }

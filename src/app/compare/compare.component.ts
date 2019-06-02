@@ -2,8 +2,13 @@ import { Component, OnInit } from '@angular/core';
 import { LeaderboardEntry } from '../models/model.leaderboard-entry';
 import { StatisticsService } from '../statistics.service';
 import { TableSorterService } from '../table-sorter.service';
-import * as Chart from 'chart.js';
 import { BoardOptions } from '../models/model.board-options';
+import { PlayerData } from '../models/model.player-data';
+import { BumpyballService } from '../bumpyball.service';
+import { FlashMessagesService } from 'angular2-flash-messages';
+import * as Chart from 'chart.js';
+import * as md5 from 'md5';
+import { RatioEntry } from '../models/models.ratio-entry';
 
 @Component({
   selector: 'app-compare',
@@ -17,7 +22,17 @@ export class CompareComponent implements OnInit {
   dataSet: boolean;
   scoreBoardOptions: BoardOptions;
 
-  constructor(private statService: StatisticsService, private sorter: TableSorterService) { }
+  player1Name: string;
+  player2Name: string;
+  player1Data: PlayerData;
+  player2Data: PlayerData;
+  playerDiffData: PlayerData;
+
+  constructor(private statService: StatisticsService,
+    private sorter: TableSorterService,
+    private bumpyball: BumpyballService,
+    private flashMessage: FlashMessagesService
+  ) { }
 
   ngOnInit() {
     this.selectedView = 0;
@@ -30,7 +45,8 @@ export class CompareComponent implements OnInit {
 
     this.scoreBoardOptions.Labels = ["Name", "Raw Score", "Survive Rate Penalty", "Goal per Game Penalty", "Final Score"];
     this.scoreBoardOptions.DataOrder = [0, 1, 2, 3, 4];
-    this.scoreBoardOptions.Id = "0";
+    this.scoreBoardOptions.HasDecimal = [false, false, true, true, false];
+    this.scoreBoardOptions.Id = "1";
   }
 
   onSelect(index: number) {
@@ -38,6 +54,62 @@ export class CompareComponent implements OnInit {
     if (index === 1) {
       this.initialized = true;
     }
+  }
+
+  onCompare() {
+    this.bumpyball.getPlayerData(md5(this.player1Name))
+      .subscribe(playerData1 => {
+        if (playerData1 == -1) {
+          this.flashMessage.show("Player <b>" + this.player1Name + "</b> not found", { cssClass: 'alert-danger', timeout: 5000 })
+          this.player1Name = "";
+        } else {
+          this.player1Data = this.statService.buildPlayerData(playerData1)[0];
+          this.bumpyball.getPlayerData(md5(this.player2Name))
+            .subscribe(playerData2 => {
+              if (playerData2 == -1) {
+                this.flashMessage.show("Player <b>" + this.player2Name + "</b> not found", { cssClass: 'alert-danger', timeout: 5000 })
+                this.player2Name = "";
+              } else {
+                this.player2Data = this.statService.buildPlayerData(playerData2)[0];
+                this.setPlayerDiff();
+              }
+            });
+          }
+        });
+  }
+
+  formatNumber(number : number, withDecimal : boolean = false){
+    return this.statService.formatNumber(number, withDecimal);
+  }
+
+  formatDiff(number : number, withDecimal : boolean = false){
+    var formattedNumber = this.formatNumber(number, withDecimal);
+
+    if(number > 0){
+      formattedNumber = '+ ' + formattedNumber;
+    }
+
+    return formattedNumber;
+  }
+
+  private setPlayerDiff(){
+    this.playerDiffData = new PlayerData();
+    this.playerDiffData.Ratios = new RatioEntry();
+    this.playerDiffData.State = new LeaderboardEntry(0);
+
+    var ratioKeys = Object.keys(this.playerDiffData.Ratios);
+    ratioKeys.forEach(key => {
+      this.playerDiffData.Ratios[key] = Math.round((this.player1Data.Ratios[key] - this.player2Data.Ratios[key]) * 100) / 100;
+    });
+
+    var stateKeys = Object.keys(this.playerDiffData.State);
+    stateKeys.forEach(key => {
+      this.playerDiffData.State[key] = Math.round((this.player1Data.State[key] - this.player2Data.State[key]) * 100) / 100;
+    });
+
+    console.log(this.playerDiffData);
+    console.log(this.playerDiffData.State);
+    console.log(this.playerDiffData.Ratios);
   }
 
   private setDistributionCharts(entries: LeaderboardEntry[]) {

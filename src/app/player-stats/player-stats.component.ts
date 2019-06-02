@@ -2,8 +2,8 @@ import { Component, OnInit } from '@angular/core';
 import { BumpyballService } from '../bumpyball.service';
 import { PlayerData } from '../models/model.player-data';
 import { StatisticsService } from '../statistics.service';
-import * as md5 from 'md5';
 import { FlashMessagesService } from 'angular2-flash-messages';
+import * as md5 from 'md5';
 
 @Component({
   selector: 'app-player-stats',

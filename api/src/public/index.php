@@ -11,9 +11,9 @@ use Classes\ProgressService as ProgressService;
 $config['displayErrorDetails'] = true;
 $config['addContentLengthHeader'] = false;
 
-$config['db']['host']   = 'den1.mysql5.gear.host';
-$config['db']['user']   = 'bumpystatsdb';
-$config['db']['pass']   = 'Wk1N6!nPz1L_';
+$config['db']['host']   = 'localhost';
+$config['db']['user']   = 'dev';
+$config['db']['pass']   = 'Welcome!123';
 $config['db']['dbname'] = 'bumpystatsdb';
 
 $app = new \Slim\App(['settings' => $config]);

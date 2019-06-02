@@ -3,4 +3,5 @@ export class BoardOptions {
     Labels: string[];
     DataOrder: number[];
     Data: any[];
+    HasDecimal: boolean[];
 }

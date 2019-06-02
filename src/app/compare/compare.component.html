@@ -1,41 +1,172 @@
 <div class="page-title">Compare</div>
 <div class="row view-selector col-md-11">
-  <div class="col-md-4" [class.selected]="selectedView === 0" (click)="onSelect(0)">
-    Distributions
-  </div>
-  <div class="col-md-4" [class.selected]="selectedView === 1" (click)="onSelect(1)">
-    Score Board
-  </div>
-  <div class="col-md-4" [class.selected]="selectedView === 2" (click)="onSelect(2)">
-    Player vs Player
-  </div>
+    <div class="col-md-4" [class.selected]="selectedView === 0" (click)="onSelect(0)">
+        Distributions
+    </div>
+    <div class="col-md-4" [class.selected]="selectedView === 1" (click)="onSelect(1)">
+        Score Board
+    </div>
+    <div class="col-md-4" [class.selected]="selectedView === 2" (click)="onSelect(2)">
+        Player vs Player
+    </div>
 </div>
+
 <div class="row foldable" [class.fold]="selectedView !== 0" id="0">
-  <div class="col-md-11">
-    <div class="section-title">Total Experience / Total Games</div>
-    <div class="col-md-12 row">
-      <canvas id="myChart" class="col-md-12" height="500"></canvas>
+    <div class="col-md-11">
+        <div class="section-title">Total Experience / Total Games</div>
+        <div class="col-md-12 row">
+            <canvas id="myChart" class="col-md-12" height="500"></canvas>
+        </div>
+        <div class="section-title">Survive Rate (Wins + Draws) / Total Games</div>
+        <div class="col-md-12 row" style="margin-top: 20px">
+            <canvas id="myChart2" class="col-md-12" height="300"></canvas>
+        </div>
+        <div class="section-title">Goals per game / Total Games</div>
+        <div class="col-md-12 row" style="margin-top: 20px">
+            <canvas id="myChart3" class="col-md-12" height="300"></canvas>
+        </div>
     </div>
-    <div class="section-title">Survive Rate (Wins + Draws) / Total Games</div>
-    <div class="col-md-12 row" style="margin-top: 20px">
-      <canvas id="myChart2" class="col-md-12" height="300"></canvas>
+    <div class="col-md-11">
+        <div class="section-title">Score / Total Games</div>
+        <div class="col-md-12 row" style="margin-top: 20px">
+            <canvas id="myChart4" class="col-md-12" height="300"></canvas>
+        </div>
     </div>
-    <div class="section-title">Goals per game / Total Games</div>
-    <div class="col-md-12 row" style="margin-top: 20px">
-      <canvas id="myChart3" class="col-md-12" height="300"></canvas>
-    </div>
-  </div>
-  <div class="col-md-11">
-    <div class="section-title">Score / Total Games</div>
-    <div class="col-md-12 row" style="margin-top: 20px">
-      <canvas id="myChart4" class="col-md-12" height="300"></canvas>
-    </div>
-  </div>
 </div>
+
 <div class="row foldable" [class.fold]="selectedView !== 1" id="1">
-  <div class="plain-text col-md-10">Experimental</div>
-  <app-board *ngIf="dataSet && initialized" [Options]="scoreBoardOptions"></app-board>
+    <div class="plain-text col-md-10">Experimental</div>
+    <app-board *ngIf="dataSet && initialized" [Options]="scoreBoardOptions"></app-board>
 </div>
-<div class="row foldable" [class.fold]="selectedView !== 2" id="2">
-  <div class="section-title">Sooooon :3</div>
+
+<div class="container foldable" [class.fold]="selectedView !== 2" id="2">
+    <div class="row">
+        <div class="row col-md-11">
+            <table class="table">
+                <tbody class="thead-dark" id="CompareTable">
+                    <tr>
+                        <td style="width: 40%">
+                            <input type="text" [(ngModel)]="player1Name" id="FirstPlayerName" class="form-control" placeholder="First player name" />
+                        </td>
+                        <th style="text-align: center; width: 20%">
+                            <button class="btn btn-light" (click)="onCompare()">Compare</button>
+                        </th>
+                        <td style="width: 40%">
+                            <input type="text" [(ngModel)]="player2Name" id="SecondPlayerName" class="form-control" placeholder="Second player name" />
+                        </td>
+                    </tr>
+                    <tr>
+                        <td><span *ngIf="player1Data">{{formatNumber(player1Data.State.Experience)}}</span></td>
+                        <th>
+                            Experience
+                            <br/>
+                            <span *ngIf="playerDiffData" [class.red]="playerDiffData.State.Experience < 0" [class.green]="playerDiffData.State.Experience > 0">
+                                {{formatDiff(playerDiffData.State.Experience)}}
+                            </span>
+                        </th>
+                        <td><span *ngIf="player2Data">{{formatNumber(player2Data.State.Experience)}}</span></td>
+                    </tr>
+                    <tr>
+                        <td><span *ngIf="player1Data">{{formatNumber(player1Data.Ratios.Games)}}</span></td>
+                        <th>
+                            Games
+                            <br/>
+                            <span *ngIf="playerDiffData" [class.red]="playerDiffData.Ratios.Games < 0" [class.green]="playerDiffData.Ratios.Games > 0">
+                                {{formatDiff(playerDiffData.Ratios.Games)}}
+                            </span>
+                        </th>
+                        <td><span *ngIf="player2Data">{{formatNumber(player2Data.Ratios.Games)}}</span></td>
+                    </tr>
+                    <tr>
+                        <td><span *ngIf="player1Data">{{formatNumber(player1Data.State.Wins)}}</span></td>
+                        <th>
+                            Wins
+                            <br/>
+                            <span *ngIf="playerDiffData" [class.red]="playerDiffData.State.Wins < 0" [class.green]="playerDiffData.State.Wins > 0">
+                                {{formatDiff(playerDiffData.State.Wins)}}
+                            </span>
+                        </th>
+                        <td><span *ngIf="player2Data">{{formatNumber(player2Data.State.Wins)}}</span></td>
+                    </tr>
+                    <tr>
+                        <td><span *ngIf="player1Data">{{formatNumber(player1Data.State.Draws)}}</span></td>
+                        <th>
+                            Draws
+                            <br/>
+                            <span *ngIf="playerDiffData" [class.red]="playerDiffData.State.Draws < 0" [class.green]="playerDiffData.State.Draws > 0">
+                                {{formatDiff(playerDiffData.State.Draws)}}
+                            </span>
+                        </th>
+                        <td><span *ngIf="player2Data">{{formatNumber(player2Data.State.Draws)}}</span></td>
+                    </tr>
+                    <tr>
+                        <td><span *ngIf="player1Data">{{formatNumber(player1Data.State.Losses)}}</span></td>
+                        <th>
+                            Losses
+                            <br/>
+                            <span *ngIf="playerDiffData" [class.red]="playerDiffData.State.Losses > 0" [class.green]="playerDiffData.State.Losses < 0">
+                                {{formatDiff(playerDiffData.State.Losses)}}
+                            </span>
+                        </th>
+                        <td><span *ngIf="player2Data">{{formatNumber(player2Data.State.Losses)}}</span></td>
+                    </tr>
+                    <tr>
+                        <td><span *ngIf="player1Data">{{formatNumber(player1Data.State.Goals)}}</span></td>
+                        <th>
+                            Goals
+                            <br/>
+                            <span *ngIf="playerDiffData" [class.red]="playerDiffData.State.Goals < 0" [class.green]="playerDiffData.State.Goals > 0">
+                                {{formatDiff(playerDiffData.State.Goals)}}
+                            </span>
+                        </th>
+                        <td><span *ngIf="player2Data">{{formatNumber(player2Data.State.Goals)}}</span></td>
+                    </tr>
+                    <tr>
+                        <td><span *ngIf="player1Data">{{formatNumber(player1Data.State.Assists)}}</span></td>
+                        <th>
+                            Assists
+                            <br/>
+                            <span *ngIf="playerDiffData" [class.red]="playerDiffData.State.Assists < 0" [class.green]="playerDiffData.State.Assists > 0">
+                                {{formatDiff(playerDiffData.State.Assists)}}
+                            </span>
+                        </th>
+                        <td><span *ngIf="player2Data">{{formatNumber(player2Data.State.Assists)}}</span></td>
+                    </tr>
+                    <tr>
+                        <td><span *ngIf="player1Data">{{formatNumber(player1Data.Ratios.ExpGame, true)}}</span></td>
+                        <th>
+                            Exp / Game
+                            <br/>
+                            <span *ngIf="playerDiffData" [class.red]="playerDiffData.Ratios.ExpGame < 0" [class.green]="playerDiffData.Ratios.ExpGame > 0">
+                                {{formatDiff(playerDiffData.Ratios.ExpGame, true)}}
+                            </span>
+                        </th>
+                        <td><span *ngIf="player2Data">{{formatNumber(player2Data.Ratios.ExpGame, true)}}</span></td>
+                    </tr>
+                    <tr>
+                        <td><span *ngIf="player1Data">{{formatNumber(player1Data.Ratios.WinGame, true)}}</span></td>
+                        <th>
+                            Win / Game
+                            <br/>
+                            <span *ngIf="playerDiffData" [class.red]="playerDiffData.Ratios.WinGame < 0" [class.green]="playerDiffData.Ratios.WinGame > 0">
+                                {{formatDiff(playerDiffData.Ratios.WinGame, true)}}
+                            </span>
+                        </th>
+                        <td><span *ngIf="player2Data">{{formatNumber(player2Data.Ratios.WinGame, true)}}</span></td>
+                    </tr>
+                    <tr>
+                        <td><span *ngIf="player1Data">{{formatNumber(player1Data.Ratios.LossGame, true)}}</span></td>
+                        <th>
+                            Loss / Game
+                            <br/>
+                            <span *ngIf="playerDiffData" [class.red]="playerDiffData.Ratios.LossGame > 0" [class.green]="playerDiffData.Ratios.LossGame < 0">
+                                {{formatDiff(playerDiffData.Ratios.LossGame, true)}}
+                            </span>
+                        </th>
+                        <td><span *ngIf="player2Data">{{formatNumber(player2Data.Ratios.LossGame, true)}}</span></td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
 </div>

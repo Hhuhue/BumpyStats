@@ -205,6 +205,16 @@ export class StatisticsService {
     return leaderboardEntries;
   }
 
+  formatNumber(number : number, withDecimal : boolean = true) : string{
+    var formattedNumber = number.toFixed(2).replace(/\d(?=(\d{3})+\.)/g, '$&,');
+
+    if(!withDecimal){
+      formattedNumber = formattedNumber.substr(0, formattedNumber.length - 3);
+    }
+
+    return formattedNumber
+  }
+
   private treatLeaderboard(leaderboard: LeaderboardEntry[]): RatioEntry[] {
     var ratios = [];
     leaderboard.forEach(element => {

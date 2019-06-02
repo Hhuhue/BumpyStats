@@ -13,10 +13,10 @@ export class BumpyballService {
   private leaderboardURL = "http://listing.usemapsettings.com/Leaderboard?Limit=250";
   private uidUrl = "http://nifty-condition-169823.appspot.com/GetPlayerRecord?Game=BumpyBall&Uid=";
   private levelsUrl = "http://www.usemapsettings.com/data/levels.json";
-  private getPlayerProgressApiUrl = this.prodBase + "/snapshot-preview";
-  private getPlayerDataApiUrl = this.prodBase + "/data/";
-  private getLatestProgressesApiUrl = this.prodBase + "/latest-progress";
-  private setPlayerUidApiUrl = this.prodBase + "/setPlayerUID/";
+  private getPlayerProgressApiUrl = this.localBase + "/snapshot-preview";
+  private getPlayerDataApiUrl = this.localBase + "/data/";
+  private getLatestProgressesApiUrl = this.localBase + "/latest-progress";
+  private setPlayerUidApiUrl = this.localBase + "/setPlayerUID/";
   constructor(private http: HttpClient) { }
 
   getLeaderboard() : Observable<LeaderboardEntry[]>{

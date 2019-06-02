@@ -82,10 +82,7 @@ export class LeaderboardsComponent implements OnInit {
 
   private setProgresses(progresses: LeaderboardEntry[]) {
     for (let index = 0; index < progresses.length; index++) {
-      if(progresses[index].Position != undefined)
-        progresses[index].Position *= -1;
-      else
-        progresses[index].Position = "N/A";
+      if(progresses[index].Position != NaN) progresses[index].Position *= -1;
     }
 
     this.progressBoardOptions.Data = progresses;
@@ -99,14 +96,17 @@ export class LeaderboardsComponent implements OnInit {
 
     this.leaderboardOptions.Labels = ["Position", "Name", "Win", "Loss", "Draw", "Goal", "Assist", "Experience"];
     this.leaderboardOptions.DataOrder = [0, 1, 2, 3, 4, 5, 6, 7];
+    this.leaderboardOptions.HasDecimal = [false, false, false, false, false, false, false, false];
     this.leaderboardOptions.Id = "0";
 
     this.ratioBoardOptions.Labels = ["Position", "Name", "Games", "Goals / Game", "Assists / Game", "Exp / Game", "Loss %", "Win %"];
     this.ratioBoardOptions.DataOrder = [9, 0, 1, 2, 3, 4, 7, 6];
+    this.ratioBoardOptions.HasDecimal = [false, false, false, true, true, true, true, true];
     this.ratioBoardOptions.Id = "1";
 
     this.progressBoardOptions.Labels = ["Position", "Name", "Win", "Loss", "Draw", "Goal", "Assist", "Experience"];
     this.progressBoardOptions.DataOrder = [0, 1, 2, 3, 4, 5, 6, 7];
+    this.progressBoardOptions.HasDecimal = [false, false, false, false, false, false, false, false];
     this.progressBoardOptions.Id = "2";
   }
 }
