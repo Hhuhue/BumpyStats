@@ -70,6 +70,7 @@
                     <th>Assists / Game</th>
                     <th>Exp / Game</th>
                     <th>Wins / Losses</th>
+                    <th>Avg play time / day</th>
                 </tr>
             </thead>
             <tbody>
@@ -79,6 +80,7 @@
                     <td>{{rawData.ratio.AssistsGame}}</td>
                     <td>{{rawData.ratio.ExpGame}}</td>
                     <td>{{rawData.ratio.WinLoss}}</td>
+                    <td *ngIf="averageSessionTime > -1">{{averageSessionTime}} min.</td>
                 </tr>
             </tbody>
         </table>

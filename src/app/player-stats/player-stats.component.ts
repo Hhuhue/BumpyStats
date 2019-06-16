@@ -21,6 +21,7 @@ export class PlayerStatsComponent implements OnInit {
   expAccumulated : number = 0;
   levelUpProgress : string = "";
   gamesUntilLevelUp : number = 0;
+  averageSessionTime : number = -1;
 
   constructor(private bumpyball: BumpyballService,
     private statService: StatisticsService,
@@ -37,7 +38,12 @@ export class PlayerStatsComponent implements OnInit {
     if (keycode && keycode.toString() == '13') {
       this.rawData = undefined;
       this.name = $("#SearchedPlayer").val().toString();
-      this.bumpyball.getPlayerData(md5(this.name)).subscribe(data => this.setData(data));
+
+      this.bumpyball.getPlayerData(md5(this.name))
+      .subscribe(data => this.setData(data));
+      
+      this.bumpyball.getPlayerAverageTime(md5(this.name))
+      .subscribe(avg => this.averageSessionTime = Math.round(avg));
     }
   }
   

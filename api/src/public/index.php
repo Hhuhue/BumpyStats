@@ -1,6 +1,7 @@
 <?php
 header("Access-Control-Allow-Origin: *");
 require '../../vendor/autoload.php';
+require 'credentials.php';
 
 use \Psr\Http\Message\ServerRequestInterface as Request;
 use \Psr\Http\Message\ResponseInterface as Response;
@@ -11,10 +12,10 @@ use Classes\ProgressService as ProgressService;
 $config['displayErrorDetails'] = true;
 $config['addContentLengthHeader'] = false;
 
-$config['db']['host']   = 'localhost';
-$config['db']['user']   = 'dev';
-$config['db']['pass']   = 'Welcome!123';
-$config['db']['dbname'] = 'bumpystatsdb';
+$config['db']['host']   = $host;
+$config['db']['user']   = $user;
+$config['db']['pass']   = $password;
+$config['db']['dbname'] = $database;
 
 $app = new \Slim\App(['settings' => $config]);
 
@@ -102,7 +103,6 @@ $app->get('/setPlayerUID/{uid}', function (Request $request, Response $response,
 
 $app->get('/data/{player}', function (Request $request, Response $response, $args) {
     $name = (string)$args['player'];
-    $this->logger->info($name);
     $connection = CreateDBConnection($this);
     $playerData = $connection->getPlayerData($name);
 
@@ -133,6 +133,15 @@ $app->get('/latest-progress', function (Request $request, Response $response) {
     $latestProgresses = $connection->getPlayersLatestProgress();
 
     $response->getBody()->write(json_encode($latestProgresses));
+    return $response;
+});
+
+$app->get('/average-time/{player}', function (Request $request, Response $response, $args) {   
+    $name = (string)$args['player'];
+    $connection = CreateDBConnection($this);
+    $averagePlayTime = $connection->getPlayerAverageSessionTime($name);
+
+    $response->getBody()->write($averagePlayTime);
     return $response;
 });
 

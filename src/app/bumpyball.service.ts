@@ -13,10 +13,12 @@ export class BumpyballService {
   private leaderboardURL = "http://listing.usemapsettings.com/Leaderboard?Limit=250";
   private uidUrl = "http://nifty-condition-169823.appspot.com/GetPlayerRecord?Game=BumpyBall&Uid=";
   private levelsUrl = "http://www.usemapsettings.com/data/levels.json";
-  private getPlayerProgressApiUrl = this.localBase + "/snapshot-preview";
-  private getPlayerDataApiUrl = this.localBase + "/data/";
-  private getLatestProgressesApiUrl = this.localBase + "/latest-progress";
-  private setPlayerUidApiUrl = this.localBase + "/setPlayerUID/";
+  private getPlayerProgressApiUrl = this.getUrlBase() + "/snapshot-preview";
+  private getPlayerDataApiUrl = this.getUrlBase() + "/data/";
+  private getLatestProgressesApiUrl = this.getUrlBase() + "/latest-progress";
+  private getPlayerAvergageTimeUrl = this.getUrlBase() + "/average-time/";
+  private setPlayerUidApiUrl = this.getUrlBase() + "/setPlayerUID/";
+
   constructor(private http: HttpClient) { }
 
   getLeaderboard() : Observable<LeaderboardEntry[]>{
@@ -35,6 +37,10 @@ export class BumpyballService {
     return this.http.get<any>(this.getPlayerDataApiUrl + name);
   }
 
+  getPlayerAverageTime(name : string) : Observable<any>{
+    return this.http.get<any>(this.getPlayerAvergageTimeUrl + name);
+  }
+
   getLatestProgresses() : Observable<any[]>{
     return this.http.get<any[]>(this.getLatestProgressesApiUrl);
   }
@@ -45,5 +51,9 @@ export class BumpyballService {
 
   sendPlayerFromUID(uid : string){
     this.http.get<any>(this.setPlayerUidApiUrl + uid).subscribe();
+  }
+
+  private getUrlBase(){
+    return this.prodBase;
   }
 }

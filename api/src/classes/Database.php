@@ -162,6 +162,24 @@ class Database
         return $latestProgresses;
     }
 
+    public function getPlayerAverageSessionTime($player){
+        $id = $this->getPlayerIdFromHash($player);
+        if($id == -1) return -1;
+
+        $sql = "SELECT content FROM progress WHERE player = ?";
+        $progresses = $this->executeSqlQuery($sql, [$id]);
+        
+        $days = 0;
+        $games = 0;
+        foreach ($progresses as $playerProgress) {
+            $progressData = json_decode($playerProgress['content'], true);
+            $days++;
+            $games += $progressData["Wins"] + $progressData["Draws"] + $progressData["Losses"];
+        }
+
+        return $games / $days * 5;
+    }
+
     private function formatOffBoardPlayerStateContent($playerStateContent)
     {
         $playerStateData = json_decode($playerStateContent, true);
@@ -303,7 +321,7 @@ class Database
             if (!in_array($player["name"], $namesToExclude)) {
                 array_push($result, $player);
             }
-        }
+        }   
 
         return $result;
     }
