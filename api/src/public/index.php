@@ -145,4 +145,12 @@ $app->get('/average-time/{player}', function (Request $request, Response $respon
     return $response;
 });
 
+$app->get('/names', function (Request $request, Response $response) {
+    $connection = CreateDBConnection($this);
+    $names = $connection->getNames();
+
+    $response->getBody()->write($names);
+    return $response;
+});
+
 $app->run();

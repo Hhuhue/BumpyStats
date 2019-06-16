@@ -16,44 +16,49 @@ export class BumpyballService {
   private getPlayerProgressApiUrl = this.getUrlBase() + "/snapshot-preview";
   private getPlayerDataApiUrl = this.getUrlBase() + "/data/";
   private getLatestProgressesApiUrl = this.getUrlBase() + "/latest-progress";
-  private getPlayerAvergageTimeUrl = this.getUrlBase() + "/average-time/";
+  private getPlayerAvergageTimeApiUrl = this.getUrlBase() + "/average-time/";
+  private getPlayersNameApiUrl = this.getUrlBase() + "/names";
   private setPlayerUidApiUrl = this.getUrlBase() + "/setPlayerUID/";
 
   constructor(private http: HttpClient) { }
 
-  getLeaderboard() : Observable<LeaderboardEntry[]>{
+  getLeaderboard(): Observable<LeaderboardEntry[]> {
     return this.http.get<LeaderboardEntry[]>(this.leaderboardURL);
   }
 
-  getLevels() : Observable<any>{
+  getLevels(): Observable<any> {
     return this.http.get<any>(this.levelsUrl);
   }
 
-  getPlayerProgress() : Observable<LeaderboardEntry[]>{
+  getPlayerProgress(): Observable<LeaderboardEntry[]> {
     return this.http.get<LeaderboardEntry[]>(this.getPlayerProgressApiUrl);
   }
 
-  getPlayerData(name : string) : Observable<any>{
+  getPlayerData(name: string): Observable<any> {
     return this.http.get<any>(this.getPlayerDataApiUrl + name);
   }
 
-  getPlayerAverageTime(name : string) : Observable<any>{
-    return this.http.get<any>(this.getPlayerAvergageTimeUrl + name);
+  getPlayerAverageTime(name: string): Observable<any> {
+    return this.http.get<any>(this.getPlayerAvergageTimeApiUrl + name);
   }
 
-  getLatestProgresses() : Observable<any[]>{
+  getLatestProgresses(): Observable<any[]> {
     return this.http.get<any[]>(this.getLatestProgressesApiUrl);
   }
 
-  getPlayerFromUID(uid : string) : Observable<any>{
+  getPlayerFromUID(uid: string): Observable<any> {
     return this.http.get<any>(this.uidUrl + uid);
   }
 
-  sendPlayerFromUID(uid : string){
+  getPlayersName(): Observable<string[]> {
+    return this.http.get<any>(this.getPlayersNameApiUrl);
+  }
+
+  sendPlayerFromUID(uid: string) {
     this.http.get<any>(this.setPlayerUidApiUrl + uid).subscribe();
   }
 
-  private getUrlBase(){
+  private getUrlBase() {
     return this.prodBase;
   }
 }

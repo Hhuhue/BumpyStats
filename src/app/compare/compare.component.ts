@@ -22,6 +22,7 @@ export class CompareComponent implements OnInit {
   dataSet: boolean;
   scoreBoardOptions: BoardOptions;
 
+  names : string[] = [];
   player1Name: string;
   player2Name: string;
   player1Data: PlayerData;
@@ -42,6 +43,9 @@ export class CompareComponent implements OnInit {
 
     this.statService.getLeaderboard(false)
       .subscribe(entries => this.setDistributionCharts(entries));
+
+    this.bumpyball.getPlayersName()
+      .subscribe(names => this.names = names);
 
     this.scoreBoardOptions.Labels = ["Name", "Raw Score", "Survive Rate Penalty", "Goal per Game Penalty", "Final Score"];
     this.scoreBoardOptions.DataOrder = [0, 1, 2, 3, 4];

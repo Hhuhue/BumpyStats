@@ -56,20 +56,34 @@ class Database
     {
         $id = $this->getPlayerIdFromHash($player);
 
-        if($id == -1) return -1;
+        if ($id == -1) return -1;
 
         $dateObj = new \DateTime(date('Y-m-d'));
         $dateObj->sub(new \DateInterval('P7D'));
         $lastWeek = $dateObj->format('Y-m-d');
 
         $playerProgresses = $this->getPlayerProgresses($id, $lastWeek);
-        $playerStates = $this->getPlayerStates($id, $lastWeek);       
+        $playerStates = $this->getPlayerStates($id, $lastWeek);
 
         $playerData = [];
         $playerData['states'] = $playerStates;
         $playerData['progress'] = $playerProgresses;
 
         return json_encode($playerData);
+    }
+
+    public function getNames()
+    {
+        $sql = "SELECT name FROM player";
+
+        $results = $this->executeSqlQuery($sql, []);
+        $names = [];
+
+        foreach ($results as $result) {
+            array_push($names, $result["name"]);
+        }
+
+        return json_encode($names);
     }
 
     public function snapshotPreview($leaderboardJson)
@@ -122,7 +136,7 @@ class Database
         $this->insertPlayersProgress($progressEntries);
 
         $playersState = $this->extractPlayersLeaderboardEntry($playersData, $players);
-        for ($i=0; $i < sizeof($playersState); $i++) { 
+        for ($i = 0; $i < sizeof($playersState); $i++) {
             $playersState[$i]["content"] = $this->formatOffBoardPlayerStateContent($playersState[$i]["content"]);
         }
 
@@ -162,13 +176,14 @@ class Database
         return $latestProgresses;
     }
 
-    public function getPlayerAverageSessionTime($player){
+    public function getPlayerAverageSessionTime($player)
+    {
         $id = $this->getPlayerIdFromHash($player);
-        if($id == -1) return -1;
+        if ($id == -1) return -1;
 
         $sql = "SELECT content FROM progress WHERE player = ?";
         $progresses = $this->executeSqlQuery($sql, [$id]);
-        
+
         $days = 0;
         $games = 0;
         foreach ($progresses as $playerProgress) {
@@ -321,7 +336,7 @@ class Database
             if (!in_array($player["name"], $namesToExclude)) {
                 array_push($result, $player);
             }
-        }   
+        }
 
         return $result;
     }
@@ -367,8 +382,8 @@ class Database
     }
 
     private function insertPlayersProgress($playersProgress)
-    {        
-        if(sizeof($playersProgress) > 0){
+    {
+        if (sizeof($playersProgress) > 0) {
             $sql = "INSERT INTO progress (player, progressDate, content) VALUES ";
             $propertiesToSave = 3;
             $queryComponents = $this->sqlHelper->buildInsertQuery($sql, $playersProgress, $propertiesToSave);
@@ -456,7 +471,7 @@ class Database
         $sql = "SELECT id FROM player WHERE MD5(name) = ?";
         $result = $this->executeSqlQuery($sql, [$hashedName]);
 
-        if(sizeof($result) == 0) return -1;
+        if (sizeof($result) == 0) return -1;
 
         return $result[0]['id'];
     }

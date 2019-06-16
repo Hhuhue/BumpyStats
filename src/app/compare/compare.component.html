@@ -46,13 +46,19 @@
                 <tbody class="thead-dark" id="CompareTable">
                     <tr>
                         <td style="width: 40%">
-                            <input type="text" [(ngModel)]="player1Name" id="FirstPlayerName" class="form-control" placeholder="First player name" />
+                            <input type="text" [(ngModel)]="player1Name" id="FirstPlayerName" class="form-control" placeholder="First player name" list="Names1" />
+                            <datalist id="Names1">
+                                <option *ngFor="let name of names" value="{{name}}"></option>
+                            </datalist>
                         </td>
                         <th style="text-align: center; width: 20%">
                             <button class="btn btn-light" (click)="onCompare()">Compare</button>
                         </th>
                         <td style="width: 40%">
-                            <input type="text" [(ngModel)]="player2Name" id="SecondPlayerName" class="form-control" placeholder="Second player name" />
+                            <input type="text" [(ngModel)]="player2Name" id="SecondPlayerName" class="form-control" placeholder="Second player name" list="Names2" />
+                            <datalist id="Names2">
+                                <option *ngFor="let name of names" value="{{name}}"></option>
+                            </datalist>
                         </td>
                     </tr>
                     <tr>
