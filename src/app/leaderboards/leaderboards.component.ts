@@ -104,9 +104,9 @@ export class LeaderboardsComponent implements OnInit {
     this.ratioBoardOptions.HasDecimal = [false, false, false, true, true, true, true, true];
     this.ratioBoardOptions.Id = "1";
 
-    this.progressBoardOptions.Labels = ["Position", "Name", "Win", "Loss", "Draw", "Goal", "Assist", "Experience"];
-    this.progressBoardOptions.DataOrder = [0, 1, 2, 3, 4, 5, 6, 7];
-    this.progressBoardOptions.HasDecimal = [false, false, false, false, false, false, false, false];
+    this.progressBoardOptions.Labels = ["Name", "Win", "Loss", "Draw", "Goal", "Assist", "Experience"];
+    this.progressBoardOptions.DataOrder = [1, 2, 3, 4, 5, 6, 7];
+    this.progressBoardOptions.HasDecimal = [false, false, false, false, false, false, false];
     this.progressBoardOptions.Id = "2";
   }
 }

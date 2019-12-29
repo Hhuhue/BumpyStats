@@ -67,6 +67,11 @@ class Database
         $playerProgresses = $this->getPlayerProgresses($id, $lastWeek);
         $playerStates = $this->getPlayerStates($id, $lastWeek);
 
+        if(sizeof($playerStates) == 0){
+            $name = $this->getPlayerNameFromHash($player);
+            $playerStates = [json_decode($this->getPlayersLatestState([["name" => $name]])[0]["content"], true)];
+        }
+
         $playerData = [];
         $playerData['states'] = $playerStates;
         $playerData['progress'] = $playerProgresses;
@@ -98,7 +103,7 @@ class Database
         if(!$registeredSnapshot){
             $knownLeaderboardPlayers = $this->excludePlayersByName($knownLeaderboardPlayers, $registeredNames);
         }
-        
+
         $knownPlayersLeaderboardEntry = $this->extractPlayersLeaderboardEntry($leaderboard, $knownLeaderboardPlayers);
         $knownPlayersLatestState = $this->getPlayersLatestState($knownLeaderboardPlayers);
         $playersProgress = $this->progressService->getPlayersProgress($knownPlayersLatestState, $knownPlayersLeaderboardEntry);
@@ -144,7 +149,7 @@ class Database
             $this->getPlayerIds();
         }
 
-        $playersProgress = $this->snapshotPreview($playersDataJson);
+        $playersProgress = $this->snapshotPreview($playersDataJson, true);
         $progressEntries = $this->progressContentsToProgressEntries($playersProgress);
         $this->insertPlayersProgress($progressEntries);
 
@@ -503,6 +508,16 @@ class Database
         if (sizeof($result) == 0) return -1;
 
         return $result[0]['id'];
+    }
+
+    private function getPlayerNameFromHash($hashedName)
+    {
+        $sql = "SELECT name FROM player WHERE MD5(name) = ?";
+        $result = $this->executeSqlQuery($sql, [$hashedName]);
+
+        if (sizeof($result) == 0) return -1;
+
+        return $result[0]['name'];
     }
 
     private function getPlayers()

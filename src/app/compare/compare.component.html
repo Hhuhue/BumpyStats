@@ -150,26 +150,26 @@
                         <td><span *ngIf="player2Data">{{formatNumber(player2Data.Ratios.ExpGame, true)}}</span></td>
                     </tr>
                     <tr>
-                        <td><span *ngIf="player1Data">{{formatNumber(player1Data.Ratios.WinGame, true)}}</span></td>
+                        <td><span *ngIf="player1Data">{{formatNumber(player1Data.Ratios.WinGame, true) + "%"}}</span></td>
                         <th>
                             Win / Game
                             <br/>
                             <span *ngIf="playerDiffData" [class.red]="playerDiffData.Ratios.WinGame < 0" [class.green]="playerDiffData.Ratios.WinGame > 0">
-                                {{formatDiff(playerDiffData.Ratios.WinGame, true)}}
+                                {{formatDiff(playerDiffData.Ratios.WinGame, true) + "%"}}
                             </span>
                         </th>
-                        <td><span *ngIf="player2Data">{{formatNumber(player2Data.Ratios.WinGame, true)}}</span></td>
+                        <td><span *ngIf="player2Data">{{formatNumber(player2Data.Ratios.WinGame, true) + "%"}}</span></td>
                     </tr>
                     <tr>
-                        <td><span *ngIf="player1Data">{{formatNumber(player1Data.Ratios.LossGame, true)}}</span></td>
+                        <td><span *ngIf="player1Data">{{formatNumber(player1Data.Ratios.LossGame, true) + "%"}}</span></td>
                         <th>
                             Loss / Game
                             <br/>
                             <span *ngIf="playerDiffData" [class.red]="playerDiffData.Ratios.LossGame > 0" [class.green]="playerDiffData.Ratios.LossGame < 0">
-                                {{formatDiff(playerDiffData.Ratios.LossGame, true)}}
+                                {{formatDiff(playerDiffData.Ratios.LossGame, true) + "%"}}
                             </span>
                         </th>
-                        <td><span *ngIf="player2Data">{{formatNumber(player2Data.Ratios.LossGame, true)}}</span></td>
+                        <td><span *ngIf="player2Data">{{formatNumber(player2Data.Ratios.LossGame, true) + "%"}}</span></td>
                     </tr>
                 </tbody>
             </table>

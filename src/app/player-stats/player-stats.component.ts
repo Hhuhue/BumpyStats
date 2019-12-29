@@ -57,12 +57,6 @@ export class PlayerStatsComponent implements OnInit {
     } else {
       this.playerData = this.statService.buildPlayerData(data);
 
-      if (this.playerData.length == 0) {
-        this.flashMessage.show("Player <b>" + this.name + "</b> has no recent record", { cssClass: 'alert-warning', timeout: 5000 })
-        this.name = "";
-        return;
-      }
-
       var state = this.playerData[this.playerData.length - 1].State;
       var ratio = this.statService.entryToRatio(state);
       this.rawData = { state, ratio };
