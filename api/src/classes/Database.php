@@ -2,6 +2,8 @@
 
 namespace Classes;
 
+use Exception;
+
 use function GuzzleHttp\json_encode;
 
 class Database
@@ -86,11 +88,17 @@ class Database
         return json_encode($names);
     }
 
-    public function snapshotPreview($leaderboardJson)
+    public function snapshotPreview($leaderboardJson, $registeredSnapshot = false)
     {
         $leaderboard = json_decode($leaderboardJson, true);
         $knownLeaderboardPlayers = $this->getKnownPlayersFromLeaderboard($leaderboard);
-
+        
+        $registeredPlayers = $this->getRegisteredPlayers();
+        $registeredNames = $this->getNameFromPlayers($registeredPlayers);
+        if(!$registeredSnapshot){
+            $knownLeaderboardPlayers = $this->excludePlayersByName($knownLeaderboardPlayers, $registeredNames);
+        }
+        
         $knownPlayersLeaderboardEntry = $this->extractPlayersLeaderboardEntry($leaderboard, $knownLeaderboardPlayers);
         $knownPlayersLatestState = $this->getPlayersLatestState($knownLeaderboardPlayers);
         $playersProgress = $this->progressService->getPlayersProgress($knownPlayersLatestState, $knownPlayersLeaderboardEntry);
@@ -126,10 +134,15 @@ class Database
         $this->insertPlayersState($playersState);
     }
 
-    public function snapshotOffBoard($playersDataJson)
+    public function snapshotRegistered($playersDataJson)
     {
         $playersData = json_decode($playersDataJson, true);
         $players = $this->extractDistinctPlayers($playersData);
+
+        $namesHaveChanged = $this->updateRegisteredNames($playersData);
+        if($namesHaveChanged){
+            $this->getPlayerIds();
+        }
 
         $playersProgress = $this->snapshotPreview($playersDataJson);
         $progressEntries = $this->progressContentsToProgressEntries($playersProgress);
@@ -139,21 +152,17 @@ class Database
         for ($i = 0; $i < sizeof($playersState); $i++) {
             $playersState[$i]["content"] = $this->formatOffBoardPlayerStateContent($playersState[$i]["content"]);
         }
-
+                
         $this->insertPlayersState($playersState);
     }
 
-    public function getOffBoardPlayersUID($leaderboardJson)
+    public function getRegisteredPlayersUID()
     {
-        $leaderboard = json_decode($leaderboardJson, true);
-        $registeredPlayers = $this->getRegisteredPLayers();
-        $leaderboardPlayers = $this->extractDistinctPlayers($leaderboard);
-        $leaderboardNames = $this->getNameFromPlayers($leaderboardPlayers);
-        $offBoardPlayers = $this->excludePlayersByName($registeredPlayers, $leaderboardNames);
+        $registeredPlayers = $this->getRegisteredPlayers();
 
         $uids = [];
-        foreach ($offBoardPlayers as $offBoardPlayer) {
-            array_push($uids, $offBoardPlayer["guid"]);
+        foreach ($registeredPlayers as $registeredPlayer) {
+            array_push($uids, $registeredPlayer["guid"]);
         }
 
         return $uids;
@@ -242,7 +251,7 @@ class Database
         return $statesWithDate;
     }
 
-    private function getRegisteredPLayers()
+    private function getRegisteredPlayers()
     {
         $sql = "SELECT name, guid FROM player WHERE guid IS NOT NULL";
         return $this->executeSqlQuery($sql, []);
@@ -444,6 +453,26 @@ class Database
         foreach ($result as $playerRecord) {
             $this->playerIds[$playerRecord['name']] = $playerRecord["id"];
         }
+    }   
+
+    private function updateRegisteredNames($playersData)
+    {
+        $sql = "UPDATE player SET name=? WHERE guid=?";
+        $registeredPlayers = $this->getRegisteredPlayers();
+        $changesMade = false;
+
+        foreach ($playersData as $playerData){
+            foreach ($registeredPlayers as $registeredPlayer) {
+                if($registeredPlayer["guid"] == $playerData["Uid"]){
+                    if($registeredPlayer["name"] != $playerData["last_name"]){
+                        $this->executeSqlQuery($sql, [$playerData["last_name"], $playerData["Uid"]]);
+                        $changesMade = true;
+                    }
+                }
+            }
+        }
+
+        return $changesMade;
     }
 
     private function updatePlayersInLeaderboard($players, $inLeaderboard)
@@ -484,13 +513,21 @@ class Database
 
     private function executeSqlQuery($sql, $parameters)
     {
-        $queryResult = $this->pdo->prepare($sql);
-        $queryResult->execute($parameters);
-
-        if (!preg_match('/\bSELECT\b/', $sql)) {
-            return $queryResult;
-        } else {
-            return $queryResult->fetchAll();
+        try {
+            $queryResult = $this->pdo->prepare($sql);
+            $queryResult->execute($parameters);
+    
+            if (!preg_match('/\bSELECT\b/', $sql)) {
+                return $queryResult;
+            } else {
+                return $queryResult->fetchAll();
+            }
+        }
+        catch (\Exception $e) {
+            $message = $e->getMessage() . "\n Error running query : \n";
+            $message .= "'$sql' \n";
+            $message .= json_encode($parameters);
+            throw new Exception($message);
         }
     }
 }

@@ -64,13 +64,13 @@ $app->get('/snapshot-preview', function (Request $request, Response $response) {
     $leaderboardJson = ExecuteWebRequest('GET', 'http://listing.usemapsettings.com/Leaderboard?Limit=250');
 
     $connection = CreateDBConnection($this);
+    $registeredPlayersUids = $connection->getRegisteredPlayersUID();
+    $registeredPlayersState = GetPlayersStateFromUids($registeredPlayersUids);
+    $registeredPlayersProgress = $connection->snapshotPreview(json_encode($registeredPlayersState), true);
+
     $leaderboardPlayersProgress = $connection->snapshotPreview($leaderboardJson);
 
-    $offboardPlayersUids = $connection->getOffBoardPlayersUID($leaderboardJson);
-    $offboardPlayersState = GetPlayersStateFromUids($offboardPlayersUids);
-    $offboardPlayersProgress = $connection->snapshotPreview(json_encode($offboardPlayersState));
-
-    $playersProgress = array_merge($leaderboardPlayersProgress, $offboardPlayersProgress);
+    $playersProgress = array_merge($leaderboardPlayersProgress, $registeredPlayersProgress);
 
     $response->getBody()->write(json_encode($playersProgress));
     return $response;
@@ -80,12 +80,12 @@ $app->get('/snapshot', function (Request $request, Response $response) {
     $leaderboardJson = ExecuteWebRequest('GET', 'http://listing.usemapsettings.com/Leaderboard?Limit=250');
 
     $connection = CreateDBConnection($this);
+    $registeredPlayersUids = $connection->getRegisteredPlayersUID();
+    $registeredPlayersState = GetPlayersStateFromUids($registeredPlayersUids);    
+    $connection->snapshotRegistered(json_encode($registeredPlayersState));
+
     $connection->snapshotLeaderboard($leaderboardJson);
-
-    $offboardPlayersUids = $connection->getOffBoardPlayersUID($leaderboardJson);
-    $offboardPlayersState = GetPlayersStateFromUids($offboardPlayersUids);
-    $connection->snapshotOffBoard(json_encode($offboardPlayersState));
-
+    
     $response->getBody()->write("Snapshot success");
 
     return $response;
