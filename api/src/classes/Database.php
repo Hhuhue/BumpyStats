@@ -93,16 +93,16 @@ class Database
         return json_encode($names);
     }
 
-    public function snapshotPreview($leaderboardJson, $registeredSnapshot = false)
+    public function snapshotPreview($registeredJson, $leaderboardJson)
     {
         $leaderboard = json_decode($leaderboardJson, true);
+        $registeredPlayersData = json_decode($registeredJson, true);
+        $registeredPlayers = $this->extractDistinctPlayers($registeredPlayersData);
         $knownLeaderboardPlayers = $this->getKnownPlayersFromLeaderboard($leaderboard);
         
-        $registeredPlayers = $this->getRegisteredPlayers();
         $registeredNames = $this->getNameFromPlayers($registeredPlayers);
-        if(!$registeredSnapshot){
-            $knownLeaderboardPlayers = $this->excludePlayersByName($knownLeaderboardPlayers, $registeredNames);
-        }
+        $knownLeaderboardPlayers = $this->excludePlayersByName($knownLeaderboardPlayers, $registeredNames);
+        $leaderboard = $this->addPositionToPlayersData($leaderboard, $knownLeaderboardPlayers);
 
         $knownPlayersLeaderboardEntry = $this->extractPlayersLeaderboardEntry($leaderboard, $knownLeaderboardPlayers);
         $knownPlayersLatestState = $this->getPlayersLatestState($knownLeaderboardPlayers);
@@ -111,13 +111,31 @@ class Database
         return $playersProgress;
     }
 
-    public function snapshotLeaderboard($leaderboardJson)
+    public function snapshotRegisteredPreview($registeredJson, $leaderboardJson)
     {
-        $leaderboardPlayersProgress = $this->snapshotPreview($leaderboardJson);
+        $leaderboard = json_decode($leaderboardJson, true);
+        $registeredPlayersData = json_decode($registeredJson, true);
+        $registeredPlayers = $this->extractDistinctPlayers($registeredPlayersData);
+        $leaderboardPlayers = $this->extractDistinctPlayers($leaderboard);
 
+        $registeredPlayersData = $this->addPositionToPlayersData($registeredPlayersData, $leaderboardPlayers);
+
+        $registeredPlayersLeaderboardEntry = $this->extractPlayersLeaderboardEntry($registeredPlayersData, $registeredPlayers);
+        $registeredPlayersLatestState = $this->getPlayersLatestState($registeredPlayers);
+        $playersProgress = $this->progressService->getPlayersProgress($registeredPlayersLatestState, $registeredPlayersLeaderboardEntry);
+
+        return $playersProgress;
+    }
+
+    public function snapshotLeaderboard($registeredJson, $leaderboardJson)
+    {
+        $registeredPlayersData = json_decode($registeredJson, true);
+        $registeredPlayers = $this->extractDistinctPlayers($registeredPlayersData);
         $leaderboard = json_decode($leaderboardJson, true);
         $leaderboardPlayers = $this->extractDistinctPlayers($leaderboard);
         $newLeaderboardPlayers = $this->getNewLeaderboardPlayers($leaderboardPlayers);
+        
+        $leaderboardPlayersProgress = $this->snapshotPreview($registeredJson, $leaderboardJson);
 
         if (sizeof($newLeaderboardPlayers) > 0) {
             $this->insertPlayers($newLeaderboardPlayers);
@@ -128,34 +146,40 @@ class Database
         $this->insertPlayersProgress($progressEntries);
 
         $newPlayersName = $this->getNameFromPlayers($newLeaderboardPlayers);
-        $knowLeaderboardPLayers = $this->excludePlayersByName($leaderboardPlayers, $newPlayersName);
-        $this->updatePlayersInLeaderboard($knowLeaderboardPLayers, 1);
+        $knownLeaderboardPlayers = $this->excludePlayersByName($leaderboardPlayers, $newPlayersName);
+        $this->updatePlayersInLeaderboard($knownLeaderboardPlayers, 1);
 
         $leaderboardPlayersName = $this->getNameFromPlayers($leaderboardPlayers);
         $offBoardPlayers = $this->excludePlayersByName($this->getPlayers(), $leaderboardPlayersName);
         $this->updatePlayersInLeaderboard($offBoardPlayers, 0);
 
-        $playersState = $this->extractPlayersLeaderboardEntry($leaderboard, $leaderboardPlayers);
+        $registeredNames = $this->getNameFromPlayers($registeredPlayers);
+        $leaderboard = $this->addPositionToPlayersData($leaderboard, $leaderboardPlayers);
+        $nonRegisteredLeaderboardPlayers = $this->excludePlayersByName($leaderboardPlayers, $registeredNames);
+        $playersState = $this->extractPlayersLeaderboardEntry($leaderboard, $nonRegisteredLeaderboardPlayers);
         $this->insertPlayersState($playersState);
     }
 
-    public function snapshotRegistered($playersDataJson)
+    public function snapshotRegistered($registeredJson, $leaderboardJson)
     {
-        $playersData = json_decode($playersDataJson, true);
-        $players = $this->extractDistinctPlayers($playersData);
+        $leaderboard = json_decode($leaderboardJson, true);
+        $leaderboardPlayers = $this->extractDistinctPlayers($leaderboard);
+        $registeredPlayersData = json_decode($registeredJson, true);
+        $players = $this->extractDistinctPlayers($registeredPlayersData);
 
-        $namesHaveChanged = $this->updateRegisteredNames($playersData);
+        $namesHaveChanged = $this->updateRegisteredNames($registeredPlayersData);
         if($namesHaveChanged){
             $this->getPlayerIds();
         }
-
-        $playersProgress = $this->snapshotPreview($playersDataJson, true);
+        
+        $playersProgress = $this->snapshotRegisteredPreview($registeredJson, $leaderboardJson);
         $progressEntries = $this->progressContentsToProgressEntries($playersProgress);
         $this->insertPlayersProgress($progressEntries);
-
-        $playersState = $this->extractPlayersLeaderboardEntry($playersData, $players);
+        
+        $registeredPlayersData = $this->addPositionToPlayersData($registeredPlayersData, $leaderboardPlayers);
+        $playersState = $this->extractPlayersLeaderboardEntry($registeredPlayersData, $players);
         for ($i = 0; $i < sizeof($playersState); $i++) {
-            $playersState[$i]["content"] = $this->formatOffBoardPlayerStateContent($playersState[$i]["content"]);
+            $playersState[$i]["content"] = $this->formatRegisteredPlayerStateContent($playersState[$i]["content"]);
         }
                 
         $this->insertPlayersState($playersState);
@@ -209,7 +233,7 @@ class Database
         return $games / $days * 5;
     }
 
-    private function formatOffBoardPlayerStateContent($playerStateContent)
+    private function formatRegisteredPlayerStateContent($playerStateContent)
     {
         $playerStateData = json_decode($playerStateContent, true);
         $formattedState = array(
@@ -221,6 +245,10 @@ class Database
             "last_name" => $playerStateData["last_name"],
             "Experience" => $playerStateData["Experience"]
         );
+
+        if(array_key_exists("Position", $playerStateData)){
+            $formattedState["Position"] = $playerStateData["Position"];
+        }
 
         return json_encode($formattedState);
     }
@@ -355,6 +383,19 @@ class Database
         return $result;
     }
 
+    private function filterPlayersByName($players, $namesToInclude)
+    {
+        $result = [];
+
+        foreach ($players as $player) {
+            if (in_array($player["name"], $namesToInclude)) {
+                array_push($result, $player);
+            }
+        }
+
+        return $result;
+    }
+
     private function insertPlayers($players)
     {
         $sql = "INSERT INTO player (name, inLeaderBoard) VALUES ";
@@ -436,7 +477,6 @@ class Database
         for ($i = 0; $i < sizeof($players); $i++) {
             $player = $players[$i];
             $leaderboardEntry = $leaderboard[$player["index"]];
-            $leaderboardEntry["Position"] = $player["index"] + 1;
 
             array_push($playersState, array(
                 "player" => $this->playerIds[$player["name"]],
@@ -478,6 +518,19 @@ class Database
         }
 
         return $changesMade;
+    }
+
+    private function addPositionToPlayersData($playersData, $leaderboardPlayers)
+    {
+        for($i = 0; $i < sizeof($playersData); $i++){
+            foreach($leaderboardPlayers as $leaderboardPlayer){
+                if($leaderboardPlayer["name"] == $playersData[$i]["last_name"]){
+                    $playersData[$i]["Position"] = $leaderboardPlayer["index"] + 1;
+                }
+            }
+        }
+
+        return $playersData;
     }
 
     private function updatePlayersInLeaderboard($players, $inLeaderboard)

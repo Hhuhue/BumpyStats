@@ -66,9 +66,10 @@ $app->get('/snapshot-preview', function (Request $request, Response $response) {
     $connection = CreateDBConnection($this);
     $registeredPlayersUids = $connection->getRegisteredPlayersUID();
     $registeredPlayersState = GetPlayersStateFromUids($registeredPlayersUids);
-    $registeredPlayersProgress = $connection->snapshotPreview(json_encode($registeredPlayersState), true);
+    $registeredPlayersJson = json_encode($registeredPlayersState);
 
-    $leaderboardPlayersProgress = $connection->snapshotPreview($leaderboardJson);
+    $registeredPlayersProgress = $connection->snapshotRegisteredPreview($registeredPlayersJson, $leaderboardJson);
+    $leaderboardPlayersProgress = $connection->snapshotPreview($registeredPlayersJson, $leaderboardJson);
 
     $playersProgress = array_merge($leaderboardPlayersProgress, $registeredPlayersProgress);
 
@@ -81,10 +82,11 @@ $app->get('/snapshot', function (Request $request, Response $response) {
 
     $connection = CreateDBConnection($this);
     $registeredPlayersUids = $connection->getRegisteredPlayersUID();
-    $registeredPlayersState = GetPlayersStateFromUids($registeredPlayersUids);    
-    $connection->snapshotRegistered(json_encode($registeredPlayersState));
+    $registeredPlayersState = GetPlayersStateFromUids($registeredPlayersUids);
+    $registeredPlayersJson = json_encode($registeredPlayersState);
 
-    $connection->snapshotLeaderboard($leaderboardJson);
+    $connection->snapshotRegistered($registeredPlayersJson, $leaderboardJson);
+    $connection->snapshotLeaderboard($registeredPlayersJson, $leaderboardJson);
     
     $response->getBody()->write("Snapshot success");
 
