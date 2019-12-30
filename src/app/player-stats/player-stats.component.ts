@@ -56,7 +56,6 @@ export class PlayerStatsComponent implements OnInit {
       this.name = "";
     } else {
       this.playerData = this.statService.buildPlayerData(data);
-
       var state = this.playerData[this.playerData.length - 1].State;
       var ratio = this.statService.entryToRatio(state);
       this.rawData = { state, ratio };

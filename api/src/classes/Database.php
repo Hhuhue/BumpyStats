@@ -69,7 +69,11 @@ class Database
 
         if(sizeof($playerStates) == 0){
             $name = $this->getPlayerNameFromHash($player);
-            $playerStates = [json_decode($this->getPlayersLatestState([["name" => $name]])[0]["content"], true)];
+            $latestState = $this->getPlayersLatestState([["name" => $name]])[0];
+            $stateDate = $latestState["stateDate"];
+            $stateData = json_decode($latestState["content"], true);
+            $stateData["Date"] = $stateDate;
+            $playerStates = [$stateData];
         }
 
         $playerData = [];
