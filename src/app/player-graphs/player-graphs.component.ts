@@ -14,6 +14,7 @@ export class PlayerGraphsComponent implements OnInit {
 
   @Input() rawData : any;
   @Input() playerData : PlayerData[];
+  @Input() playerTimeline : PlayerData[];
 
   ngOnInit() {
     this.setCharts();
@@ -58,7 +59,16 @@ export class PlayerGraphsComponent implements OnInit {
     var gameRatiosChart = new Chart(ctx, {
       type: 'doughnut',
       data: data['data'],
-      options: data['option'],
+      options: data['option']
+    });    
+
+    data = this.getTimelineChart();
+    element = document.getElementById('TimelineChart');
+    ctx = element.getContext('2d');
+
+    var timelineChart = new Chart(ctx, {
+      data: data['data'],
+      options: data['option']
     });
   }
 
@@ -221,4 +231,100 @@ export class PlayerGraphsComponent implements OnInit {
     return { data: chart, option: options };
   }
 
+  private getTimelineChart() {
+    var data = [];
+    
+    this.playerTimeline.forEach(element => {
+      data.push({t: moment(element.DataDate).valueOf(), y: element.State.Experience});
+    });
+
+    var chart = {
+      datasets: [{
+        label: 'Experience',
+        backgroundColor: '#23e2bc',
+        borderColor: '#23e2bc',
+        data: data,
+        type: 'line',
+        pointRadius: 0,
+        fill: false,
+        lineTension: 0,
+        borderWidth: 2
+      }]
+    };
+
+    var options = {
+      title: { display: true, text: 'Experience Timeline' },
+      animation: {
+        duration: 0
+      },
+      scales: {
+        xAxes: [{
+          type: 'time',
+          distribution: 'series',
+          offset: true,
+          ticks: {
+            major: {
+              enabled: true,
+              fontStyle: 'bold'
+            },
+            source: 'data',
+            autoSkip: true,
+            autoSkipPadding: 75,
+            maxRotation: 0,
+            sampleSize: 100
+          },
+          afterBuildTicks: function(scale, ticks) {
+            var majorUnit = scale._majorUnit;
+            var firstTick = ticks[0];
+            var i, ilen, val, tick, currMajor, lastMajor;
+
+            val = moment(ticks[0].value);
+            if ((majorUnit === 'minute' && val.second() === 0)
+                || (majorUnit === 'hour' && val.minute() === 0)
+                || (majorUnit === 'day' && val.hour() === 9)
+                || (majorUnit === 'month' && val.date() <= 3 && val.isoWeekday() === 1)
+                || (majorUnit === 'year' && val.month() === 0)) {
+              firstTick.major = true;
+            } else {
+              firstTick.major = false;
+            }
+            lastMajor = val.get(majorUnit);
+
+            for (i = 1, ilen = ticks.length; i < ilen; i++) {
+              tick = ticks[i];
+              val = moment(tick.value);
+              currMajor = val.get(majorUnit);
+              tick.major = currMajor !== lastMajor;
+              lastMajor = currMajor;
+            }
+            return ticks;
+          }
+        }],
+        yAxes: [{
+          gridLines: {
+            drawBorder: false
+          },
+          scaleLabel: {
+            display: true,
+            labelString: 'Experience'
+          }
+        }]
+      },
+      tooltips: {
+        intersect: false,
+        mode: 'index',
+        callbacks: {
+          label: function(tooltipItem, myData) {
+            var label = myData.datasets[tooltipItem.datasetIndex].label || '';
+            if (label) {
+              label += ': ';
+            }
+            label += parseFloat(tooltipItem.value).toFixed(2);
+            return label;
+          }
+        }
+      }      
+    };
+    return { data: chart, option: options };
+  }
 }

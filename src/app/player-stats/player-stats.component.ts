@@ -14,7 +14,9 @@ import * as md5 from 'md5';
 export class PlayerStatsComponent implements OnInit {
   name: string;
   playerData: PlayerData[];
+  playerTimeline: PlayerData[];
   rawData: any;
+  date : Date;
 
   level: number = 0;
   expNeededForLevelUp: number = 0;
@@ -44,6 +46,9 @@ export class PlayerStatsComponent implements OnInit {
 
       this.bumpyball.getPlayerData(md5(this.name))
         .subscribe(data => this.setData(data));
+      
+      this.bumpyball.getPlayerTimeline(md5(this.name))
+        .subscribe(data => this.setTimeline(data));
 
       this.bumpyball.getPlayerAverageTime(md5(this.name))
         .subscribe(avg => this.averageSessionTime = Math.round(avg));
@@ -59,12 +64,22 @@ export class PlayerStatsComponent implements OnInit {
       var state = this.playerData[this.playerData.length - 1].State;
       var ratio = this.statService.entryToRatio(state);
       this.rawData = { state, ratio };
+      this.date = this.playerData[this.playerData.length - 1].DataDate;
 
       this.level = this.statService.expToLevel(this.playerData[this.playerData.length - 1].State.Experience);
       this.expNeededForLevelUp = this.statService.getExpForNextLevel(this.level);
       this.expAccumulated = state.Experience - this.statService.getAccumulatedExpAtLevel(this.level - 1);
       this.levelUpProgress = Math.round(this.expAccumulated / this.expNeededForLevelUp * 100) + '%';
       this.gamesUntilLevelUp = Math.round((this.expNeededForLevelUp - this.expAccumulated) / ratio.ExpGame);
+    }
+  }
+
+  private setTimeline(data) {
+    if (data == -1) {
+      this.flashMessage.show("Player <b>" + this.name + "</b> not found", { cssClass: 'alert-danger', timeout: 5000 })
+      this.name = "";
+    } else {
+      this.playerTimeline = this.statService.buildPlayerData(data);
     }
   }
 }

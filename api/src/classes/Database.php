@@ -83,6 +83,21 @@ class Database
         return json_encode($playerData);
     }
 
+    public function getAllPlayerStates($player)
+    {
+        $id = $this->getPlayerIdFromHash($player);
+
+        if ($id == -1) return -1;
+
+        $playerStates = $this->getPlayerStates($id, (new \DateTime())->setTimestamp(0)->format('Y-m-d'));
+
+        $playerData = [];
+        $playerData['states'] = $playerStates;
+        $playerData['progress'] = [];
+
+        return json_encode($playerData);
+    }
+
     public function getNames()
     {
         $sql = "SELECT name FROM player";

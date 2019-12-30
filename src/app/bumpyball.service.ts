@@ -15,6 +15,7 @@ export class BumpyballService {
   private levelsUrl = "http://www.usemapsettings.com/data/levels.json";
   private getPlayerProgressApiUrl = this.getUrlBase() + "/snapshot-preview";
   private getPlayerDataApiUrl = this.getUrlBase() + "/data/";
+  private getPlayerTimelineApiUrl = this.getUrlBase() + "/timeline/";
   private getLatestProgressesApiUrl = this.getUrlBase() + "/latest-progress";
   private getPlayerAvergageTimeApiUrl = this.getUrlBase() + "/average-time/";
   private getPlayersNameApiUrl = this.getUrlBase() + "/names";
@@ -36,6 +37,10 @@ export class BumpyballService {
 
   getPlayerData(name: string): Observable<any> {
     return this.http.get<any>(this.getPlayerDataApiUrl + name);
+  }
+
+  getPlayerTimeline(name: string): Observable<any> {
+    return this.http.get<any>(this.getPlayerTimelineApiUrl + name);
   }
 
   getPlayerAverageTime(name: string): Observable<any> {

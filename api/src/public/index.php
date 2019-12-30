@@ -112,6 +112,15 @@ $app->get('/data/{player}', function (Request $request, Response $response, $arg
     return $response;
 });
 
+$app->get('/timeline/{player}', function (Request $request, Response $response, $args) {
+    $name = (string)$args['player'];
+    $connection = CreateDBConnection($this);
+    $playerData = $connection->getAllPlayerStates($name);
+
+    $response->getBody()->write($playerData);
+    return $response;
+});
+
 $app->get('/init', function (Request $request, Response $response) {
     $leaderboardJson = ExecuteWebRequest('GET', 'http://listing.usemapsettings.com/Leaderboard?Limit=250');
 
