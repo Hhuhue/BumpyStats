@@ -42,6 +42,14 @@ class Database
         $this->pdo->query($sql);
     }
 
+    public function recordActivity($activityJson)
+    {
+        $activityData = json_decode($activityJson, true);
+        $sql = "INSERT INTO activity (playerCount, time) VALUES (?, ?)";
+        $datetime = (new \DateTime())->format("Y-m-d H:i:s");
+        $this->executeSqlQuery($sql,[$activityData["Players"], $datetime]);
+    }
+
     public function setPlayerUID($playerDataJson)
     {
         $playerData = json_decode($playerDataJson, true);

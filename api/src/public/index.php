@@ -164,4 +164,12 @@ $app->get('/names', function (Request $request, Response $response) {
     return $response;
 });
 
+$app->get('/record-activity', function (Request $request, Response $response) {
+    $connection = CreateDBConnection($this);
+    $activityJson = ExecuteWebRequest('GET', 'http://listing.usemapsettings.com/Statistics');
+    $connection->recordActivity($activityJson);
+    $response->getBody()->write("activity recorded");
+    return $response;
+});
+
 $app->run();
