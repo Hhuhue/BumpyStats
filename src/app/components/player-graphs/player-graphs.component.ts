@@ -1,7 +1,7 @@
 import { Component, OnInit, Input } from '@angular/core';
 import * as Chart from 'chart.js';
 import * as moment from 'moment';
-import { PlayerData } from '../models/model.player-data';
+import { PlayerData } from '../../models/model.player-data';
 
 @Component({
   selector: 'app-player-graphs',

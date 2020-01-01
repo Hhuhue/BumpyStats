@@ -1,7 +1,7 @@
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
-import { LeaderboardEntry } from "./models/model.leaderboard-entry";
-import { Observable } from '../../node_modules/rxjs';
+import { LeaderboardEntry } from "../models/model.leaderboard-entry";
+import { Observable } from 'rxjs';
 
 @Injectable({
   providedIn: 'root'

@@ -1,11 +1,11 @@
 import { NgModule } from '@angular/core';
 import { Routes, RouterModule } from '@angular/router';
-import { LeaderboardsComponent } from './leaderboards/leaderboards.component';
-import { PlayerStatsComponent } from './player-stats/player-stats.component';
-import { RegisterComponent } from './register/register.component';
-import { CompareComponent } from './compare/compare.component';
-import { AboutComponent } from './about/about.component';
-import { GraveyardComponent } from './graveyard/graveyard.component';
+import { LeaderboardsComponent } from './components/leaderboards/leaderboards.component';
+import { PlayerStatsComponent } from './components/player-stats/player-stats.component';
+import { RegisterComponent } from './components/register/register.component';
+import { CompareComponent } from './components/compare/compare.component';
+import { AboutComponent } from './components/about/about.component';
+import { GraveyardComponent } from './components/graveyard/graveyard.component';
 
 const routes: Routes = [
   {path: '', redirectTo: 'Leaderboards', pathMatch: 'full'},

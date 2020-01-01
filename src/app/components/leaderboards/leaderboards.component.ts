@@ -1,9 +1,9 @@
 import { Component, OnInit } from '@angular/core';
-import { LeaderboardEntry } from "../models/model.leaderboard-entry";
-import { StatisticsService } from "../statistics.service";
-import { RatioEntry } from '../models/models.ratio-entry';
-import { TableSorterService } from "../table-sorter.service";
-import { BoardOptions } from '../models/model.board-options';
+import { LeaderboardEntry } from "../../models/model.leaderboard-entry";
+import { StatisticsService } from "../../services/statistics.service";
+import { RatioEntry } from '../../models/models.ratio-entry';
+import { TableSorterService } from "../../services/table-sorter.service";
+import { BoardOptions } from '../../models/model.board-options';
 
 @Component({
   selector: 'app-leaderboards',

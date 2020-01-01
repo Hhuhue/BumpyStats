@@ -1,6 +1,6 @@
 import { Component, OnInit } from '@angular/core';
-import { BumpyballService } from '../bumpyball.service';
-import { TableSorterService } from '../table-sorter.service';
+import { BumpyballService } from '../../services/bumpyball.service';
+import { TableSorterService } from '../../services/table-sorter.service';
 
 @Component({
   selector: 'app-graveyard',

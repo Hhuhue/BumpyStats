@@ -1,10 +1,10 @@
 import { Injectable } from '@angular/core';
-import { LeaderboardEntry } from "./models/model.leaderboard-entry";
-import { RatioEntry } from "./models/models.ratio-entry";
+import { LeaderboardEntry } from "../models/model.leaderboard-entry";
+import { RatioEntry } from "../models/models.ratio-entry";
 import { BumpyballService } from "./bumpyball.service";
-import { Observable, of } from '../../node_modules/rxjs';
+import { Observable, of } from 'rxjs';
 import { map } from 'rxjs/operators';
-import { PlayerData } from './models/model.player-data';
+import { PlayerData } from '../models/model.player-data';
 
 @Injectable({
   providedIn: 'root'

@@ -7,15 +7,15 @@ import { FormsModule } from '@angular/forms';
 import { FlashMessagesModule } from 'angular2-flash-messages';
 import { HttpClientModule }    from '@angular/common/http';
 
-import { NavigationComponent } from './navigation/navigation.component';
-import { LeaderboardsComponent } from './leaderboards/leaderboards.component';
-import { PlayerStatsComponent } from './player-stats/player-stats.component';
-import { RegisterComponent } from './register/register.component';
-import { CompareComponent } from './compare/compare.component';
-import { AboutComponent } from './about/about.component';
-import { BoardComponent } from './board/board.component';
-import { PlayerGraphsComponent } from './player-graphs/player-graphs.component';
-import { GraveyardComponent } from './graveyard/graveyard.component';
+import { NavigationComponent } from './components/navigation/navigation.component';
+import { LeaderboardsComponent } from './components/leaderboards/leaderboards.component';
+import { PlayerStatsComponent } from './components/player-stats/player-stats.component';
+import { RegisterComponent } from './components/register/register.component';
+import { CompareComponent } from './components/compare/compare.component';
+import { AboutComponent } from './components/about/about.component';
+import { BoardComponent } from './components/board/board.component';
+import { PlayerGraphsComponent } from './components/player-graphs/player-graphs.component';
+import { GraveyardComponent } from './components/graveyard/graveyard.component';
 
 @NgModule({
   declarations: [

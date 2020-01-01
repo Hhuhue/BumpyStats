@@ -1,14 +1,14 @@
 import { Component, OnInit } from '@angular/core';
-import { LeaderboardEntry } from '../models/model.leaderboard-entry';
-import { StatisticsService } from '../statistics.service';
-import { TableSorterService } from '../table-sorter.service';
-import { BoardOptions } from '../models/model.board-options';
-import { PlayerData } from '../models/model.player-data';
-import { BumpyballService } from '../bumpyball.service';
+import { LeaderboardEntry } from '../../models/model.leaderboard-entry';
+import { StatisticsService } from '../../services/statistics.service';
+import { TableSorterService } from '../../services/table-sorter.service';
+import { BoardOptions } from '../../models/model.board-options';
+import { PlayerData } from '../../models/model.player-data';
+import { BumpyballService } from '../../services/bumpyball.service';
 import { FlashMessagesService } from 'angular2-flash-messages';
 import * as Chart from 'chart.js';
 import * as md5 from 'md5';
-import { RatioEntry } from '../models/models.ratio-entry';
+import { RatioEntry } from '../../models/models.ratio-entry';
 
 @Component({
   selector: 'app-compare',

@@ -1,6 +1,6 @@
 import { Component, OnInit, Input } from '@angular/core';
-import { BoardOptions } from '../models/model.board-options';
-import { StatisticsService } from '../statistics.service';
+import { BoardOptions } from '../../models/model.board-options';
+import { StatisticsService } from '../../services/statistics.service';
 
 @Component({
   selector: 'app-board',

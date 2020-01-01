@@ -1,6 +1,6 @@
 import { Component } from '@angular/core';
 import * as $ from 'jquery';
-import { StatisticsService } from './statistics.service';
+import { StatisticsService } from './services/statistics.service';
 
 @Component({
   selector: 'app-root',

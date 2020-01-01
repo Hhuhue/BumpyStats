@@ -1,5 +1,5 @@
 import { Component, OnInit } from '@angular/core';
-import { BumpyballService } from '../bumpyball.service';
+import { BumpyballService } from '../../services/bumpyball.service';
 
 @Component({
   selector: 'app-register',

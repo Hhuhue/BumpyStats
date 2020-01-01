@@ -1,7 +1,7 @@
 import { Component, OnInit } from '@angular/core';
-import { BumpyballService } from '../bumpyball.service';
-import { PlayerData } from '../models/model.player-data';
-import { StatisticsService } from '../statistics.service';
+import { BumpyballService } from '../../services/bumpyball.service';
+import { PlayerData } from '../../models/model.player-data';
+import { StatisticsService } from '../../services/statistics.service';
 import { FlashMessagesService } from 'angular2-flash-messages';
 import * as md5 from 'md5';
 
