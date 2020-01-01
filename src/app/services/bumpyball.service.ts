@@ -2,6 +2,7 @@ import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { LeaderboardEntry } from "../models/model.leaderboard-entry";
 import { Observable } from 'rxjs';
+import { ActivityRecord } from '../models/models.activity-record';
 
 @Injectable({
   providedIn: 'root'
@@ -20,6 +21,7 @@ export class BumpyballService {
   private getPlayerAvergageTimeApiUrl = this.getUrlBase() + "/average-time/";
   private getPlayersNameApiUrl = this.getUrlBase() + "/names";
   private setPlayerUidApiUrl = this.getUrlBase() + "/setPlayerUID/";
+  private getActivityApiUrl = this.getUrlBase() + "/activity";
 
   constructor(private http: HttpClient) { }
 
@@ -63,7 +65,11 @@ export class BumpyballService {
     this.http.get<any>(this.setPlayerUidApiUrl + uid).subscribe();
   }
 
+  getActivity() : Observable<ActivityRecord[]> {
+    return this.http.get<ActivityRecord[]>(this.getActivityApiUrl);
+  }
+
   private getUrlBase() {
-    return this.prodBase;
+    return this.localBase;
   }
 }

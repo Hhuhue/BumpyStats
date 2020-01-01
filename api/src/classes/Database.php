@@ -50,6 +50,23 @@ class Database
         $this->executeSqlQuery($sql,[$activityData["Players"], $datetime]);
     }
 
+    public function getActivity()
+    {
+        $sql = "SELECT time, playerCount FROM activity";
+        $results = $this->executeSqlQuery($sql,[]);
+
+        $activityData = [];
+
+        foreach ($results as $activity) {
+            array_push($activityData, array(
+                "DateTime" => $activity["time"],
+                "PlayerCount" => $activity["playerCount"]
+            ));
+        }
+
+        return json_encode($activityData);
+    }
+
     public function setPlayerUID($playerDataJson)
     {
         $playerData = json_decode($playerDataJson, true);

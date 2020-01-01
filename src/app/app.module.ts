@@ -16,6 +16,7 @@ import { AboutComponent } from './components/about/about.component';
 import { BoardComponent } from './components/board/board.component';
 import { PlayerGraphsComponent } from './components/player-graphs/player-graphs.component';
 import { GraveyardComponent } from './components/graveyard/graveyard.component';
+import { ActivityComponent } from './components/activity/activity.component';
 
 @NgModule({
   declarations: [
@@ -28,7 +29,8 @@ import { GraveyardComponent } from './components/graveyard/graveyard.component';
     AboutComponent,
     BoardComponent,
     PlayerGraphsComponent,
-    GraveyardComponent
+    GraveyardComponent,
+    ActivityComponent
   ],
   imports: [
     BrowserModule,

@@ -6,6 +6,7 @@ import { RegisterComponent } from './components/register/register.component';
 import { CompareComponent } from './components/compare/compare.component';
 import { AboutComponent } from './components/about/about.component';
 import { GraveyardComponent } from './components/graveyard/graveyard.component';
+import { ActivityComponent } from './components/activity/activity.component';
 
 const routes: Routes = [
   {path: '', redirectTo: 'Leaderboards', pathMatch: 'full'},
@@ -14,7 +15,8 @@ const routes: Routes = [
   {path: 'Compare', component: CompareComponent},  
   {path: 'Register', component: RegisterComponent},
   {path: 'Graveyard', component: GraveyardComponent},
-  {path: 'About', component: AboutComponent}
+  {path: 'About', component: AboutComponent},
+  {path: 'Activity', component: ActivityComponent}
 ];
 
 @NgModule({
