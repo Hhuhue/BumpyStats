@@ -1,0 +1,36 @@
+<div class="page-title">Matchmaker</div>
+<div class="col-md-11">
+  <div class="section-title">Manage Teams</div>
+  <hr/>  
+  <div id="ManageTeams" class="col-md-12 form-inline">  
+    <div class="col-md-2 offset">
+      <input type="text" (change)="onTeamNameChanged($event)" class="form-control" id="SelectedTeam" placeholder="Enter a team name" list="TeamNames" />
+      <small id="TeamHelp" class="form-text text-muted">This field is case sensitive </small>
+      <datalist id="TeamNames">
+        <option *ngFor="let team of teams" value="{{team}}"></option>
+      </datalist>
+    </div>
+    <div class="col-md-1">
+      <span class="btn btn-success">Create</span>
+    </div>
+    <div class="col-md-2">
+      <span class="btn btn-warning">Save Changes</span>
+    </div>
+    <div id="TeamMembers" class="col-md-12 offset">
+      <span class="labeler">Team members: </span>
+      <span class="team-member">AG7 <i class="fa fa-times delete-btn"></i></span>
+      <span class="team-member">Bowl <i class="fa fa-times delete-btn"></i></span>
+    </div>
+    <div id="AddMemberForm" class="col-md-12 offset">
+      <input type="text" class="form-control" id="NewMemberName" list="PlayerNames" placeholder="Enter a player name"/>
+      <datalist id="PlayerNames">
+        <option *ngFor="let player of players" value="{{player}}"></option>
+      </datalist>
+      <span class="btn btn-success" style="margin-left:10px;" (click)="addPlayer()">Add</span>
+    </div>
+  </div>
+  <div class="section-title">Manage Matches</div>
+  <hr/>
+  <div class="section-title">Manage Events</div>
+  <hr/>
+</div>

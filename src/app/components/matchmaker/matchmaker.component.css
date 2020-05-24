@@ -1,0 +1,28 @@
+.offset{
+    margin-top: 23px;
+}
+
+.team-member{
+    border: solid 2px rgba(61, 61, 211, 1);
+    border-radius: 3px;
+    font-size: 13pt;
+    padding: 6px 16px 6px 16px;
+    font-weight: bold;
+    margin-right: 10px;
+}
+
+.delete-btn{
+    color: rgba(178, 74, 74, 1);
+    padding-left: 5px;
+}
+
+.delete-btn:hover{
+    color: rgb(126, 39, 39);
+}
+
+.labeler{
+    font-weight: bold;
+    color: rgba(2, 18, 20, 1);
+    font-size: 14pt;
+    margin-top: 10px;
+}

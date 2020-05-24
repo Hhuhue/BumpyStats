@@ -7,6 +7,7 @@ import { CompareComponent } from './components/compare/compare.component';
 import { AboutComponent } from './components/about/about.component';
 import { GraveyardComponent } from './components/graveyard/graveyard.component';
 import { ActivityComponent } from './components/activity/activity.component';
+import { MatchmakerComponent } from './components/matchmaker/matchmaker.component';
 
 const routes: Routes = [
   {path: '', redirectTo: 'Leaderboards', pathMatch: 'full'},
@@ -16,6 +17,7 @@ const routes: Routes = [
   {path: 'Register', component: RegisterComponent},
   {path: 'Graveyard', component: GraveyardComponent},
   {path: 'About', component: AboutComponent},
+  {path: 'Matchmaker', component: MatchmakerComponent},
   {path: 'Activity', component: ActivityComponent}
 ];
 

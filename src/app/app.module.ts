@@ -17,6 +17,7 @@ import { BoardComponent } from './components/board/board.component';
 import { PlayerGraphsComponent } from './components/player-graphs/player-graphs.component';
 import { GraveyardComponent } from './components/graveyard/graveyard.component';
 import { ActivityComponent } from './components/activity/activity.component';
+import { MatchmakerComponent } from './components/matchmaker/matchmaker.component';
 
 @NgModule({
   declarations: [
@@ -30,7 +31,8 @@ import { ActivityComponent } from './components/activity/activity.component';
     BoardComponent,
     PlayerGraphsComponent,
     GraveyardComponent,
-    ActivityComponent
+    ActivityComponent,
+    MatchmakerComponent
   ],
   imports: [
     BrowserModule,
