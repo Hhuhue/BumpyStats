@@ -179,4 +179,26 @@ $app->get('/activity', function (Request $request, Response $response) {
     return $response;
 });
 
+$app->get('/team-names', function (Request $request, Response $response) {
+    $connection = CreateDBConnection($this);
+    $teamNamesJson = $connection->getTeamNames();
+    $response->getBody()->write($teamNamesJson);
+    return $response;
+});
+
+$app->get('/team/{name}', function (Request $request, Response $response, $args) {
+    $connection = CreateDBConnection($this);   
+    $name = (string)$args['name'];
+    $teamJson = $connection->getTeamData($name);
+    $response->getBody()->write($teamJson);
+    return $response;
+});
+
+$app->post('/submit-team', function (Request $request, Response $response) {
+    $connection = CreateDBConnection($this);
+    $body = $request->getBody();
+    $connection->createEditTeam($body);
+    return $response;
+});
+
 $app->run();

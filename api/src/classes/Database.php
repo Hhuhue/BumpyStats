@@ -50,10 +50,56 @@ class Database
         $this->executeSqlQuery($sql,[$activityData["Players"], $datetime]);
     }
 
-    public function getActivity()
+    public function getTeamNames(){
+        $sql = "SELECT name FROM team";
+
+        $results = $this->executeSqlQuery($sql, []);
+        $names = [];
+
+        foreach ($results as $result) {
+            array_push($names, $result["name"]);
+        }
+
+        return json_encode($names);
+    }
+    
+    public function getTeamData($name){
+        $teamId = $this->getTeamId($name);
+        if ($teamId == -1){
+            return -1;
+        }
+
+        $sql = "SELECT p.name FROM team_player tp LEFT JOIN player p ON tp.player = p.id WHERE tp.team = ?";
+        $results = $this->executeSqlQuery($sql, [$teamId]);
+        $teamData = array("id" => $teamId, "name" => $name, "teammates" => []);
+
+        foreach ($results as $result) {
+            array_push($teamData["teammates"], $result["name"]);
+        }
+
+        return json_encode($teamData);
+    }
+
+    public function createEditTeam($teamJson){
+        $teamData = json_decode($teamJson, true);
+        $sql = "";
+        $params = [$teamData["Name"]];
+        
+        if ($teamData["Id"] == -1){
+            $sql = "INSERT INTO team (name) VALUES (?)";
+        } else {
+            $sql = "UPDATE team SET name = ? WHERE id = ?";
+            array_push($params, $teamData["Id"]);
+        }
+        
+        $this->executeSqlQuery($sql, $params);
+        $this->updateTeammates($teamData);
+    }
+
+    public function getActivity($fromDate, $toDate)
     {
-        $sql = "SELECT time, playerCount FROM activity";
-        $results = $this->executeSqlQuery($sql,[]);
+        $sql = "SELECT time, playerCount FROM activity WHERE ? <= time AND ? >= time ";
+        $results = $this->executeSqlQuery($sql, [$fromDate, $toDate]);
 
         $activityData = [];
 
@@ -277,6 +323,40 @@ class Database
         return $games / $days * 5;
     }
 
+    private function updateTeammates($teamData){
+        $teammatesData = $teamData["Teammates"];
+        $teamId = $this->getTeamId($teamData["Name"]);
+
+        $sql = "SELECT id, player FROM team_player WHERE team = ?";
+        $results = $this->executeSqlQuery($sql, [$teamId]);
+        $oldIds = [];
+        $newIds = [];
+
+        foreach($results as $oldTeammate){
+            array_push($oldIds, [$oldTeammate["player"], $oldTeammate["id"]]);
+        }
+        foreach($teammatesData as $newTeammate){
+            if (!array_key_exists($newTeammate, $this->playerIds)){
+                $this->insertPlayer($newTeammate, 0, NULL);
+                $this->getPlayerIds();
+            }
+            array_push($newIds, $this->playerIds[$newTeammate]);
+        }
+
+        foreach($oldIds as $oldId){
+            if (!in_array($oldId[0], $newIds)){
+                $sql = "DELETE FROM team_player WHERE id = ?";
+                $this->executeSqlQuery($sql, [$oldId[1]]);
+            }
+        }
+        foreach($newIds as $newId){
+            if (!in_array($newId, array_column($oldIds, 0))){
+                $sql = "INSERT INTO team_player (team, player) VALUES (?,?)";
+                $this->executeSqlQuery($sql, [$teamId, $newId]);
+            }
+        }
+    }
+
     private function formatRegisteredPlayerStateContent($playerStateContent)
     {
         $playerStateData = json_decode($playerStateContent, true);
@@ -443,9 +523,6 @@ class Database
     private function insertPlayers($players)
     {
         $sql = "INSERT INTO player (name, inLeaderBoard) VALUES ";
-        $propertiesToSave = 2;
-
-        $queryComponents = $this->sqlHelper->buildInsertQuery($sql, $players, $propertiesToSave);
         $this->executeSqlQuery($queryComponents["query"], $queryComponents["parameters"]);
     }
 
@@ -542,7 +619,17 @@ class Database
         foreach ($result as $playerRecord) {
             $this->playerIds[$playerRecord['name']] = $playerRecord["id"];
         }
-    }   
+    }
+    
+    private function getTeamId($name){
+        $sql = "SELECT id FROM team WHERE name = ?";        
+        $result = $this->executeSqlQuery($sql, [$name]);
+        if (sizeof($result) == 0){
+            return -1;
+        } else {
+            return $result[0]["id"];
+        }
+    }
 
     private function updateRegisteredNames($playersData)
     {

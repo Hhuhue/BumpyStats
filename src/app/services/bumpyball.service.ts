@@ -3,6 +3,7 @@ import { HttpClient } from '@angular/common/http';
 import { LeaderboardEntry } from "../models/model.leaderboard-entry";
 import { Observable } from 'rxjs';
 import { ActivityRecord } from '../models/models.activity-record';
+import { Team } from '../models/models.team';
 
 @Injectable({
   providedIn: 'root'
@@ -22,6 +23,9 @@ export class BumpyballService {
   private getPlayersNameApiUrl = this.getUrlBase() + "/names";
   private setPlayerUidApiUrl = this.getUrlBase() + "/setPlayerUID/";
   private getActivityApiUrl = this.getUrlBase() + "/activity";
+  private getTeamNamesApiUrl = this.getUrlBase() + "/team-names";
+  private getTeamDataApiUrl = this.getUrlBase() + "/team/";
+  private postTeamDataApiUrl = this.getUrlBase() + "/submit-team";
 
   constructor(private http: HttpClient) { }
 
@@ -67,6 +71,18 @@ export class BumpyballService {
 
   getActivity() : Observable<ActivityRecord[]> {
     return this.http.get<ActivityRecord[]>(this.getActivityApiUrl);
+  }
+
+  getTeamNames() : Observable<string[]> {
+    return this.http.get<string[]>(this.getTeamNamesApiUrl);
+  }
+
+  getTeamData(name : string) : Observable<any> {
+    return this.http.get<any>(this.getTeamDataApiUrl + name);
+  }
+
+  postTeamData(teamData: any) {
+    return this.http.post(this.postTeamDataApiUrl, teamData);
   }
 
   private getUrlBase() {
