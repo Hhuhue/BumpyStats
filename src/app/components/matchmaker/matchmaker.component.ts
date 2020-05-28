@@ -1,6 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { BumpyballService } from 'src/app/services/bumpyball.service';
 import { Team } from 'src/app/models/models.team';
+import { TournamentEvent } from 'src/app/models/models.tournament-event';
 
 @Component({
   selector: 'app-matchmaker',
@@ -10,29 +11,42 @@ import { Team } from 'src/app/models/models.team';
 export class MatchmakerComponent implements OnInit {
   teams: string[];
   players: string[];
+  events: string[];
   selectedTeam: Team;
+  selectedEvent: TournamentEvent;
   selectedTeamExists = false;
 
   constructor(private bumpyball: BumpyballService) { }
 
   ngOnInit() {
+    this.bumpyball.getPlayersName()
+      .subscribe(names => this.players = names);
     this.initTeamManager();
+    this.initEventManager();
   }
 
   initTeamManager(){
+    this.teams = [];
     this.bumpyball.getTeamNames()
       .subscribe(names => this.teams = names);
-    this.bumpyball.getPlayersName()
-      .subscribe(names => this.players = names);
     this.selectedTeam = new Team(null);
-    this.teams = [];
-    this.onTeamNameChanged(null);
     $("#SelectedTeam").val("");
     $("#NewTeamName").val("");
     $("#NewMemberName").val("");
+    this.onTeamNameChanged();
   }
 
-  onTeamNameChanged(event: any){
+  initEventManager(){
+    this.events = [];
+    this.bumpyball.getEventNames()
+      .subscribe(names => this.events = names);
+    this.selectedEvent = new TournamentEvent(null);
+    $("#SelectedEvent").val("");
+    $("#NewEventName").val("");
+    this.onEventNameChanged();
+  }
+
+  onTeamNameChanged(){
     if (!this.teams) return;
 
     this.selectedTeam.Name = $("#SelectedTeam").val().toString();
@@ -42,7 +56,7 @@ export class MatchmakerComponent implements OnInit {
       $("#TeamSubmit").text("Create");
       $("#AddMemberForm").hide();
       $("#TeamMembers").hide();  
-      $("#NewNameForm").hide();
+      $("#NewTeamNameForm").hide();
       this.selectedTeam = new Team(null);
     } else {
       $("#TeamSubmit").removeClass("btn-success");
@@ -53,10 +67,29 @@ export class MatchmakerComponent implements OnInit {
     }
   }
 
+  onEventNameChanged(){
+    if (!this.events) return;
+
+    this.selectedEvent.Name = $("#SelectedEvent").val().toString();
+    if (this.events.indexOf(this.selectedEvent.Name) == -1){
+      $("#NewEventNameForm").hide();
+      $("#EventSubmit").removeClass("btn-warning");
+      $("#EventSubmit").addClass("btn-success");
+      $("#EventSubmit").text("Create");
+    } else {
+      $("#EventSubmit").removeClass("btn-success");
+      $("#EventSubmit").addClass("btn-warning");
+      $("#EventSubmit").text("Save");
+      this.bumpyball.getEventData(this.selectedEvent.Name)
+        .subscribe(team => {this.selectedEvent = new TournamentEvent(team); this.loadEventData()});
+    }
+  }
+
   onAddPlayer(){
     var newPlayer = $("#NewMemberName").val().toString();
     this.selectedTeam.Teammates.push(newPlayer);
     this.loadTeamData();
+    $("#NewMemberName").val("");
   }
 
   onRemovePlayer(event){
@@ -86,6 +119,20 @@ export class MatchmakerComponent implements OnInit {
     this.initTeamManager();
   }
 
+  onEventSave(){
+    var newEventName = $("#NewEventName").val().toString();
+    if(this.selectedEvent.Name == ""){
+      this.selectedEvent.Name = $("#SelectedTeam").val().toString();
+    } else if(newEventName != ""){
+      this.selectedEvent.Name = newEventName;
+    }
+
+    var eventData = JSON.stringify(this.selectedEvent);
+    console.log(eventData);
+    this.bumpyball.postEventData(eventData).subscribe();
+    this.initEventManager();
+  }
+
   loadTeamData(){
     $("#MemberList").html(""); 
 
@@ -103,7 +150,11 @@ export class MatchmakerComponent implements OnInit {
   
     $("#AddMemberForm").show();
     $("#TeamMembers").show();  
-    $("#NewNameForm").show();
+    $("#NewTeamNameForm").show();
+  }
+
+  loadEventData(){
+    $("#NewEventNameForm").show();
   }
 
 }

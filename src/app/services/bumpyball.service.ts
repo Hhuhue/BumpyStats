@@ -24,8 +24,11 @@ export class BumpyballService {
   private setPlayerUidApiUrl = this.getUrlBase() + "/setPlayerUID/";
   private getActivityApiUrl = this.getUrlBase() + "/activity";
   private getTeamNamesApiUrl = this.getUrlBase() + "/team-names";
+  private getEventNamesApiUrl = this.getUrlBase() + "/event-names";
   private getTeamDataApiUrl = this.getUrlBase() + "/team/";
+  private getEventDataApiUrl = this.getUrlBase() + "/event/";
   private postTeamDataApiUrl = this.getUrlBase() + "/submit-team";
+  private postEventDataApiUrl = this.getUrlBase() + "/submit-event";
 
   constructor(private http: HttpClient) { }
 
@@ -77,12 +80,24 @@ export class BumpyballService {
     return this.http.get<string[]>(this.getTeamNamesApiUrl);
   }
 
+  getEventNames() : Observable<string[]> {
+    return this.http.get<string[]>(this.getEventNamesApiUrl);
+  }
+
   getTeamData(name : string) : Observable<any> {
     return this.http.get<any>(this.getTeamDataApiUrl + name);
   }
 
+  getEventData(name : string) : Observable<any> {
+    return this.http.get<any>(this.getEventDataApiUrl + name);
+  }
+
   postTeamData(teamData: any) {
     return this.http.post(this.postTeamDataApiUrl, teamData);
+  }
+
+  postEventData(eventData: any) {
+    return this.http.post(this.postEventDataApiUrl, eventData);
   }
 
   private getUrlBase() {

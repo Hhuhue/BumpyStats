@@ -96,6 +96,44 @@ class Database
         $this->updateTeammates($teamData);
     }
 
+    public function getEventNames(){
+        $sql = "SELECT name FROM event";
+
+        $results = $this->executeSqlQuery($sql, []);
+        $names = [];
+
+        foreach ($results as $result) {
+            array_push($names, $result["name"]);
+        }
+
+        return json_encode($names);
+    }
+    
+    public function getEventData($name){
+        $eventId = $this->getEventId($name);
+        if ($eventId == -1){
+            return -1;
+        }
+        $eventData = array("id" => $eventId, "name" => $name);
+
+        return json_encode($eventData);
+    }
+
+    public function createEditEvent($eventJson){
+        $eventData = json_decode($eventJson, true);
+        $sql = "";
+        $params = [$eventData["Name"]];
+        
+        if ($eventData["Id"] == -1){
+            $sql = "INSERT INTO event (name) VALUES (?)";
+        } else {
+            $sql = "UPDATE event SET name = ? WHERE id = ?";
+            array_push($params, $eventData["Id"]);
+        }
+        
+        $this->executeSqlQuery($sql, $params);
+    }
+
     public function getActivity($fromDate, $toDate)
     {
         $sql = "SELECT time, playerCount FROM activity WHERE ? <= time AND ? >= time ";
@@ -623,6 +661,16 @@ class Database
     
     private function getTeamId($name){
         $sql = "SELECT id FROM team WHERE name = ?";        
+        $result = $this->executeSqlQuery($sql, [$name]);
+        if (sizeof($result) == 0){
+            return -1;
+        } else {
+            return $result[0]["id"];
+        }
+    }
+    
+    private function getEventId($name){
+        $sql = "SELECT id FROM event WHERE name = ?";        
         $result = $this->executeSqlQuery($sql, [$name]);
         if (sizeof($result) == 0){
             return -1;

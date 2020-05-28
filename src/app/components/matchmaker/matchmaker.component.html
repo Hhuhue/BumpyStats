@@ -2,36 +2,56 @@
 <div class="col-md-11">
   <div class="section-title">Manage Teams</div>
   <hr/>  
-  <div id="ManageTeams" class="col-md-12 form-inline">  
-    <div class="col-md-2 offset">
-      <input type="text" (change)="onTeamNameChanged($event)" class="form-control" id="SelectedTeam" placeholder="Enter a team name" list="TeamNames" />
+  <div id="ManageTeams" class="col-md-12 row">  
+    <div class="col-md-4">
+      <input type="text" (change)="onTeamNameChanged()" class="form-control" id="SelectedTeam" placeholder="Enter a team name" list="TeamNames" />
       <small id="TeamHelp" class="form-text text-muted">This field is case sensitive </small>
       <datalist id="TeamNames">
         <option *ngFor="let team of teams" value="{{team}}"></option>
       </datalist>
     </div>
-    <div id="NewNameForm" class="col-md-2 offset">
+    <div id="NewTeamNameForm" class="col-md-4">
       <input type="text" class="form-control" id="NewTeamName" placeholder="Enter a new team name"/>
-      <small id="TeamHelp" class="form-text text-muted">Leave blank for no change</small>
+      <small id="NameHelp" class="form-text text-muted">Leave blank for no change</small>
     </div>
-    <div id="AddMemberForm" class="col-md-3">
-      <input type="text" class="form-control" id="NewMemberName" list="PlayerNames" placeholder="Enter a player name"/>
+    <div id="AddMemberForm" class="col-md-4">
+      <div class="input-group mb-3">
+        <input type="text" class="form-control" id="NewMemberName" list="PlayerNames" placeholder="Enter a player name"/>
+        <div class="input-group-append">
+          <button class="btn btn-success" (click)="onAddPlayer()">Add</button>
+        </div>
+      </div>      
       <datalist id="PlayerNames">
         <option *ngFor="let player of players" value="{{player}}"></option>
       </datalist>
-      <span class="btn btn-success" style="margin-left:10px;" (click)="onAddPlayer()">Add</span>
-    </div>
-    <div class="col-md-1">
-      <span id="TeamSubmit" class="btn btn-success" (click)="onTeamSave()">Save</span>
     </div>
     <div id="TeamMembers" class="col-md-12 offset">
       <span class="labeler">Team members: </span>
       <span id="MemberList">
       </span>
+    </div>    
+    <div class="col-md-1">
+      <span id="TeamSubmit" class="btn btn-success" (click)="onTeamSave()">Save</span>
     </div>
   </div>
-  <div class="section-title">Manage Events</div>
-  <hr/>
   <div class="section-title">Manage Matches</div>
   <hr/>
+  <div class="section-title">Manage Events</div>
+  <hr/>
+  <div id="ManageEvents" class="col-md-12 row">
+    <div class="col-md-4">
+      <input type="text" (change)="onEventNameChanged()" class="form-control" id="SelectedEvent" placeholder="Enter an event name" list="EventNames" />
+      <small id="EventHelp" class="form-text text-muted">This field is case sensitive </small>
+      <datalist id="EventNames">
+        <option *ngFor="let event of events" value="{{events}}"></option>
+      </datalist>
+    </div>
+    <div id="NewEventNameForm" class="col-md-4">
+      <input type="text" class="form-control" id="NewEventName" placeholder="Enter a new event name"/>
+      <small id="NameHelp" class="form-text text-muted">Leave blank for no change</small>
+    </div>
+    <div class="col-md-1">
+      <span id="EventSubmit" class="btn btn-success" (click)="onEventSave()">Create</span>
+    </div>
+  </div>
 </div>

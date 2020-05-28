@@ -186,6 +186,13 @@ $app->get('/team-names', function (Request $request, Response $response) {
     return $response;
 });
 
+$app->get('/event-names', function (Request $request, Response $response) {
+    $connection = CreateDBConnection($this);
+    $teamNamesJson = $connection->getEventNames();
+    $response->getBody()->write($teamNamesJson);
+    return $response;
+});
+
 $app->get('/team/{name}', function (Request $request, Response $response, $args) {
     $connection = CreateDBConnection($this);   
     $name = (string)$args['name'];
@@ -194,10 +201,25 @@ $app->get('/team/{name}', function (Request $request, Response $response, $args)
     return $response;
 });
 
+$app->get('/event/{name}', function (Request $request, Response $response, $args) {
+    $connection = CreateDBConnection($this);   
+    $name = (string)$args['name'];
+    $eventJson = $connection->getEventData($name);
+    $response->getBody()->write($eventJson);
+    return $response;
+});
+
 $app->post('/submit-team', function (Request $request, Response $response) {
     $connection = CreateDBConnection($this);
     $body = $request->getBody();
     $connection->createEditTeam($body);
+    return $response;
+});
+
+$app->post('/submit-event', function (Request $request, Response $response) {
+    $connection = CreateDBConnection($this);
+    $body = $request->getBody();
+    $connection->createEditEvent($body);
     return $response;
 });
 
