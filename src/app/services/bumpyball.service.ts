@@ -29,6 +29,7 @@ export class BumpyballService {
   private getEventDataApiUrl = this.getUrlBase() + "/event/";
   private postTeamDataApiUrl = this.getUrlBase() + "/submit-team";
   private postEventDataApiUrl = this.getUrlBase() + "/submit-event";
+  private postMatchDataApiUrl = this.getUrlBase() + "/submit-match";
 
   constructor(private http: HttpClient) { }
 
@@ -98,6 +99,10 @@ export class BumpyballService {
 
   postEventData(eventData: any) {
     return this.http.post(this.postEventDataApiUrl, eventData);
+  }
+
+  postMatchData(matchData: any) {
+    return this.http.post(this.postMatchDataApiUrl, matchData);
   }
 
   private getUrlBase() {

@@ -1,5 +1,5 @@
 <div class="page-title">Matchmaker</div>
-<div class="col-md-11">
+<div class="col-md-11" style="margin-bottom: 50px;">
   <div class="section-title">Manage Teams</div>
   <hr/>  
   <div id="ManageTeams" class="col-md-12 row">  
@@ -34,8 +34,6 @@
       <span id="TeamSubmit" class="btn btn-success" (click)="onTeamSave()">Save</span>
     </div>
   </div>
-  <div class="section-title">Manage Matches</div>
-  <hr/>
   <div class="section-title">Manage Events</div>
   <hr/>
   <div id="ManageEvents" class="col-md-12 row">
@@ -43,7 +41,7 @@
       <input type="text" (change)="onEventNameChanged()" class="form-control" id="SelectedEvent" placeholder="Enter an event name" list="EventNames" />
       <small id="EventHelp" class="form-text text-muted">This field is case sensitive </small>
       <datalist id="EventNames">
-        <option *ngFor="let event of events" value="{{events}}"></option>
+        <option *ngFor="let event of events" value="{{event}}"></option>
       </datalist>
     </div>
     <div id="NewEventNameForm" class="col-md-4">
@@ -52,6 +50,80 @@
     </div>
     <div class="col-md-1">
       <span id="EventSubmit" class="btn btn-success" (click)="onEventSave()">Create</span>
+    </div>
+  </div>
+  <div class="section-title">Manage Matches</div>
+  <hr/>
+  <div id="ManageMatches" class="col-md-12 row">
+    <div id="MatchSettingForm" class="col-md-12 row">
+      <div class="col-md-2">
+        <div class="custom-control custom-switch" (click)="onMatchModeChange()">
+          <input type="checkbox" class="custom-control-input" id="MatchMode"/>
+          <label class="custom-control-label" for="MatchMode">Team Match</label>
+        </div>
+      </div>
+      <div class="col-md-4">
+        <input type="text" class="form-control" id="MatchEvent" placeholder="Enter an event name" list="EventNames" />
+        <small id="TeamHelp" class="form-text text-muted">This field is optional</small>
+      </div>
+      <div class="col-md-4">
+        <span class="btn btn-primary">Load Match</span>
+      </div>
+      <div id="1v1Form" class="col-md-10 input-group offset">
+        <input type="text" class="form-control" id="Player1" placeholder="Enter a player name" list="PlayerNames" (change)="onOpponentsChanged()"/>
+        <div class="input-group-append">
+          <span class="input-group-text">VS</span>
+        </div>
+        <input type="text" class="form-control" id="Player2" placeholder="Enter a player name" list="PlayerNames" (change)="onOpponentsChanged()"/>
+      </div>
+      <div id="TvTForm" class="col-md-10 input-group offset">
+        <input type="text" class="form-control" id="Team1" placeholder="Enter a team name" list="TeamNames" (change)="onOpponentsChanged()"/>
+        <div class="input-group-append">
+          <span class="input-group-text">VS</span>
+        </div>
+        <input type="text" class="form-control" id="Team2" placeholder="Enter a team name" list="TeamNames" (change)="onOpponentsChanged()"/>
+      </div>           
+      <div class="col-md-3 offset">
+        <div class="custom-control custom-switch" (click)="onEnterResultsChange()">
+          <input type="checkbox" class="custom-control-input" id="EnterResults"/>
+          <label class="custom-control-label" for="EnterResults">Enter Results</label>
+        </div>
+      </div>      
+      <div class="col-md-7 offset">
+        <div class="custom-control custom-switch">
+          <input type="checkbox" class="custom-control-input" id="AggregateScore"/>
+          <label class="custom-control-label" for="AggregateScore">Aggregate Score</label>
+        </div>
+      </div>
+    </div>
+    <div id="ResultsForm" class="col-md-10 offset">     
+      <input type="text" class="form-control" id="VideoLink" placeholder="Enter a video link" style="width: 70%"/>
+      <div id="ResultSection" class="offset">
+        <table class="table table-striped">
+          <thead class="thead-dark">
+            <tr>
+              <th>Game</th>
+              <th id="Opponent1"></th>
+              <th id="Opponent2"></th>
+              <th></th>
+            </tr>
+          </thead>
+          <tbody id="Games">
+          </tbody>
+        </table>
+        <span class="btn btn-success" (click)="onAddGame()">Add Game</span>
+        <div class="offset">
+          <div class="custom-control custom-switch" (click)="onEnterPersonalGoalsChange()">
+            <input type="checkbox" class="custom-control-input" id="EnterPersonalGoals"/>
+            <label class="custom-control-label" for="EnterPersonalGoals">Enter Personal Goals</label>
+          </div>
+        </div>
+      </div>
+      <div id="PersonalGoalSection" class="row">
+      </div>
+    </div>    
+    <div class="col-md-6 offset">
+      <span id="MatchSubmit" class="btn btn-success" (click)="onMatchSave()">Create</span>
     </div>
   </div>
 </div>
