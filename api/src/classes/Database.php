@@ -134,6 +134,85 @@ class Database
         $this->executeSqlQuery($sql, $params);
     }
 
+    public function getMatches($filterJson){
+        $sql = "SELECT * FROM ranked_match WHERE";
+    }
+    
+    public function getMatchData($matchId){
+        $sql = "SELECT * from ranked_match WHERE id = ?";
+        $result = $this->executeSqlQuery($sql, [$matchId]);
+        if (sizeof($result) == 0){
+            return -1;
+        }
+        $match = $result[0];
+        $matchData = array("id" => $eventId, "name" => $name);
+
+        return json_encode($eventData);
+    }
+
+    public function createEditMatch($matchJson){
+        //TODO: update date only if no score was previously entered
+        $matchData = json_decode($matchJson, true);
+        $sql = "";
+        $vars = ["date"];
+        $params = [$matchData["Date"]];
+
+        if($matchData["IsTeamMatch"]){
+            array_push($vars, "team_1", "team_2");
+            $team1 = intval($this->getTeamId($matchData["Opponent1"]));
+            $team2 = intval($this->getTeamId($matchData["Opponent2"]));
+            array_push($params, $team1, $team2);
+        } else {
+            array_push($vars, "player_1", "player_2");
+            $player1 = intval($this->playerIds[$matchData["Opponent1"]]);
+            $player2 = intval($this->playerIds[$matchData["Opponent2"]]);
+            array_push($params, $player1, $player2);
+        }
+
+        if(strlen($matchData["Event"]) > 0){
+            array_push($vars, "event");
+            array_push($params, intval($this->getEventId($matchData["Event"])));
+        }
+
+        if($matchData["Results"]){
+            $opp1Points = 0;
+            $opp2Points = 0;
+            foreach($matchData["Results"] as $result){
+                if($matchData["IsAggregateWin"]){
+                    $opp1Points += $result[0];
+                    $opp2Points += $result[1];
+                } else {
+                    $opp1Points += $result[0] > $result[1];
+                    $opp2Points += $result[0] < $result[1];
+                }
+            }
+
+            $resultData = array("scores" => $matchData["Results"]);
+            if(sizeof($matchData["PersonalGoals"]) > 0){
+                $resultData["personals"] = $matchData["PersonalGoals"];
+            }
+
+            array_push($vars, "result", "victor");
+            array_push($params, json_encode($resultData), ($opp1Points < $opp2Points)? 2 : 1);              
+            
+            if(strlen($matchData["VideoLink"]) > 0){
+                $resultData["link"] = $matchData["VideoLink"];
+            }
+        }
+
+        if ($matchData["Id"] == -1){
+            $params_string = implode(",", array_fill(0, sizeof($params), "?"));
+            $var_string = implode(",", $vars);
+            $sql = "INSERT INTO ranked_match ($var_string) VALUES ($params_string)";
+        } else {
+            $params_string = implode(" = ?", $vars);
+            $sql = "UPDATE ranked_match SET $params_string = ? WHERE id = ?";
+            array_push($params, $matchData["Id"]);
+        }
+        
+        $this->executeSqlQuery($sql, $params);
+    }
+
     public function getActivity($fromDate, $toDate)
     {
         $sql = "SELECT time, playerCount FROM activity WHERE ? <= time AND ? >= time ";

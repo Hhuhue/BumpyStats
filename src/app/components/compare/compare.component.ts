@@ -110,10 +110,6 @@ export class CompareComponent implements OnInit {
     stateKeys.forEach(key => {
       this.playerDiffData.State[key] = Math.round((this.player1Data.State[key] - this.player2Data.State[key]) * 100) / 100;
     });
-
-    console.log(this.playerDiffData);
-    console.log(this.playerDiffData.State);
-    console.log(this.playerDiffData.Ratios);
   }
 
   private setDistributionCharts(entries: LeaderboardEntry[]) {
@@ -376,7 +372,6 @@ export class CompareComponent implements OnInit {
 
     var rawScore = entry.Experience / 100;
     var score = rawScore / (surviveRateModifier * goalGameModifier);
-    //console.log(entry.last_name + "| rs: " + rawScore + " | sp: " + surviveRateModifier + " | gp: " + goalGameModifier);
     return {
       name: entry.Name,
       rawScore: Math.round(rawScore),

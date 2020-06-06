@@ -2,7 +2,6 @@ import { Component, OnInit } from '@angular/core';
 import { BumpyballService } from 'src/app/services/bumpyball.service';
 import { Team } from 'src/app/models/models.team';
 import { TournamentEvent } from 'src/app/models/models.tournament-event';
-import { toDate } from '@angular/common/src/i18n/format_date';
 import { TournamentMatch } from 'src/app/models/models.tournament-match';
 import * as moment from 'moment';
 
@@ -53,6 +52,19 @@ export class MatchmakerComponent implements OnInit {
 
   initMatchManager(){
     this.selectedMatch = new TournamentMatch(null);
+    $("#MatchEvent").val("");
+    $("#Player1").val("");
+    $("#Player2").val("");
+    $("#Team1").val("");
+    $("#Team2").val("");
+    $("#Opponent1").html("");
+    $("#Opponent2").html("");
+    $("#VideoLink").val("");
+    $("#VideoLink").val("");
+    $("#Games").html("");
+    $("#MatchMode").prop("checked", false);
+    $("#EnterResults").prop("checked", false);
+    $("#AggregateScore").prop("checked", false);
     this.onMatchModeChange();
     this.onEnterResultsChange();
     this.onEnterPersonalGoalsChange();
@@ -112,9 +124,7 @@ export class MatchmakerComponent implements OnInit {
     });
     this.selectedTeam.Teammates = newTeammates;
 
-    console.log(this.selectedTeam);
     var teamData = JSON.stringify(this.selectedTeam);
-    console.log(teamData);
     this.bumpyball.postTeamData(teamData).subscribe();
     this.initTeamManager();
   }
@@ -136,7 +146,7 @@ export class MatchmakerComponent implements OnInit {
     this.selectedMatch.Event = $("#MatchEvent").val().toString();
     this.selectedMatch.IsAggregateWin = $("#AggregateScore").prop("checked");
     this.selectedMatch.Name = $("#Opponent1").text() + " VS " + $("#Opponent2").text();
-    this.selectedMatch.Date = moment().toString();
+    this.selectedMatch.Date = moment().format("YYYY-MM-DD");
 
     if ($("#EnterResults").prop("checked")){
       this.selectedMatch.VideoLink = $("#VideoLink").val().toString();
@@ -155,7 +165,9 @@ export class MatchmakerComponent implements OnInit {
         this.selectedMatch.PersonalGoals = personalGoals.get();
       }
     }    
-    console.log(this.selectedMatch);
+    var matchData = JSON.stringify(this.selectedMatch);
+    this.bumpyball.postMatchData(matchData).subscribe();
+    this.initMatchManager();
   }
 
   onMatchModeChange(){
@@ -318,7 +330,6 @@ export class MatchmakerComponent implements OnInit {
       "</div>";
       html += playerGoals;
     });
-    console.log(players);
     $("#PersonalGoalSection").html(html);
   }
 }

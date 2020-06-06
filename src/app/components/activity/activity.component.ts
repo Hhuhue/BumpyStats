@@ -36,7 +36,6 @@ export class ActivityComponent implements OnInit {
       data.push({t: moment(element.DateTime).valueOf(), y: element.PlayerCount});
     });
     
-    console.log(data);
     var chart = {
       datasets: [{
         label: 'Player Count',

@@ -223,4 +223,11 @@ $app->post('/submit-event', function (Request $request, Response $response) {
     return $response;
 });
 
+$app->post('/submit-match', function (Request $request, Response $response) {
+    $connection = CreateDBConnection($this);
+    $body = $request->getBody();
+    $connection->createEditMatch($body);
+    return $response;
+});
+
 $app->run();
