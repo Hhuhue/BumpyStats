@@ -172,9 +172,10 @@ $app->get('/record-activity', function (Request $request, Response $response) {
     return $response;
 });
 
-$app->get('/activity', function (Request $request, Response $response) {
+$app->post('/activity', function (Request $request, Response $response) {
     $connection = CreateDBConnection($this);
-    $activityJson = $connection->getActivity();
+    $dates = json_decode($request->getBody());
+    $activityJson = $connection->getActivity($dates[0], $dates[1]);
     $response->getBody()->write($activityJson);
     return $response;
 });

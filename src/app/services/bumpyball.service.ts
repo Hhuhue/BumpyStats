@@ -73,8 +73,8 @@ export class BumpyballService {
     this.http.get<any>(this.setPlayerUidApiUrl + uid).subscribe();
   }
 
-  getActivity() : Observable<ActivityRecord[]> {
-    return this.http.get<ActivityRecord[]>(this.getActivityApiUrl);
+  getActivity(dateRange : string) : Observable<ActivityRecord[]> {
+    return this.http.post<ActivityRecord[]>(this.getActivityApiUrl, dateRange);
   }
 
   getTeamNames() : Observable<string[]> {

@@ -1,7 +1,18 @@
 <div class="page-title">Activity tracker</div>
 <br>
 <div class="row col-md-11">
-  <div class="col-md-12 row">
+  <label for="FromDate" class="col-md-1 col-form-label">From date:</label>
+  <div class="col-md-4">
+    <input type="date" class="form-control" id="FromDate" [(ngModel)]="fromDate"/>
+  </div>
+  <label for="ToDate" class="col-md-1 col-form-label">To date:</label>
+  <div class="col-md-4">
+    <input type="date" class="form-control" id="ToDate" [(ngModel)]="toDate"/>
+  </div>
+  <div class="col-md-2">
+    <button (click)="displayActivity()" class="btn btn-primary">Update</button>
+  </div>
+  <div class="col-md-12">
     <canvas id="TimelineChart" class="col-md-12"></canvas>
   </div>
 </div>
