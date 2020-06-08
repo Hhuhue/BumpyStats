@@ -67,7 +67,7 @@
         <small id="TeamHelp" class="form-text text-muted">This field is optional</small>
       </div>
       <div class="col-md-4">
-        <span class="btn btn-primary">Load Match</span>
+        <span class="btn btn-primary" data-toggle="modal" data-target=".bd-example-modal-lg">Load Match</span>
       </div>
       <div id="1v1Form" class="col-md-10 input-group offset">
         <input type="text" class="form-control" id="Player1" placeholder="Enter a player name" list="PlayerNames" (change)="onOpponentsChanged()"/>
@@ -97,7 +97,7 @@
       </div>
     </div>
     <div id="ResultsForm" class="col-md-10 offset">     
-      <input type="text" class="form-control" id="VideoLink" placeholder="Enter a video link" style="width: 70%"/>
+      <input type="text" class="form-control" id="VideoLink" placeholder="Enter a video link" style="width: 70%" [(ngModel)]="selectedMatch.VideoLink"/>
       <div id="ResultSection" class="offset">
         <table class="table table-striped">
           <thead class="thead-dark">
@@ -108,7 +108,13 @@
               <th></th>
             </tr>
           </thead>
-          <tbody id="Games">
+          <tbody id="ResultGames">
+            <tr *ngFor="let game of selectedMatch.Results">
+              <td>{{getGameIndex()}}</td>
+              <td><input name="opp1" type="number" class="form-control" value="{{game[0]}}"/></td>
+              <td><input name="opp2" type="number" class="form-control" value="{{game[1]}}"/></td>
+              <td><button class="btn btn-outline-danger remove-game" (click)="onRemoveGame()"><i class="fa fa-times"></i></button></td>
+            </tr>
           </tbody>
         </table>
         <span class="btn btn-success" (click)="onAddGame()">Add Game</span>
@@ -120,10 +126,73 @@
         </div>
       </div>
       <div id="PersonalGoalSection" class="row">
+        <div *ngFor="let player of opponentsPlayers" id='{{player}}' class='input-group col-md-6'>
+          <div class='input-group-prepend' style='margin-bottom: 15px;'>
+            <span class='input-group-text'>{{player}}</span>
+          </div>
+          <input type='number' class='form-control' placeholder='Goals'/>       
+          <input type='number' class='form-control' placeholder='Assists'/>
+        </div>
       </div>
     </div>    
     <div class="col-md-6 offset">
       <span id="MatchSubmit" class="btn btn-success" (click)="onMatchSave()">Create</span>
+    </div>
+  </div>
+  <div id="MatchSearchModal" class="modal fade bd-example-modal-lg" tabindex="-1" role="dialog" aria-labelledby="MatchSearchModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title" id="MatchSearchModalLabel">Search match</h5>
+          <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+            <span aria-hidden="true">&times;</span>
+          </button>
+        </div>
+        <div class="modal-body row">
+          <div class="col-md-4">
+            <input type="text" class="form-control" id="PlayerSearch" placeholder="Player name"/>
+          </div>
+          <div class="col-md-4">
+            <input type="text" class="form-control" id="TeamSearch" placeholder="Team name"/>
+          </div>
+          <div class="col-md-4">
+            <input type="text" class="form-control" id="EventSearch" placeholder="Event name"/>
+          </div>
+          <div class="col-md-12 offset row">
+            <label for="FromDate" class="col-md-1 col-form-label">From date:</label>
+            <div class="col-md-4">
+              <input type="date" class="form-control" id="FromDate"/>
+            </div>
+            <label for="ToDate" class="col-md-1 col-form-label">To date:</label>
+            <div class="col-md-4">
+              <input type="date" class="form-control" id="ToDate"/>
+            </div>
+            <div class="col-md-2">
+              <button (click)="onSearchMatches()" class="btn btn-primary">Search</button>
+            </div>
+          </div>
+          <div class="col-md-12 offset">
+            <table id="MatchingMatches" class="table table-striped">
+              <thead class="thead-dark">
+                <tr>
+                  <th>Match Name</th>
+                  <th>Event</th>
+                  <th>Date</th>
+                  <th></th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr *ngFor="let match of searchedMatches">
+                  <td>{{(match.match_name_1)? match.match_name_1 : match.match_name_2}}</td>
+                  <td>{{match.event}}</td>
+                  <td>{{match.date}}</td>
+                  <td><button class="btn btn-primary" (click)="onLoadMatch(match.id)">Load</button></td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
     </div>
   </div>
 </div>

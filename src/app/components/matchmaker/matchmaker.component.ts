@@ -18,6 +18,9 @@ export class MatchmakerComponent implements OnInit {
   selectedEvent: TournamentEvent;
   selectedMatch: TournamentMatch;
   selectedTeamExists = false;
+  searchedMatches = [];
+  opponentsPlayers = [];
+  gameIndex = 1;
 
   constructor(private bumpyball: BumpyballService) { }
 
@@ -52,6 +55,9 @@ export class MatchmakerComponent implements OnInit {
 
   initMatchManager(){
     this.selectedMatch = new TournamentMatch(null);
+    this.searchedMatches = [];
+    this.opponentsPlayers = [];
+    this.gameIndex = 1;
     $("#MatchEvent").val("");
     $("#Player1").val("");
     $("#Player2").val("");
@@ -208,10 +214,10 @@ export class MatchmakerComponent implements OnInit {
             .subscribe(t2 => {
               var team1 = (t1 == -1) ? new Team(null) : new Team(t1);
               var team2 = (t2 == -1) ? new Team(null) : new Team(t2);
-              this.loadMatchIndividuals(team1.Teammates.concat(team2.Teammates));
+              this.opponentsPlayers = team1.Teammates.concat(team2.Teammates);
         }));
     } else {
-      this.loadMatchIndividuals([]);
+      this.opponentsPlayers = []
       $("#PersonalGoalSection").hide();
     }
   }
@@ -228,8 +234,8 @@ export class MatchmakerComponent implements OnInit {
     teamMember.remove();
   }
 
-  onRemoveGame(row){
-    row.remove();
+  onRemoveGame(){
+    this.selectedMatch.Results.pop();
   }
 
   onOpponentsChanged(){
@@ -247,54 +253,38 @@ export class MatchmakerComponent implements OnInit {
   }
 
   onAddGame(){
-    var row = document.createElement("tr");
-    var opponent1Goals = document.createElement("input");
-    var opponent2Goals = document.createElement("input");
-    var td0 = document.createElement("td");
-    var td1 = document.createElement("td");
-    var td2 = document.createElement("td");
-    var td3 = document.createElement("td");
-    var deleteBtn = document.createElement("span");
-
-    var deleteFunc = this.onRemoveGame;
-    var updateIndexFunc = this.updateGameIndex;
-
-    opponent1Goals.setAttribute("type", "text");
-    opponent2Goals.setAttribute("type", "text");
-    opponent1Goals.setAttribute("name", "opp1");
-    opponent2Goals.setAttribute("name", "opp2");
-    opponent1Goals.setAttribute("class", "form-control");
-    opponent2Goals.setAttribute("class", "form-control");
-    deleteBtn.setAttribute("class", "btn btn-outline-danger");
-    deleteBtn.innerHTML = "<i class='fa fa-times'></i>";
-    deleteBtn.addEventListener("click", () => {    
-      deleteFunc(row);
-      updateIndexFunc();    
-    }); 
-
-    td0.setAttribute("name", "index");
-    td1.appendChild(opponent1Goals);
-    td2.appendChild(opponent2Goals);
-    td3.appendChild(deleteBtn);
-
-    row.appendChild(td0);
-    row.appendChild(td1);
-    row.appendChild(td2);
-    row.appendChild(td3);
-
-    $("#Games").append(row);
-    this.updateGameIndex();
+    this.selectedMatch.Results.push([0,0])
   }
 
-  updateGameIndex(){
-    var index = 1;
-    $("td[name='index']").get().forEach(td => {
-      td.innerText = index.toString();
-      index++;
-    });
+  onSearchMatches(){
+    var searchParams = {
+      "team": $("#TeamSearch").val().toString(),
+      "player": $("#PlayerSearch").val().toString(),
+      "event": $("#EventSearch").val().toString(),
+      "fromDate": $("#FromDate").val().toString(),
+      "toDate": $("#ToDate").val().toString()
+    };
+
+    this.bumpyball.getMatches(JSON.stringify(searchParams))
+      .subscribe(searchResult => this.searchedMatches = searchResult);
   }
 
-  loadTeamData(){
+  onLoadMatch(matchId){
+    this.bumpyball.getMatch(matchId)
+      .subscribe(match => {this.selectedMatch = new TournamentMatch(match); this.loadMatchData()});
+  }
+
+  getGameIndex(){
+    if(this.gameIndex == this.selectedMatch.Results.length){
+      this.gameIndex = 1;
+      return this.selectedMatch.Results.length;
+    } else {
+      this.gameIndex++;
+      return this.gameIndex - 1;
+    }
+  }
+
+  private loadTeamData(){
     $("#MemberList").html(""); 
 
     this.selectedTeam.Teammates.forEach(teammate => {
@@ -314,22 +304,10 @@ export class MatchmakerComponent implements OnInit {
     $("#NewTeamNameForm").show();
   }
 
-  loadEventData(){
+  private loadEventData(){
     $("#NewEventNameForm").show();
   }
 
-  loadMatchIndividuals(players : any[]){
-    var html = "";
-    players.forEach(player =>{
-      var playerGoals = "<div id='" + player + "' class='input-group col-md-6'>"+
-        "<div class='input-group-prepend' style='margin-bottom: 15px;'>"+
-          "<span class='input-group-text'>" + player + "</span>"+
-        "</div>"+
-        "<input type='text' class='form-control' placeholder='Goals'/>"+          
-        "<input type='text' class='form-control' placeholder='Assists'/>"+
-      "</div>";
-      html += playerGoals;
-    });
-    $("#PersonalGoalSection").html(html);
+  private loadMatchData(){
   }
 }

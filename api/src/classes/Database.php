@@ -135,7 +135,62 @@ class Database
     }
 
     public function getMatches($filterJson){
-        $sql = "SELECT * FROM ranked_match WHERE";
+        $filterData = json_decode($filterJson);
+        $sql = "SELECT rm.id," .
+            "concat(p1.name, \" VS \", p2.name) as \"match_name_1\"," .
+            "concat(t1.name, \" VS \", t2.name) as \"match_name_2\"," .
+            "e.name as \"event\"," .
+            "rm.date " .
+        "FROM bumpystatsdb.ranked_match rm ".
+        "LEFT JOIN bumpystatsdb.team t1 ON" .
+        "    t1.id = rm.team_1 " .
+        "LEFT JOIN bumpystatsdb.team t2 ON" .
+        "    t2.id = rm.team_2 " .
+        "LEFT JOIN bumpystatsdb.player p1 ON" .
+        "    p1.id = rm.player_1 " .
+        "LEFT JOIN bumpystatsdb.player p2 ON" .
+        "    p2.id = rm.player_2 " .
+        "LEFT JOIN bumpystatsdb.event e ON" .
+        "    e.id = rm.event ";
+        $filterCount = 0;
+        $filter = "";
+        $params = [];
+
+        if (strlen($filterData->team) > 0){
+            $teamId = $this->getTeamId($filterData->team);
+            $filter += "(team_1 = ? OR team_2 = ?)";
+            $filterCount++;
+            array_push($params, $teamId, $teamId);
+        } else if (strlen($filterData->player) > 0){
+            $playerId = playerIds[$filterData->player];
+            $filter += "(player_1 = ? OR player_2 = ?)";
+            $filterCount++;
+            array_push($params, $playerId, $playerId);
+        }
+
+        if(strlen($filterData->event) > 0){
+            $eventId = $this->getEventId($filterData->event);
+            if ($filterCount > 0) $filter += " AND ";
+            $filter = "event = ?";
+            array_push($params, $eventId);
+        }
+
+        if(strlen($filterData->fromDate) > 0){
+            if ($filterCount > 0) $filter += " AND ";
+            $filter = "date >= ?";
+            array_push($params, $filterData->fromDate);
+        }
+
+        if(strlen($filterData->toDate) > 0){
+            if ($filterCount > 0) $filter += " AND ";
+            $filter = "date <= ?";
+            array_push($params, $filterData->toDate);
+        }
+
+        if($filterCount > 0) $sql += " WHERE $filter";
+
+        $result = $this->executeSqlQuery($sql, $params);
+        return json_encode($result);
     }
     
     public function getMatchData($matchId){
@@ -144,18 +199,15 @@ class Database
         if (sizeof($result) == 0){
             return -1;
         }
-        $match = $result[0];
-        $matchData = array("id" => $eventId, "name" => $name);
-
-        return json_encode($eventData);
+        $match = $result[0];        
+        return json_encode($match);
     }
 
     public function createEditMatch($matchJson){
-        //TODO: update date only if no score was previously entered
         $matchData = json_decode($matchJson, true);
         $sql = "";
-        $vars = ["date"];
-        $params = [$matchData["Date"]];
+        $vars = [];
+        $params = [];
 
         if($matchData["IsTeamMatch"]){
             array_push($vars, "team_1", "team_2");
@@ -201,6 +253,8 @@ class Database
         }
 
         if ($matchData["Id"] == -1){
+            array_push($vars, "date");
+            array_push($params, $matchData["Date"]);
             $params_string = implode(",", array_fill(0, sizeof($params), "?"));
             $var_string = implode(",", $vars);
             $sql = "INSERT INTO ranked_match ($var_string) VALUES ($params_string)";

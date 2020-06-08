@@ -17,6 +17,14 @@
     margin-top: 10px;
 }
 
+#ResultGames > tr > td > button{
+    display: none;
+}
+
+#ResultGames > tr:last-child > td > button{
+    display: block;
+}
+
 :host ::ng-deep .delete-btn{
     color: rgba(178, 74, 74, 1);
     padding-left: 5px;

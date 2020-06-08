@@ -210,6 +210,14 @@ $app->get('/event/{name}', function (Request $request, Response $response, $args
     return $response;
 });
 
+$app->get('/match/{id}', function (Request $request, Response $response, $args) {
+    $connection = CreateDBConnection($this);   
+    $id = (int)$args['id'];
+    $matchJson = $connection->getMatchData($id);
+    $response->getBody()->write($matchJson);
+    return $response;
+});
+
 $app->post('/submit-team', function (Request $request, Response $response) {
     $connection = CreateDBConnection($this);
     $body = $request->getBody();
@@ -228,6 +236,14 @@ $app->post('/submit-match', function (Request $request, Response $response) {
     $connection = CreateDBConnection($this);
     $body = $request->getBody();
     $connection->createEditMatch($body);
+    return $response;
+});
+
+$app->post('/match-search', function (Request $request, Response $response) {
+    $connection = CreateDBConnection($this);
+    $body = $request->getBody();
+    $searchJson = $connection->getMatches($body);
+    $response->getBody()->write($searchJson);
     return $response;
 });
 
