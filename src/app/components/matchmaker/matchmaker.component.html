@@ -63,7 +63,7 @@
         </div>
       </div>
       <div class="col-md-4">
-        <input type="text" class="form-control" id="MatchEvent" placeholder="Enter an event name" list="EventNames" />
+        <input type="text" class="form-control" id="MatchEvent" placeholder="Enter an event name" list="EventNames" [(ngModel)]="selectedMatch.Event" />
         <small id="TeamHelp" class="form-text text-muted">This field is optional</small>
       </div>
       <div class="col-md-4">
@@ -103,8 +103,8 @@
           <thead class="thead-dark">
             <tr>
               <th>Game</th>
-              <th id="Opponent1"></th>
-              <th id="Opponent2"></th>
+              <th>{{selectedMatch.Opponent1}}</th>
+              <th>{{selectedMatch.Opponent2}}</th>
               <th></th>
             </tr>
           </thead>
@@ -126,17 +126,18 @@
         </div>
       </div>
       <div id="PersonalGoalSection" class="row">
-        <div *ngFor="let player of opponentsPlayers" id='{{player}}' class='input-group col-md-6'>
+        <div *ngFor="let player of selectedMatch.PersonalGoals" id='{{player[0]}}' class='input-group col-md-6'>
           <div class='input-group-prepend' style='margin-bottom: 15px;'>
-            <span class='input-group-text'>{{player}}</span>
+            <span class='input-group-text'>{{player[0]}}</span>
           </div>
-          <input type='number' class='form-control' placeholder='Goals'/>       
-          <input type='number' class='form-control' placeholder='Assists'/>
+          <input type='number' class='form-control' placeholder='Goals' value="{{player[1]}}"/>       
+          <input type='number' class='form-control' placeholder='Assists' value="{{player[2]}}"/>
         </div>
       </div>
     </div>    
     <div class="col-md-6 offset">
       <span id="MatchSubmit" class="btn btn-success" (click)="onMatchSave()">Create</span>
+      <span id="CancelEdit" class="btn btn-danger" (click)="initMatchManager()">Cancel</span>
     </div>
   </div>
   <div id="MatchSearchModal" class="modal fade bd-example-modal-lg" tabindex="-1" role="dialog" aria-labelledby="MatchSearchModalLabel" aria-hidden="true">
@@ -186,7 +187,7 @@
                   <td>{{(match.match_name_1)? match.match_name_1 : match.match_name_2}}</td>
                   <td>{{match.event}}</td>
                   <td>{{match.date}}</td>
-                  <td><button class="btn btn-primary" (click)="onLoadMatch(match.id)">Load</button></td>
+                  <td><button class="btn btn-primary" (click)="onLoadMatch(match.id)" data-dismiss="modal">Load</button></td>
                 </tr>
               </tbody>
             </table>

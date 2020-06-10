@@ -194,7 +194,25 @@ class Database
     }
     
     public function getMatchData($matchId){
-        $sql = "SELECT * from ranked_match WHERE id = ?";
+        $sql = "SELECT rm.id, 
+            IFNULL(p1.name, t1.name) as opponent_1, 
+            IFNULL(p2.name, t2.name) as opponent_2,        
+            e.name as event, 
+            rm.date,
+            rm.result,
+            ISNULL(rm.player_1) as team_match 
+        FROM ranked_match rm 
+            LEFT JOIN team t1 ON
+                t1.id = rm.team_1 
+            LEFT JOIN team t2 ON
+                t2.id = rm.team_2 
+            LEFT JOIN player p1 ON
+                p1.id = rm.player_1 
+            LEFT JOIN player p2 ON
+                p2.id = rm.player_2 
+            LEFT JOIN event e ON
+                e.id = rm.event
+        WHERE rm.id = ?";
         $result = $this->executeSqlQuery($sql, [$matchId]);
         if (sizeof($result) == 0){
             return -1;
@@ -253,8 +271,8 @@ class Database
         }
 
         if ($matchData["Id"] == -1){
-            array_push($vars, "date");
-            array_push($params, $matchData["Date"]);
+            array_push($vars, "date", "aggregate_win");
+            array_push($params, $matchData["Date"], $matchData["IsAggregateWin"]);
             $params_string = implode(",", array_fill(0, sizeof($params), "?"));
             $var_string = implode(",", $vars);
             $sql = "INSERT INTO ranked_match ($var_string) VALUES ($params_string)";

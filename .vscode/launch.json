@@ -17,6 +17,14 @@
             "program": "${file}",
             "cwd": "${fileDirname}",
             "port": 9000
+        },
+        {        
+            "type": "firefox",
+            "request": "launch",
+            "name": "Launch FireFox against localhost",
+            "url": "http://localhost:4200",
+            "webRoot": "${workspaceFolder}"
         }
+            
     ]
 }

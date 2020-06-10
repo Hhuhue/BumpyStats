@@ -19,7 +19,6 @@ export class MatchmakerComponent implements OnInit {
   selectedMatch: TournamentMatch;
   selectedTeamExists = false;
   searchedMatches = [];
-  opponentsPlayers = [];
   gameIndex = 1;
 
   constructor(private bumpyball: BumpyballService) { }
@@ -56,7 +55,6 @@ export class MatchmakerComponent implements OnInit {
   initMatchManager(){
     this.selectedMatch = new TournamentMatch(null);
     this.searchedMatches = [];
-    this.opponentsPlayers = [];
     this.gameIndex = 1;
     $("#MatchEvent").val("");
     $("#Player1").val("");
@@ -71,6 +69,7 @@ export class MatchmakerComponent implements OnInit {
     $("#MatchMode").prop("checked", false);
     $("#EnterResults").prop("checked", false);
     $("#AggregateScore").prop("checked", false);
+    $("#EnterPersonalGoals").prop("checked", false);
     this.onMatchModeChange();
     this.onEnterResultsChange();
     this.onEnterPersonalGoalsChange();
@@ -158,6 +157,7 @@ export class MatchmakerComponent implements OnInit {
       this.selectedMatch.VideoLink = $("#VideoLink").val().toString();
       var opponent1Goals = $("input[name=opp1]").map((idx, elem) => {return parseInt($(elem).val().toString());}).get();
       var opponent2Goals = $("input[name=opp2]").map((idx, elem) => {return parseInt($(elem).val().toString());}).get();
+      this.selectedMatch.Results = [];
       for(var i = 0; i < opponent1Goals.length; i++){
         this.selectedMatch.Results.push([opponent1Goals[i], opponent2Goals[i]])
       }
@@ -179,20 +179,21 @@ export class MatchmakerComponent implements OnInit {
   onMatchModeChange(){
     var teamMatch = $("#MatchMode").prop("checked");
     this.selectedMatch.IsTeamMatch = teamMatch;
+    this.selectedMatch.Opponent1 = "";
+    this.selectedMatch.Opponent2 = "";
     if(teamMatch){
       $("#1v1Form").hide();
       $("#TvTForm").show();
       $("#Player1").val("");
       $("#Player2").val("");
-      $("#EnterPersonalGoals").removeAttr("disabled");
-      $("#EnterPersonalGoals").prop("checked", false);
-      this.onEnterPersonalGoalsChange();
+      this.selectedMatch.PersonalGoals = [];
+      this.togglePersonalGoals();
     } else {
       $("#1v1Form").show();
       $("#TvTForm").hide();
       $("#Team1").val("");
       $("#Team2").val("");
-      $("#EnterPersonalGoals").attr("disabled","disabled");
+      this.togglePersonalGoals();
     }
   }
 
@@ -204,7 +205,7 @@ export class MatchmakerComponent implements OnInit {
       $("#ResultsForm").hide();
     }
   }
-
+  
   onEnterPersonalGoalsChange(){
     var enterPersonalGoals = $("#EnterPersonalGoals").prop("checked");
     if(enterPersonalGoals && this.selectedMatch.IsTeamMatch){
@@ -214,10 +215,11 @@ export class MatchmakerComponent implements OnInit {
             .subscribe(t2 => {
               var team1 = (t1 == -1) ? new Team(null) : new Team(t1);
               var team2 = (t2 == -1) ? new Team(null) : new Team(t2);
-              this.opponentsPlayers = team1.Teammates.concat(team2.Teammates);
+              this.selectedMatch.PersonalGoals = team1.Teammates.concat(team2.Teammates)
+                .map((idx, elem) => [idx, 0, 0]);
         }));
     } else {
-      this.opponentsPlayers = []
+      this.selectedMatch.PersonalGoals = []
       $("#PersonalGoalSection").hide();
     }
   }
@@ -241,15 +243,13 @@ export class MatchmakerComponent implements OnInit {
   onOpponentsChanged(){
     var teamMatch = $("#MatchMode").prop("checked");
     if(teamMatch){
-      $("#Opponent1").text($("#Team1").val().toString());
-      $("#Opponent2").text($("#Team2").val().toString());
-      this.onEnterPersonalGoalsChange()
+      this.selectedMatch.Opponent1 = $("#Team1").val().toString();
+      this.selectedMatch.Opponent2 = $("#Team2").val().toString();
+      this.togglePersonalGoals();
     } else {
-      $("#Opponent1").text($("#Player1").val().toString());
-      $("#Opponent2").text($("#Player2").val().toString());
+      this.selectedMatch.Opponent1 = $("#Player1").val().toString();
+      this.selectedMatch.Opponent2 = $("#Player2").val().toString();
     }
-    this.selectedMatch.Opponent1 = $("#Opponent1").text();
-    this.selectedMatch.Opponent2 = $("#Opponent2").text();
   }
 
   onAddGame(){
@@ -271,7 +271,7 @@ export class MatchmakerComponent implements OnInit {
 
   onLoadMatch(matchId){
     this.bumpyball.getMatch(matchId)
-      .subscribe(match => {this.selectedMatch = new TournamentMatch(match); this.loadMatchData()});
+      .subscribe(match => this.loadMatchData(match));
   }
 
   getGameIndex(){
@@ -281,6 +281,17 @@ export class MatchmakerComponent implements OnInit {
     } else {
       this.gameIndex++;
       return this.gameIndex - 1;
+    }
+  }
+
+  private togglePersonalGoals(){
+    var isTeamMatch = $("#MatchMode").prop("checked");
+    var opponentsAreDefined = this.selectedMatch.Opponent1 && this.selectedMatch.Opponent2;
+    if(isTeamMatch && opponentsAreDefined) {
+      $("#EnterPersonalGoals").removeAttr("disabled");
+      $("#EnterPersonalGoals").prop("checked", false);
+    } else {
+      $("#EnterPersonalGoals").attr("disabled","disabled");
     }
   }
 
@@ -308,6 +319,34 @@ export class MatchmakerComponent implements OnInit {
     $("#NewEventNameForm").show();
   }
 
-  private loadMatchData(){
+  private loadMatchData(matchData){
+    var match = new TournamentMatch(matchData);
+    this.selectedMatch = match;
+
+    $("#AggregateScore").prop("checked", match.IsAggregateWin);
+    $("#MatchMode").prop("checked", match.IsTeamMatch);
+    if(match.IsTeamMatch){
+      $("#Team1").val(match.Opponent1);
+      $("#Team2").val(match.Opponent2);
+      $("#1v1Form").hide();
+      $("#TvTForm").show();
+
+    } else {
+      $("#Player1").val(match.Opponent1);
+      $("#Player2").val(match.Opponent2);
+      $("#1v1Form").show();
+      $("#TvTForm").hide();
+    }
+    $("#EnterResults").prop("checked", match.Results.length > 0);
+    if(match.Results.length > 0){
+      $("#ResultsForm").show();
+      $("#EnterPersonalGoals").prop("checked", match.PersonalGoals.length > 0);
+      if(match.PersonalGoals.length > 0){
+        this.onEnterPersonalGoalsChange();
+      }
+    } else {      
+      $("#ResultsForm").hide();
+    }
+    this.onOpponentsChanged();
   }
 }
