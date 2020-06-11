@@ -136,8 +136,9 @@
       </div>
     </div>    
     <div class="col-md-6 offset">
-      <span id="MatchSubmit" class="btn btn-success" (click)="onMatchSave()">Create</span>
-      <span id="CancelEdit" class="btn btn-danger" (click)="initMatchManager()">Cancel</span>
+      <button *ngIf="selectedMatch.Id == -1" id="MatchSubmit" class="btn btn-success mr-2" (click)="onMatchSave()">Create</button>
+      <button *ngIf="selectedMatch.Id != -1" id="MatchSubmit" class="btn btn-warning mr-2" (click)="onMatchSave()">Save</button>
+      <button *ngIf="selectedMatch.Id != -1" id="CancelEdit" class="btn btn-danger " (click)="initMatchManager()">Cancel</button>
     </div>
   </div>
   <div id="MatchSearchModal" class="modal fade bd-example-modal-lg" tabindex="-1" role="dialog" aria-labelledby="MatchSearchModalLabel" aria-hidden="true">

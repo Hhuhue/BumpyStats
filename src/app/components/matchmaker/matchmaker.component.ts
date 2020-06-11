@@ -342,11 +342,13 @@ export class MatchmakerComponent implements OnInit {
       $("#ResultsForm").show();
       $("#EnterPersonalGoals").prop("checked", match.PersonalGoals.length > 0);
       if(match.PersonalGoals.length > 0){
-        this.onEnterPersonalGoalsChange();
+        $("#EnterPersonalGoals").removeAttr("disabled");
+        $("#PersonalGoalSection").show();
+      } else {        
+        $("#PersonalGoalSection").hide();
       }
     } else {      
       $("#ResultsForm").hide();
     }
-    this.onOpponentsChanged();
   }
 }
