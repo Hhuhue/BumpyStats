@@ -76,7 +76,6 @@ export class PlayerStatsComponent implements OnInit {
 
   private setTimeline(data) {
     if (data == -1) {
-      this.flashMessage.show("Player <b>" + this.name + "</b> not found", { cssClass: 'alert-danger', timeout: 5000 })
       this.name = "";
     } else {
       this.playerTimeline = this.statService.buildPlayerData(data);

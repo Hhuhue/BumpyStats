@@ -16,7 +16,9 @@ export class StatisticsService {
   private expPath: number[] = undefined;
   private levelJson = { "levelMap": { "1": { "level": 1, "experience": 100 }, "2": { "level": 2, "experience": 250 }, "3": { "level": 3, "experience": 500 }, "4": { "level": 4, "experience": 750 }, "5": { "level": 5, "experience": 1000 }, "6": { "level": 6, "experience": 1250 }, "7": { "level": 7, "experience": 1500 }, "8": { "level": 8, "experience": 2000 }, "9": { "level": 9, "experience": 2500 }, "10": { "level": 10, "experience": 3000 }, "11": { "level": 11, "experience": 3500 }, "12": { "level": 12, "experience": 4000 }, "13": { "level": 13, "experience": 4500 }, "14": { "level": 14, "experience": 5000 }, "15": { "level": 15, "experience": 6000 }, "16": { "level": 16, "experience": 7000 }, "17": { "level": 17, "experience": 8000 }, "18": { "level": 18, "experience": 9000 }, "19": { "level": 19, "experience": 10000 }, "20": { "level": 20, "experience": 12000 }, "21": { "level": 21, "experience": 15000 }, "22": { "level": 22, "experience": 20000 }, "23": { "level": 23, "experience": 25000 }, "24": { "level": 24, "experience": 30000 }, "25": { "level": 25, "experience": 40000 }, "26": { "level": 26, "experience": 50000 }, "27": { "level": 27, "experience": 60000 }, "28": { "level": 28, "experience": 80000 }, "29": { "level": 29, "experience": 100000 }, "30": { "level": 30, "experience": 120000 }, "31": { "level": 31, "experience": 140000 }, "32": { "level": 32, "experience": 170000 }, "33": { "level": 33, "experience": 200000 }, "34": { "level": 34, "experience": 250000 }, "35": { "level": 35, "experience": 300000 }, "36": { "level": 36, "experience": 400000 }, "37": { "level": 37, "experience": 500000 }, "38": { "level": 38, "experience": 600000 }, "39": { "level": 39, "experience": 700000 }, "40": { "level": 40, "experience": 800000 }, "41": { "level": 41, "experience": 900000 }, "42": { "level": 42, "experience": 1000000 }, "43": { "level": 43, "experience": 1100000 }, "44": { "level": 44, "experience": 1200000 }, "45": { "level": 45, "experience": 1300000 }, "46": { "level": 46, "experience": 1400000 }, "47": { "level": 47, "experience": 1500000 }, "48": { "level": 48, "experience": 1600000 }, "49": { "level": 49, "experience": 1700000 }, "50": { "level": 50, "experience": 1800000 }, "51": { "level": 51, "experience": 1900000 }, "52": { "level": 52, "experience": 2000000 } } };
 
-  constructor(private bumpyball: BumpyballService) { }
+  constructor(private bumpyball: BumpyballService) { 
+    this.init();
+  }
 
   init() {
     this.getExpPath();
@@ -94,9 +96,9 @@ export class StatisticsService {
         });
       */
       var keys = Object.keys(this.levelJson.levelMap);
-        keys.forEach(key => {
-          this.expPath.push(this.levelJson.levelMap[key].experience)
-        });
+      keys.forEach(key => {
+        this.expPath.push(this.levelJson.levelMap[key].experience)
+      });
     }
   }
 
