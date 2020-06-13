@@ -2,7 +2,7 @@
 
 namespace Classes;
 
-class SqlHelper 
+class SqlHelper
 {
     public function __construct() { }
 

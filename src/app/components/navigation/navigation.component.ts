@@ -1,4 +1,5 @@
 import { Component, OnInit } from '@angular/core';
+import { AuthService } from 'src/app/services/auth-service.service';
 
 @Component({
   selector: 'app-navigation',
@@ -7,7 +8,7 @@ import { Component, OnInit } from '@angular/core';
 })
 export class NavigationComponent implements OnInit {
   selectedIndex = 1;
-  constructor() { }
+  constructor(public auth : AuthService) { }
 
   ngOnInit() {
     var url = window.location.href.split("/");
@@ -32,6 +33,9 @@ export class NavigationComponent implements OnInit {
       case "About":
         this.onSelect(6);
         break;
+      case "Matchmaker":
+        this.onSelect(7);
+        break;
       default:
         this.onSelect(1);
     }
@@ -39,5 +43,13 @@ export class NavigationComponent implements OnInit {
 
   onSelect(index) {
     this.selectedIndex = index;
+  }
+
+  onLogin(){
+    this.auth.login("G3tR4nk3d!");
+  }
+
+  onLogout(){
+    this.auth.logout();
   }
 }

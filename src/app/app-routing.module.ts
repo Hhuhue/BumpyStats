@@ -8,6 +8,7 @@ import { AboutComponent } from './components/about/about.component';
 import { GraveyardComponent } from './components/graveyard/graveyard.component';
 import { ActivityComponent } from './components/activity/activity.component';
 import { MatchmakerComponent } from './components/matchmaker/matchmaker.component';
+import { AuthGuardService } from './services/auth-guard.service';
 
 const routes: Routes = [
   {path: '', redirectTo: 'Leaderboards', pathMatch: 'full'},
@@ -17,7 +18,7 @@ const routes: Routes = [
   {path: 'Register', component: RegisterComponent},
   {path: 'Graveyard', component: GraveyardComponent},
   {path: 'About', component: AboutComponent},
-  {path: 'Matchmaker', component: MatchmakerComponent},
+  {path: 'Matchmaker', component: MatchmakerComponent, canActivate: [AuthGuardService]},
   {path: 'Activity', component: ActivityComponent}
 ];
 

@@ -277,6 +277,8 @@ class Database
             $var_string = implode(",", $vars);
             $sql = "INSERT INTO ranked_match ($var_string) VALUES ($params_string)";
         } else {
+            array_push($vars, "aggregate_win");
+            array_push($params, $matchData["IsAggregateWin"]);
             $params_string = implode(" = ?,", $vars);
             $sql = "UPDATE ranked_match SET $params_string = ? WHERE id = ?";
             array_push($params, $matchData["Id"]);

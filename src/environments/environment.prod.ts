@@ -1,3 +1,4 @@
 export const environment = {
-  production: true
+  production: true,
+  APIEndpoint: "http://bumpystats.gearhostpreview.com/src/public"  
 };

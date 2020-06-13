@@ -12,7 +12,6 @@ export class AppComponent {
   title = 'BumpyStats';
   JQuery = $;
 
-  constructor(private statService: StatisticsService) {
-    statService.init();
+  constructor() {
   }
 }

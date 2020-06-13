@@ -1,21 +1,25 @@
 <?php
 header("Access-Control-Allow-Origin: *");
 require '../../vendor/autoload.php';
-require 'credentials.php';
 
 use \Psr\Http\Message\ServerRequestInterface as Request;
 use \Psr\Http\Message\ResponseInterface as Response;
 use Classes\Database as Database;
-use Classes\SqlHelper  as SqlHelper ;
+use Classes\SqlHelper as SqlHelper;
 use Classes\ProgressService as ProgressService;
+use Classes\AuthManager as AuthManager;
+use Dotenv\Dotenv;
+
+$dotenv = new DotEnv(__DIR__);
+$dotenv->load();
 
 $config['displayErrorDetails'] = true;
 $config['addContentLengthHeader'] = false;
 
-$config['db']['host']   = $host;
-$config['db']['user']   = $user;
-$config['db']['pass']   = $password;
-$config['db']['dbname'] = $database;
+$config['db']['host']   = getenv("HOST");
+$config['db']['user']   = getenv("USER");
+$config['db']['pass']   = getenv("PASSWORD");
+$config['db']['dbname'] = getenv("DATABASE");
 
 $app = new \Slim\App(['settings' => $config]);
 
@@ -45,7 +49,7 @@ function ExecuteWebRequest($type, $url)
 
 function CreateDBConnection($context)
 {
-    return new Database($context->db, $context->logger, new SqlHelper (), new ProgressService());
+    return new Database($context->db, $context->logger, new SqlHelper(), new ProgressService());
 }
 
 function GetPlayersStateFromUids($playersUid)
@@ -244,6 +248,22 @@ $app->post('/match-search', function (Request $request, Response $response) {
     $body = $request->getBody();
     $searchJson = $connection->getMatches($body);
     $response->getBody()->write($searchJson);
+    return $response;
+});
+
+$app->post('/login', function (Request $request, Response $response) {
+    $auth = new AuthManager(getenv('SECRET'), getenv('ACCESS_PASSWORD'));
+    $body = $request->getBody();
+    $result = $auth->VerifyUser($body);
+    $response->getBody()->write($result);
+    return $response;
+});
+
+$app->post('/verify', function (Request $request, Response $response) {
+    $auth = new AuthManager(getenv('SECRET'), getenv('ACCESS_PASSWORD'));
+    $body = $request->getBody();
+    $result = $auth->VerifyJWT($body);
+    $response->getBody()->write($result);
     return $response;
 });
 

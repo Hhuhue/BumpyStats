@@ -3,35 +3,33 @@ import { HttpClient } from '@angular/common/http';
 import { LeaderboardEntry } from "../models/model.leaderboard-entry";
 import { Observable } from 'rxjs';
 import { ActivityRecord } from '../models/models.activity-record';
-import { Team } from '../models/models.team';
+import { environment } from './../../environments/environment';
 
 @Injectable({
   providedIn: 'root'
 })
 export class BumpyballService {
-  private localBase = "http://localhost:8080";
-  private prodBase = "http://bumpystats.gearhostpreview.com/src/public";
-
   private leaderboardURL = "http://listing.usemapsettings.com/Leaderboard?Limit=250";
   private uidUrl = "http://nifty-condition-169823.appspot.com/GetPlayerRecord?Game=BumpyBall&Uid=";
   private levelsUrl = "http://www.usemapsettings.com/data/levels.json";
-  private getPlayerProgressApiUrl = this.getUrlBase() + "/snapshot-preview";
-  private getPlayerDataApiUrl = this.getUrlBase() + "/data/";
-  private getPlayerTimelineApiUrl = this.getUrlBase() + "/timeline/";
-  private getLatestProgressesApiUrl = this.getUrlBase() + "/latest-progress";
-  private getPlayerAvergageTimeApiUrl = this.getUrlBase() + "/average-time/";
-  private getPlayersNameApiUrl = this.getUrlBase() + "/names";
-  private setPlayerUidApiUrl = this.getUrlBase() + "/setPlayerUID/";
-  private getActivityApiUrl = this.getUrlBase() + "/activity";
-  private getTeamNamesApiUrl = this.getUrlBase() + "/team-names";
-  private getEventNamesApiUrl = this.getUrlBase() + "/event-names";
-  private getTeamDataApiUrl = this.getUrlBase() + "/team/";
-  private getEventDataApiUrl = this.getUrlBase() + "/event/";
-  private postTeamDataApiUrl = this.getUrlBase() + "/submit-team";
-  private postEventDataApiUrl = this.getUrlBase() + "/submit-event";
-  private postMatchDataApiUrl = this.getUrlBase() + "/submit-match";
-  private getMatchesApiUrl = this.getUrlBase() + "/match-search";
-  private getMatchApiUrl = this.getUrlBase() + "/match/";
+  private getPlayerProgressApiUrl = environment.APIEndpoint + "/snapshot-preview";
+  private getPlayerDataApiUrl = environment.APIEndpoint + "/data/";
+  private getPlayerTimelineApiUrl = environment.APIEndpoint + "/timeline/";
+  private getLatestProgressesApiUrl = environment.APIEndpoint + "/latest-progress";
+  private getPlayerAvergageTimeApiUrl = environment.APIEndpoint + "/average-time/";
+  private getPlayersNameApiUrl = environment.APIEndpoint + "/names";
+  private setPlayerUidApiUrl = environment.APIEndpoint + "/setPlayerUID/";
+  private getActivityApiUrl = environment.APIEndpoint + "/activity";
+  private getTeamNamesApiUrl = environment.APIEndpoint + "/team-names";
+  private getEventNamesApiUrl = environment.APIEndpoint + "/event-names";
+  private getTeamDataApiUrl = environment.APIEndpoint + "/team/";
+  private getEventDataApiUrl = environment.APIEndpoint + "/event/";
+  private postTeamDataApiUrl = environment.APIEndpoint + "/submit-team";
+  private postEventDataApiUrl = environment.APIEndpoint + "/submit-event";
+  private postMatchDataApiUrl = environment.APIEndpoint + "/submit-match";
+  private getMatchesApiUrl = environment.APIEndpoint + "/match-search";
+  private getMatchApiUrl = environment.APIEndpoint + "/match/";
+  private postAuthApiUrl = environment.APIEndpoint + "/login";
 
   constructor(private http: HttpClient) { }
 
@@ -115,7 +113,7 @@ export class BumpyballService {
     return this.http.post(this.postMatchDataApiUrl, matchData);
   }
 
-  private getUrlBase() {
-    return this.localBase;
+  postAuthCredentials(password: string) : Observable<any> {
+    return this.http.post(this.postAuthApiUrl, password, {responseType: 'text'});
   }
 }

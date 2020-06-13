@@ -6,6 +6,7 @@ import { FormsModule } from '@angular/forms';
 
 import { FlashMessagesModule } from 'angular2-flash-messages';
 import { HttpClientModule }    from '@angular/common/http';
+import { JwtModule } from "@auth0/angular-jwt";
 
 import { NavigationComponent } from './components/navigation/navigation.component';
 import { LeaderboardsComponent } from './components/leaderboards/leaderboards.component';
@@ -18,6 +19,10 @@ import { PlayerGraphsComponent } from './components/player-graphs/player-graphs.
 import { GraveyardComponent } from './components/graveyard/graveyard.component';
 import { ActivityComponent } from './components/activity/activity.component';
 import { MatchmakerComponent } from './components/matchmaker/matchmaker.component';
+
+export function tokenGetter() {
+  return localStorage.getItem("access_token");
+}
 
 @NgModule({
   declarations: [
@@ -39,7 +44,12 @@ import { MatchmakerComponent } from './components/matchmaker/matchmaker.componen
     AppRoutingModule,
     HttpClientModule,
     FormsModule,
-    FlashMessagesModule.forRoot()
+    FlashMessagesModule.forRoot(),
+    JwtModule.forRoot({
+      config: {
+        tokenGetter: tokenGetter
+      },
+    })
   ],
   providers: [],
   bootstrap: [AppComponent]
