@@ -2,11 +2,14 @@
     "require": {
         "slim/slim": "^3.12",
         "monolog/monolog": "^1.24",
-        "guzzlehttp/guzzle": "~6.0"
+        "guzzlehttp/guzzle": "~6.0",
+        "vlucas/phpdotenv": "^2.4",
+        "nesbot/carbon": "^2.35"
     },
     "autoload": {
         "psr-4": {
-            "Classes\\": "src/classes"
+            "Classes\\": "src/classes",
+            "Src\\": "src/"
         }
     }
 }
