@@ -19,6 +19,7 @@ import { PlayerGraphsComponent } from './components/player-graphs/player-graphs.
 import { GraveyardComponent } from './components/graveyard/graveyard.component';
 import { ActivityComponent } from './components/activity/activity.component';
 import { MatchmakerComponent } from './components/matchmaker/matchmaker.component';
+import { LoginComponent } from './components/login/login.component';
 
 export function tokenGetter() {
   return localStorage.getItem("access_token");
@@ -37,7 +38,8 @@ export function tokenGetter() {
     PlayerGraphsComponent,
     GraveyardComponent,
     ActivityComponent,
-    MatchmakerComponent
+    MatchmakerComponent,
+    LoginComponent
   ],
   imports: [
     BrowserModule,

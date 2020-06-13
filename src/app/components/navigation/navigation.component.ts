@@ -44,12 +44,4 @@ export class NavigationComponent implements OnInit {
   onSelect(index) {
     this.selectedIndex = index;
   }
-
-  onLogin(){
-    this.auth.login("G3tR4nk3d!");
-  }
-
-  onLogout(){
-    this.auth.logout();
-  }
 }
