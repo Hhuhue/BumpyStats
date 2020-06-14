@@ -554,9 +554,9 @@ class Database
         $formattedState = array(
             "Wins" => $playerStateData["Wins"],
             "Draws" => $playerStateData["Draws"],
-            "goals" => $playerStateData["goals"],
+            "goals" => is_null($playerStateData["goals"]) ? 0 : $playerStateData["goals"],
             "Losses" => $playerStateData["Losses"],
-            "assists" => $playerStateData["assists"],
+            "assists" => is_null($playerStateData["assists"]) ? 0 : $playerStateData["assists"],
             "last_name" => $playerStateData["last_name"],
             "Experience" => $playerStateData["Experience"]
         );
@@ -714,6 +714,7 @@ class Database
     private function insertPlayers($players)
     {
         $sql = "INSERT INTO player (name, inLeaderBoard) VALUES ";
+        $queryComponents = $this->sqlHelper->buildInsertQuery($sql, $players, 2);
         $this->executeSqlQuery($queryComponents["query"], $queryComponents["parameters"]);
     }
 
