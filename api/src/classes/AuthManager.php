@@ -40,7 +40,7 @@ class AuthManager{
         $payload = json_encode([
             'user_id' => 1,
             'role' => 'admin',
-            'exp' => time() + 600
+            'exp' => time() + 3600
         ]);
         
         $base64UrlHeader = $this->base64UrlEncode($header);

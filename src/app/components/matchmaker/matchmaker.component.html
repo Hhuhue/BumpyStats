@@ -64,7 +64,6 @@
       </div>
       <div class="col-md-4">
         <input type="text" class="form-control" id="MatchEvent" placeholder="Enter an event name" list="EventNames" [(ngModel)]="selectedMatch.Event" />
-        <small id="TeamHelp" class="form-text text-muted">This field is optional</small>
       </div>
       <div class="col-md-4">
         <span class="btn btn-primary" data-toggle="modal" data-target=".bd-example-modal-lg">Load Match</span>
@@ -126,12 +125,15 @@
         </div>
       </div>
       <div id="PersonalGoalSection" class="row">
-        <div *ngFor="let player of selectedMatch.PersonalGoals" id='{{player[0]}}' class='input-group col-md-6'>
-          <div class='input-group-prepend' style='margin-bottom: 15px;'>
-            <span class='input-group-text'>{{player[0]}}</span>
+        <div *ngFor="let player of selectedMatch.PersonalGoals" id='{{toSlug(player[0])}}' class='input-group col-md-6 offset'>
+          <div class="input-group-prepend">
+            <div class="input-group-text" (click)="onTogglePlayer(toSlug(player[0]))">
+              <input type="checkbox" id="{{toSlug(player[0])}}-check" [attr.checked]="(player[3]) ? 'checked' : null">
+              <label style="margin: 0px 0px 0px 5px;" for="{{player[0]}}-check">{{player[0]}}</label>
+            </div>
           </div>
-          <input type='number' class='form-control' placeholder='Goals' value="{{player[1]}}"/>       
-          <input type='number' class='form-control' placeholder='Assists' value="{{player[2]}}"/>
+          <input type='number' class='form-control' placeholder='Goals' value="{{player[1]}}" [attr.disabled]="(!player[3]) ? 'disabled' : null"/>       
+          <input type='number' class='form-control' placeholder='Assists' value="{{player[2]}}" [attr.disabled]="(!player[3]) ? 'disabled' : null"/>   
         </div>
       </div>
     </div>    

@@ -4,7 +4,7 @@ export class TournamentMatch{
     Opponent1 : string;
     Opponent2 : string;
     IsTeamMatch : boolean;
-    IsAggregateWin : boolean;
+    IsAggregateWin : number;
     Event : string;
     Date : string;
     VideoLink : string;
@@ -18,7 +18,7 @@ export class TournamentMatch{
             this.Opponent1 = "";
             this.Opponent2 = "";
             this.IsTeamMatch = false;
-            this.IsAggregateWin = false;
+            this.IsAggregateWin = 0;
             this.Event = "";
             this.Date = "";
             this.VideoLink = "";

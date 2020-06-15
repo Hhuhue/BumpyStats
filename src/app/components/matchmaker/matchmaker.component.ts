@@ -4,6 +4,8 @@ import { Team } from 'src/app/models/models.team';
 import { TournamentEvent } from 'src/app/models/models.tournament-event';
 import { TournamentMatch } from 'src/app/models/models.tournament-match';
 import * as moment from 'moment';
+import slugify from 'slugify';
+import { FlashMessagesService } from 'angular2-flash-messages';
 
 @Component({
   selector: 'app-matchmaker',
@@ -21,7 +23,7 @@ export class MatchmakerComponent implements OnInit {
   searchedMatches = [];
   gameIndex = 1;
 
-  constructor(private bumpyball: BumpyballService) { }
+  constructor(private bumpyball: BumpyballService, private flashMessage : FlashMessagesService) { }
 
   ngOnInit() {
     this.bumpyball.getPlayersName()
@@ -130,7 +132,8 @@ export class MatchmakerComponent implements OnInit {
     this.selectedTeam.Teammates = newTeammates;
 
     var teamData = JSON.stringify(this.selectedTeam);
-    this.bumpyball.postTeamData(teamData).subscribe();
+    this.bumpyball.postTeamData(teamData)
+      .subscribe(() => this.flashMessage.show("Team submited", { cssClass: 'alert-success', timeout: 3000 }));
     this.initTeamManager();
   }
 
@@ -143,13 +146,14 @@ export class MatchmakerComponent implements OnInit {
     }
 
     var eventData = JSON.stringify(this.selectedEvent);
-    this.bumpyball.postEventData(eventData).subscribe();
+    this.bumpyball.postEventData(eventData)
+      .subscribe(() => this.flashMessage.show("Event submited", { cssClass: 'alert-success', timeout: 3000 }));
     this.initEventManager();
   }
 
   onMatchSave(){
     this.selectedMatch.Event = $("#MatchEvent").val().toString();
-    this.selectedMatch.IsAggregateWin = $("#AggregateScore").prop("checked");
+    this.selectedMatch.IsAggregateWin = $("#AggregateScore").prop("checked") ? 1 : 0;
     this.selectedMatch.Name = $("#Opponent1").text() + " VS " + $("#Opponent2").text();
     this.selectedMatch.Date = moment().format("YYYY-MM-DD");
 
@@ -162,18 +166,24 @@ export class MatchmakerComponent implements OnInit {
         this.selectedMatch.Results.push([opponent1Goals[i], opponent2Goals[i]])
       }
       if($("#EnterPersonalGoals").prop("checked")){
-        var personalGoals = $("#PersonalGoalSection>*").map((idx, elem) => {
+        var personalGoals = $("#PersonalGoalSection>*").map((idx, elem1) => {
           var personalData = [];
-          var goalsAssists = $(elem).find("input").map((idx, elem) => {return parseInt($(elem).val().toString());}).get();
-          personalData.push($(elem).attr("id"));
-          return [personalData.concat(goalsAssists)];
+          var id = $(elem1).attr("id");
+          var goalsAssists = $(elem1).find("input[type=number]").map((idx, elem2) => {return parseInt($(elem2).val().toString());}).get();
+          personalData.push($(elem1).find("label").text());
+          personalData = personalData.concat(goalsAssists);
+          personalData.push($("#" + id + "-check").prop("checked"));
+          return [personalData];
         });
         this.selectedMatch.PersonalGoals = personalGoals.get();
       }
     }    
     var matchData = JSON.stringify(this.selectedMatch);
-    this.bumpyball.postMatchData(matchData).subscribe();
-    this.initMatchManager();
+    this.bumpyball.postMatchData(matchData)
+      .subscribe(() => {
+        this.initMatchManager();
+        this.flashMessage.show("Match submited", { cssClass: 'alert-success', timeout: 3000 });
+      });    
   }
 
   onMatchModeChange(){
@@ -215,8 +225,9 @@ export class MatchmakerComponent implements OnInit {
             .subscribe(t2 => {
               var team1 = (t1 == -1) ? new Team(null) : new Team(t1);
               var team2 = (t2 == -1) ? new Team(null) : new Team(t2);
+              var allActive = team1.Teammates.length + team2.Teammates.length <= 6;
               this.selectedMatch.PersonalGoals = team1.Teammates.concat(team2.Teammates)
-                .map((idx, elem) => [idx, 0, 0]);
+                .map((elem, idx) => [elem, 0, 0, allActive]);
         }));
     } else {
       this.selectedMatch.PersonalGoals = []
@@ -274,6 +285,14 @@ export class MatchmakerComponent implements OnInit {
       .subscribe(match => this.loadMatchData(match));
   }
 
+  onTogglePlayer(player){
+    if($("#" + player + "-check").prop("checked")){
+      $("#" + player + ">input").removeAttr("disabled");
+    } else {
+      $("#" + player + ">input").attr("disabled", "disabled");
+    }
+  }
+
   getGameIndex(){
     if(this.gameIndex == this.selectedMatch.Results.length){
       this.gameIndex = 1;
@@ -282,6 +301,10 @@ export class MatchmakerComponent implements OnInit {
       this.gameIndex++;
       return this.gameIndex - 1;
     }
+  }
+
+  toSlug(name){
+    return slugify(name, {remove: /[&/,+()$~%.'":*?<>{}#]/g});
   }
 
   private togglePersonalGoals(){
