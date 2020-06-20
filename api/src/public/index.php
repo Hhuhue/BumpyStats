@@ -65,7 +65,7 @@ function GetPlayersStateFromUids($playersUid)
 
 $app->get('/snapshot-preview', function (Request $request, Response $response) {
 
-    $leaderboardJson = ExecuteWebRequest('GET', 'http://listing.usemapsettings.com/Leaderboard?Limit=250');
+    $leaderboardJson = ExecuteWebRequest('GET', 'http://listing.usemapsettings.com/Leaderboard?Limit=1000');
 
     $connection = CreateDBConnection($this);
     $registeredPlayersUids = $connection->getRegisteredPlayersUID();
@@ -82,7 +82,7 @@ $app->get('/snapshot-preview', function (Request $request, Response $response) {
 });
 
 $app->get('/snapshot', function (Request $request, Response $response) {
-    $leaderboardJson = ExecuteWebRequest('GET', 'http://listing.usemapsettings.com/Leaderboard?Limit=250');
+    $leaderboardJson = ExecuteWebRequest('GET', 'http://listing.usemapsettings.com/Leaderboard?Limit=1000');
 
     $connection = CreateDBConnection($this);
     $registeredPlayersUids = $connection->getRegisteredPlayersUID();
@@ -126,7 +126,7 @@ $app->get('/timeline/{player}', function (Request $request, Response $response, 
 });
 
 $app->get('/init', function (Request $request, Response $response) {
-    $leaderboardJson = ExecuteWebRequest('GET', 'http://listing.usemapsettings.com/Leaderboard?Limit=250');
+    $leaderboardJson = ExecuteWebRequest('GET', 'http://listing.usemapsettings.com/Leaderboard?Limit=1000');
 
     $connection = CreateDBConnection($this);
     $connection->initDatabase($leaderboardJson);
