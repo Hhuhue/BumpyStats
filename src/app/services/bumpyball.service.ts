@@ -9,7 +9,7 @@ import { environment } from './../../environments/environment';
   providedIn: 'root'
 })
 export class BumpyballService {
-  private leaderboardURL = "http://listing.usemapsettings.com/Leaderboard?Limit=250";
+  private leaderboardURL = "http://listing.usemapsettings.com/Leaderboard?Limit=1000";
   private uidUrl = "http://nifty-condition-169823.appspot.com/GetPlayerRecord?Game=BumpyBall&Uid=";
   private levelsUrl = "http://www.usemapsettings.com/data/levels.json";
   private getPlayerProgressApiUrl = environment.APIEndpoint + "/snapshot-preview";

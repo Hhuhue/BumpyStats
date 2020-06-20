@@ -16,6 +16,7 @@ export class MatchmakerComponent implements OnInit {
   teams: string[];
   players: string[];
   events: string[];
+  servers = ["NY", "FF", "AMS", "SGP", "SF"];
   selectedTeam: Team;
   selectedEvent: TournamentEvent;
   selectedMatch: TournamentMatch;
@@ -154,16 +155,16 @@ export class MatchmakerComponent implements OnInit {
   onMatchSave(){
     this.selectedMatch.Event = $("#MatchEvent").val().toString();
     this.selectedMatch.IsAggregateWin = $("#AggregateScore").prop("checked") ? 1 : 0;
-    this.selectedMatch.Name = $("#Opponent1").text() + " VS " + $("#Opponent2").text();
     this.selectedMatch.Date = moment().format("YYYY-MM-DD");
 
     if ($("#EnterResults").prop("checked")){
       this.selectedMatch.VideoLink = $("#VideoLink").val().toString();
       var opponent1Goals = $("input[name=opp1]").map((idx, elem) => {return parseInt($(elem).val().toString());}).get();
       var opponent2Goals = $("input[name=opp2]").map((idx, elem) => {return parseInt($(elem).val().toString());}).get();
+      var gameLocations = $("select[name=loc]").map((idx, elem) => {return $(elem).val().toString();}).get();
       this.selectedMatch.Results = [];
       for(var i = 0; i < opponent1Goals.length; i++){
-        this.selectedMatch.Results.push([opponent1Goals[i], opponent2Goals[i]])
+        this.selectedMatch.Results.push([opponent1Goals[i], opponent2Goals[i], gameLocations[i]])
       }
       if($("#EnterPersonalGoals").prop("checked")){
         var personalGoals = $("#PersonalGoalSection>*").map((idx, elem1) => {

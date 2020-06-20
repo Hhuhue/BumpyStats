@@ -104,6 +104,7 @@
               <th>Game</th>
               <th>{{selectedMatch.Opponent1}}</th>
               <th>{{selectedMatch.Opponent2}}</th>
+              <th>Server</th>
               <th></th>
             </tr>
           </thead>
@@ -112,6 +113,11 @@
               <td>{{getGameIndex()}}</td>
               <td><input name="opp1" type="number" class="form-control" value="{{game[0]}}"/></td>
               <td><input name="opp2" type="number" class="form-control" value="{{game[1]}}"/></td>
+              <td>
+                <select name="loc" type="number" class="form-control" value="{{game[2]}}">
+                  <option *ngFor="let server of servers" value="{{server}}" [selected]="game[2] == server">{{server}}</option>
+                </select>
+              </td>
               <td><button class="btn btn-outline-danger remove-game" (click)="onRemoveGame()"><i class="fa fa-times"></i></button></td>
             </tr>
           </tbody>
